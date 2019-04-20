@@ -1,0 +1,12 @@
+[package]
+name = "math-traits"
+version = "0.1.0"
+authors = ["Joshua Smith <anvil775@gmail.com>"]
+
+[lib]
+name = "math_traits"
+path = "src/traits.rs"
+
+[dependencies]
+num-traits = "0.2"
+trait-arith = {path = "../trait-arith/"}
