@@ -1,20 +1,20 @@
 //!
-//!Traits for sets with a single binary operation with various properties
+//!Traits for sets with a single binary operation and various properties of that operation
 //!
-//!Each of such properties and traits have been written with both an additive and multiplicative variant
-//!since both operations can benefit from the system and in order to provide a foundation for the
-//![ring-like](::algebra::ring_like) system.
+//!Currently, the group operation is interpreted as being either the [`Add`] or [`Mul`] operation,
+//!and each of the group properties in this module have both an additive and multiplicative variant.
 //!
-//!When choosing which operations to implement, ultimately, just use sound judgement and conventions.
-//!However, for clarity and consistency it is suggested to try to follow the general
-//!mathematical or programming conventions for whatever you are implementing
-//!whenever possible. In particular:
+//!As it stands currently, there is no real difference between the two, so it is ultimately up
+//!to the implementor's preference which one (or both) to use. However, obviously, addition and multiplication
+//!carry difference connotations in different contexts, so for clarity and consistency it is
+//!suggested to try to follow the general mathematical or programming conventions whenever possible.
+//!In particular:
 //!* Try to use multiplication for single operation structures
-//!unless there is a specific exception (such as string concatenation).
+//!except when convention dictates otherwise (such as the case of string concatenation).
 //!* While the option does exist, avoid implementing a non-commutative or especially a non-associative
-//!addition operation.
-//!* Avoid implementing both addition and multiplication where the multiplication *doesn't* distrubute
-//!and **especially** where the addition distributes instead.
+//!addition operation unless convention dictates otherwise.
+//!* Avoid implementing both an addition and multiplication where the multiplication *doesn't* distrubute
+//!or where the addition distributes instead.
 //!
 //!# Implementation
 //!
@@ -26,11 +26,11 @@
 //!    * (Note that for the auto-implementing categorization traits to work, the corresponding
 //!      "Assign" traits must be implemented.)
 //!* An identity element:
-//!    * Containts a distinguished element `0` or `1` such that `0+x=x` and `x+0=x` or
+//!    * Contains a unique element `0` or `1` such that `0+x=x` and `x+0=x` or
 //!     `1*x=x`,`x*1=x` for all `x`
 //!    * Represented with either [`Zero`] or [`One`] from [`num_traits`]
 //!* Invertibility:
-//!    * For every `x` in from the set, there exists some other `y` in the struct such that
+//!    * For every `x` in the set, there exists some other `y` in the struct such that
 //!     `x*y=1` and `y*x=1` (or `x+y=0` and `y+x=0` if additive), and there exists
 //!     a corresponding inverse operation.
 //!    * Represented with either [`Neg`], [`Sub`], and [`SubAssign`] or [`Inv`], [`Div`], and [`DivAssign`]
@@ -39,8 +39,8 @@
 //!* Commutative:
 //!    * If the operation is order invariant, ie `x+y=y+x` or `x*y=y*x` for all `x` and `y`.
 //!    * Represented with [`AddCommutative`] or [`MulCommutative`]
-//!* Commutative:
-//!    * If the operation is _evaluation_ order invariant, ie `x+(y+z)=(x+y)+z` or `x*(y*z)=(x*y)*z`
+//!* Associative:
+//!    * If operation sequences are _evaluation_ order invariant, ie `x+(y+z)=(x+y)+z` or `x*(y*z)=(x*y)*z`
 //!     for all `x`, `y`, and `z`.
 //!    * Represented with [`AddAssociative`] or [`MulAssociative`]
 //!
@@ -54,17 +54,17 @@
 //!
 //!Structs with these properties implemented will be automatically added to a number of categorization
 //!traits for various mathematical sets. These traits all have additive and multiplicative variants
-//!and fit into a heirarchy of mathematical structures:
-//!```
-//!                  ---Magma---
-//!                  |         |
-//!                  |     Semigroup
-//!                 Loop       |
-//!                  |      Monoid
-//!                  |         |
-//!                  ---Group---
-//!                       |
-//!                 Abelian Group
+//!and fit into a heirarchy of mathematical structures as such:
+//!``` ignore
+//!    ---Magma---
+//!    |         |
+//!    |     Semigroup
+//!   Loop       |
+//!    |      Monoid
+//!    |         |
+//!    ---Group---
+//!         |
+//!   Abelian Group
 //!```
 //!where:
 //!* A [Magma](MulMagma) is a set with any binary operation
@@ -100,9 +100,9 @@ pub mod additive {
     ///A marker trait for stucts whose addition operation is evaluation order independent,
     ///ie `x+(y+z)=(x+y)+z` for all `x`, `y`, and `z`.
     ///
-    ///This is an extremely common property, and most commonly used algebraic systems have it.
+    ///This is an extremely common property, and _most_ commonly used algebraic systems have it.
     ///Nonetheless, there are some algebraic constructions like loop concatenation, the cross product,
-    ///and octonions that do not have this property, so the option to _not_ implement it exists.
+    ///lie algebras, and octonions that do not have this property, so the option to _not_ implement it exists.
     ///
     ///Note however, it is _highly_ recommended to implement non-associative structs as multiplicative
     ///to be consistent with convention.
@@ -113,9 +113,12 @@ pub mod additive {
     ///A marker trait for stucts whose addition operation is order independent,
     ///ie `x+y=y+x` for all `x`, `y`, and `z`.
     ///
-    ///This is an extremely common property, and most commonly used algebraic systems have it.
+    ///This is an extremely common property, and _most_ commonly used algebraic systems have it.
     ///Nonetheless, there are also a fairly number of algebraic constructions do not, such as
     ///matrix multiplication, most finite groups, and in particular, string concatenation.
+    ///
+    ///Note however, it is _highly_ recommended to implement non-commutative structs
+    ///(except string concatentation) as multiplicative to be consistent with convention.
     ///
     pub trait AddCommutative {}
 
@@ -172,6 +175,7 @@ pub mod additive {
 
     auto!{
 
+        ///A set with an fully described additive inverse
         pub trait Negatable = Sized + Clone + Neg<Output=Self> + Sub<Self, Output=Self> + SubAssign<Self>;
 
         ///A set with an addition operation
@@ -213,7 +217,24 @@ pub mod multiplicative {
     use super::{repeated_squaring, repeated_squaring_inv};
     use algebra::{Natural, IntegerSubset};
 
+    ///
+    ///A marker trait for stucts whose multiplication operation is evaluation order independent,
+    ///ie `x*(y*z)=(x*y)*z` for all `x`, `y`, and `z`.
+    ///
+    ///This is an extremely common property, and _most_ commonly used algebraic systems have it.
+    ///Nonetheless, there are some algebraic constructions like loop concatenation, the cross product,
+    ///lie algebras, and octonions that do not have this property, so the option to _not_ implement it exists.
+    ///
     pub trait MulAssociative: {}
+
+    ///
+    ///A marker trait for stucts whose addition operation is order independent,
+    ///ie `x+y=y+x` for all `x`, `y`, and `z`.
+    ///
+    ///This is an extremely common property, and _most_ commonly used algebraic systems have it.
+    ///Nonetheless, there are also a fairly number of algebraic constructions do not, such as
+    ///matrix multiplication and most finite groups.
+    ///
     pub trait MulCommutative {}
 
     trait PowNHelper<N:Natural>: MulSemigroup + One { fn _pow_n(self, n:N) -> Self; }
@@ -242,13 +263,21 @@ pub mod multiplicative {
     impl<G:MulMonoid+Invertable> PowZ for G {}
 
     auto!{
+
+        ///A set with an fully described multiplicative inverse
         pub trait Invertable = Sized + Clone + Inv<Output=Self> + Div<Self, Output=Self> + DivAssign<Self>;
 
+        ///A set with a multiplication operation
         pub trait MulMagma = Sized + Clone + Mul<Self, Output=Self> + MulAssign<Self>;
+        ///An associative multiplicative magma
         pub trait MulSemigroup = MulMagma + MulAssociative;
+        ///A multiplicative semigroup with an identity element
         pub trait MulMonoid = MulSemigroup + One + PowN;
+        ///A multiplicative magma with an inverse operation and identity
         pub trait MulLoop = MulMagma + Invertable + One;
+        ///A multiplicative monoid with an inverse operation
         pub trait MulGroup = MulMagma + MulAssociative + Invertable + One + PowZ;
+        ///A commutative multiplicative group
         pub trait MulAbelianGroup = MulGroup + MulCommutative;
 
         pub trait MulSubmagma<G> = MulMagma + Mul<G,Output=G> where G:MulMagma;

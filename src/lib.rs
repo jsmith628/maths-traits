@@ -7,38 +7,37 @@
 //!# Design Philosophy
 //!
 //!The framework in this crate is written to fit four design goals:
-//!* Usage must be simple enough so as to add minimal complication to generics ontop of
-//! working with particular implementations or primitives in order to make code more readible and maintainable.
-//!* Implementation should utilize the current systems in [Standard Rust][std::ops] or well established
-//! libraries (such as [`num_traits`]) instead of creating new systems that require significant special
-//! attention to support.
-//!* Traits should assume as much abstraction as possible so to have maximal flexibility
-//! in what structs can fit a generic.
-//!* Whenever possible, trait naming, function, and categorization should fit their corresponding
+//!* Traits should be flexible and assume as much mathematical abstraction as possible.
+//!* Trait names, functions, and categorization should fit their corresponding
 //! mathematical conventions.
+//!* Usage must be simple enough so that working with these generics instead of primitives add
+//! minimal complication
+//!* Implementation should utilize the [standard Rust][std::ops] or well established
+//! libraries (such as [`num_traits`]) as much as possible instead of creating new systems
+//! requiring significant special attention to support.
 //!
 //!# Usage
 //!
-//!The traits in this framework are split into two sets: one for individual features and mathematical
-//!properties and the other a class of auto-implementing traits for functionality grouping and
-//! categorization. This way, to support the system, struct writers need only implement each
-//!relevant property, and end users can simply use the single trait for whichever mathematical struct
-//!fits their needs.
+//!The traits in this framework are split into two collections, one for individual features and mathematical
+//!properties and one for common mathematical structures, where the second set of traits is automatically
+//!implemented by grouping together functionality from the first set. This way, to support the system,
+//!structs need only implement each relevant property, and end users can simply use the single
+//!trait for whichever mathematical struct fits their needs.
 //!
-//!For example, to implement the [albegraic](algebra) features for a rational type,
-//!one would imlement Clone and the [`Add`](std::ops::Add), [`Sub`](std::ops::Sub), [`Mul`](std::ops::Mul),
+//!For example, to implement the [algebraic](algebra) features for a `Rational` type,
+//!you would implement [`Clone`](Clone), [`Add`](std::ops::Add), [`Sub`](std::ops::Sub), [`Mul`](std::ops::Mul),
 //![`Div`](std::ops::Div), [`Neg`](std::ops::Neg), [`Inv`](num_traits::Inv), [`Zero`](num_traits::Zero),
-//![`One`](num_traits::One), and their assign variants as normal as well as to the new traits
+//![`One`](num_traits::One), and their assign variants as normal. Then, by implementing the new traits
 //![`AddCommutative`](algebra::AddCommutative), [`AddAssociative`](algebra::AddAssociative),
 //![`MulCommutative`](algebra::MulCommutative), [`MulCommutative`](algebra::MulAssociative), and
-//![`Distributive`](algebra::Distributive) to declare those algebraic properties for our type. Then,
-//!the categorization traits such as [`Ring`](algebra::Ring) and [`MulMonoid`](algebra::MulMonoid) will
-//!automatically be implemented and usable for our type.
+//![`Distributive`](algebra::Distributive), all of the categorization traits (such as [`Ring`](algebra::Ring)
+//!and [`MulMonoid`](algebra::MulMonoid)) will automatically be implemented and usable for our type.
 //!
 //!```
 //!use math_traits::algebra::*;
 //!
-//!#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+//!#[derive(Clone)] //necessary to auto-implement Ring and MulMonoid
+//!#[derive(Copy, PartialEq, Eq, Debug)] //for convenience and displaying output
 //!pub struct Rational {
 //!    n: i32,
 //!    d: i32
@@ -127,18 +126,22 @@
 //!
 //!//Now, Ring and MulMonoid are automatically implemented for us
 //!
-//!fn mul_add<F:Ring>(a:F, b:F, c:F) -> F { a*b + c }
+//!fn mul_add<R:Ring>(a:R, b:R, c:R) -> R { a*b + c }
 //!use math_traits::algebra::group_like::repeated_squaring;
 //!
-//!assert_eq!(mul_add(Rational::new(1, 2), Rational::new(2, 3), Rational::new(1, 6)), Rational::new(1, 2));
-//!assert_eq!(repeated_squaring(Rational::new(1, 2), 7u32), Rational::new(1, 128));
+//!let half = Rational::new(1, 2);
+//!let two_thirds = Rational::new(2, 3);
+//!let sixth = Rational::new(1, 6);
+//!
+//!assert_eq!(mul_add(half, two_thirds, sixth), half);
+//!assert_eq!(repeated_squaring(half, 7u32), Rational::new(1, 128));
 //!```
 //!
 //!# Supported Constructs
 //!
-//!Currently, mathematical support in `math_traits` consists of a system for algebraic structures
-//!including [group-like](algebra::group_like), [ring-like](algebra::ring_like), [integer-like](algebra::integer),
-//!and [module-like](algebra::module_like) structures and a system for analytical constructions such as
+//!Currently, the mathematical structures supported in `math_traits` consist of a system of
+//![group-like](algebra::group_like), [ring-like](algebra::ring_like), [integer-like](algebra::integer),
+//!and [module-like](algebra::module_like) algebraic structures and a system of analytical constructions including
 //![ordered and archimedian groups](analysis::ordered), [real and complex numbers](analysis::real),
 //!and [metric and inner product spaces](analysis::metric). For more information, see each respective
 //!module.
