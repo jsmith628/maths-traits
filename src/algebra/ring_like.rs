@@ -66,27 +66,27 @@ auto! {
 
     pub trait Field = CommutativeRing + MulGroup;
 
-    pub trait Subsemiring<R> = Semiring + AddSubmonoid<R> + MulSubsemigroup<R> where R:Semiring;
-    pub trait UnitalSubsemiring<R> = Semiring + AddSubmonoid<R> + MulSubmonoid<R> where R:UnitalSemiring;
-    pub trait CommutativeSubsemiring<R> = CommutativeSemiring + UnitalSubsemiring<R> where R:UnitalSemiring;
-    pub trait DivisionSubsemiring<R> = DivisionSemiring + AddSubmonoid<R> + MulSubgroup<R> where R:DivisionSemiring;
-
-    pub trait Supersemiring<R> = Semiring + AddSupermonoid<R> + MulSupersemigroup<R> where R:Semiring;
-    pub trait UnitalSupersemiring<R> = Semiring + AddSupermonoid<R> + MulSupermonoid<R> where R:UnitalSemiring;
-    pub trait CommutativeSupersemiring<R> = CommutativeSemiring + UnitalSupersemiring<R> where R:CommutativeSemiring;
-    pub trait DivisionSupersemiring<R> = DivisionSemiring + AddSupermonoid<R> + MulSupergroup<R> where R:DivisionSemiring;
-
-    pub trait Subring<R> = Ring + AddAbelianSubgroup<R> + MulSubsemigroup<R> where R:Ring;
-    pub trait UnitalSubring<R> = Ring + AddAbelianSubgroup<R> + MulSubmonoid<R> where R:UnitalRing;
-    pub trait CommutativeSubring<R> = CommutativeRing + UnitalSubring<R> where R:UnitalRing;
-    pub trait DivisionSubring<R> = DivisionRing + AddAbelianSubgroup<R> + MulSubgroup<R> where R:DivisionRing;
-    pub trait Subfield<R> = Field + DivisionSubring<R> where R:DivisionRing;
-
-    pub trait Superring<R> = Ring + AddAbelianSupergroup<R> + MulSupersemigroup<R> where R:Ring;
-    pub trait UnitalSuperring<R> = Ring + AddAbelianSupergroup<R> + MulSupermonoid<R> where R:UnitalRing;
-    pub trait CommutativeSuperring<R> = CommutativeRing + UnitalSuperring<R> where R:CommutativeRing;
-    pub trait DivisionSuperring<R> = DivisionRing + AddAbelianSupergroup<R> + MulSupergroup<R> where R:DivisionRing;
-    pub trait Superfield<R> = Field + DivisionSuperring<R> where R:Field;
+    // pub trait Subsemiring<R> = Semiring + AddSubmonoid<R> + MulSubsemigroup<R> where R:Semiring;
+    // pub trait UnitalSubsemiring<R> = Semiring + AddSubmonoid<R> + MulSubmonoid<R> where R:UnitalSemiring;
+    // pub trait CommutativeSubsemiring<R> = CommutativeSemiring + UnitalSubsemiring<R> where R:UnitalSemiring;
+    // pub trait DivisionSubsemiring<R> = DivisionSemiring + AddSubmonoid<R> + MulSubgroup<R> where R:DivisionSemiring;
+    //
+    // pub trait Supersemiring<R> = Semiring + AddSupermonoid<R> + MulSupersemigroup<R> where R:Semiring;
+    // pub trait UnitalSupersemiring<R> = Semiring + AddSupermonoid<R> + MulSupermonoid<R> where R:UnitalSemiring;
+    // pub trait CommutativeSupersemiring<R> = CommutativeSemiring + UnitalSupersemiring<R> where R:CommutativeSemiring;
+    // pub trait DivisionSupersemiring<R> = DivisionSemiring + AddSupermonoid<R> + MulSupergroup<R> where R:DivisionSemiring;
+    //
+    // pub trait Subring<R> = Ring + AddAbelianSubgroup<R> + MulSubsemigroup<R> where R:Ring;
+    // pub trait UnitalSubring<R> = Ring + AddAbelianSubgroup<R> + MulSubmonoid<R> where R:UnitalRing;
+    // pub trait CommutativeSubring<R> = CommutativeRing + UnitalSubring<R> where R:UnitalRing;
+    // pub trait DivisionSubring<R> = DivisionRing + AddAbelianSubgroup<R> + MulSubgroup<R> where R:DivisionRing;
+    // pub trait Subfield<R> = Field + DivisionSubring<R> where R:DivisionRing;
+    //
+    // pub trait Superring<R> = Ring + AddAbelianSupergroup<R> + MulSupersemigroup<R> where R:Ring;
+    // pub trait UnitalSuperring<R> = Ring + AddAbelianSupergroup<R> + MulSupermonoid<R> where R:UnitalRing;
+    // pub trait CommutativeSuperring<R> = CommutativeRing + UnitalSuperring<R> where R:CommutativeRing;
+    // pub trait DivisionSuperring<R> = DivisionRing + AddAbelianSupergroup<R> + MulSupergroup<R> where R:DivisionRing;
+    // pub trait Superfield<R> = Field + DivisionSuperring<R> where R:Field;
 }
 
 

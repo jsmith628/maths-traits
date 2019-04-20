@@ -191,19 +191,19 @@ pub mod additive {
         ///A commutative additive group
         pub trait AddAbelianGroup = AddGroup + AddCommutative;
 
-        pub trait AddSubmagma<G> = AddMagma + Add<G,Output=G> where G:AddMagma;
-        pub trait AddSubsemigroup<G> = AddSemigroup + AddSubmagma<G> where G:AddMagma;
-        pub trait AddSubmonoid<G> = AddMonoid + AddSubmagma<G> where G:AddMonoid;
-        pub trait AddSubloop<G> = AddLoop + AddSubmagma<G> + Sub<G,Output=G> where G:AddLoop;
-        pub trait AddSubgroup<G> = AddGroup + AddSubmagma<G> + Sub<G,Output=G> where G:AddGroup;
-        pub trait AddAbelianSubgroup<G> = AddAbelianGroup + AddSubgroup<G> where G:AddGroup;
-
-        pub trait AddSupermagma<H> = AddMagma + Add<H,Output=Self> + AddAssign<H> where H:AddMagma;
-        pub trait AddSupersemigroup<H> = AddSemigroup + AddSupermagma<H> where H:AddSemigroup;
-        pub trait AddSupermonoid<H> = AddMonoid + AddSupermagma<H> where H:AddMonoid;
-        pub trait AddSuperloop<H> = AddLoop + AddSupermagma<H> + Sub<H,Output=Self> + SubAssign<H> where H:AddLoop;
-        pub trait AddSupergroup<H> = AddGroup + AddSupermagma<H> + Sub<H,Output=Self> + SubAssign<H> where H:AddGroup;
-        pub trait AddAbelianSupergroup<H> = AddAbelianGroup + AddSupergroup<H> where H:AddAbelianGroup;
+        // pub trait AddSubmagma<G> = AddMagma + Add<G,Output=G> where G:AddMagma;
+        // pub trait AddSubsemigroup<G> = AddSemigroup + AddSubmagma<G> where G:AddMagma;
+        // pub trait AddSubmonoid<G> = AddMonoid + AddSubmagma<G> where G:AddMonoid;
+        // pub trait AddSubloop<G> = AddLoop + AddSubmagma<G> + Sub<G,Output=G> where G:AddLoop;
+        // pub trait AddSubgroup<G> = AddGroup + AddSubmagma<G> + Sub<G,Output=G> where G:AddGroup;
+        // pub trait AddAbelianSubgroup<G> = AddAbelianGroup + AddSubgroup<G> where G:AddGroup;
+        //
+        // pub trait AddSupermagma<H> = AddMagma + Add<H,Output=Self> + AddAssign<H> where H:AddMagma;
+        // pub trait AddSupersemigroup<H> = AddSemigroup + AddSupermagma<H> where H:AddSemigroup;
+        // pub trait AddSupermonoid<H> = AddMonoid + AddSupermagma<H> where H:AddMonoid;
+        // pub trait AddSuperloop<H> = AddLoop + AddSupermagma<H> + Sub<H,Output=Self> + SubAssign<H> where H:AddLoop;
+        // pub trait AddSupergroup<H> = AddGroup + AddSupermagma<H> + Sub<H,Output=Self> + SubAssign<H> where H:AddGroup;
+        // pub trait AddAbelianSupergroup<H> = AddAbelianGroup + AddSupergroup<H> where H:AddAbelianGroup;
     }
 
 }
@@ -280,19 +280,19 @@ pub mod multiplicative {
         ///A commutative multiplicative group
         pub trait MulAbelianGroup = MulGroup + MulCommutative;
 
-        pub trait MulSubmagma<G> = MulMagma + Mul<G,Output=G> where G:MulMagma;
-        pub trait MulSubsemigroup<G> = MulSemigroup + MulSubmagma<G> where G:MulMagma;
-        pub trait MulSubmonoid<G> = MulMonoid + MulSubmagma<G> where G:MulMonoid;
-        pub trait MulSubloop<G> = MulLoop + MulSubmagma<G> + Div<G,Output=G> where G:MulLoop;
-        pub trait MulSubgroup<G> = MulGroup + MulSubmagma<G> + Div<G,Output=G> where G:MulGroup;
-        pub trait MulAbelianSubgroup<G> = MulAbelianGroup + MulSubgroup<G> where G:MulGroup;
-
-        pub trait MulSupermagma<H> = MulMagma + Mul<H,Output=Self> + MulAssign<H> where H:MulMagma;
-        pub trait MulSupersemigroup<H> = MulSemigroup + MulSupermagma<H> where H:MulSemigroup;
-        pub trait MulSupermonoid<H> = MulMonoid + MulSupermagma<H> where H:MulMonoid;
-        pub trait MulSuperloop<H> = MulLoop + MulSupermagma<H> + Div<H,Output=Self> + DivAssign<H> where H:MulLoop;
-        pub trait MulSupergroup<H> = MulGroup + MulSupermagma<H> + Div<H,Output=Self> + DivAssign<H> where H:MulGroup;
-        pub trait MulAbelianSupergroup<H> = MulAbelianGroup + MulSupergroup<H> where H:MulAbelianGroup;
+        // pub trait MulSubmagma<G> = MulMagma + Mul<G,Output=G> where G:MulMagma;
+        // pub trait MulSubsemigroup<G> = MulSemigroup + MulSubmagma<G> where G:MulMagma;
+        // pub trait MulSubmonoid<G> = MulMonoid + MulSubmagma<G> where G:MulMonoid;
+        // pub trait MulSubloop<G> = MulLoop + MulSubmagma<G> + Div<G,Output=G> where G:MulLoop;
+        // pub trait MulSubgroup<G> = MulGroup + MulSubmagma<G> + Div<G,Output=G> where G:MulGroup;
+        // pub trait MulAbelianSubgroup<G> = MulAbelianGroup + MulSubgroup<G> where G:MulGroup;
+        //
+        // pub trait MulSupermagma<H> = MulMagma + Mul<H,Output=Self> + MulAssign<H> where H:MulMagma;
+        // pub trait MulSupersemigroup<H> = MulSemigroup + MulSupermagma<H> where H:MulSemigroup;
+        // pub trait MulSupermonoid<H> = MulMonoid + MulSupermagma<H> where H:MulMonoid;
+        // pub trait MulSuperloop<H> = MulLoop + MulSupermagma<H> + Div<H,Output=Self> + DivAssign<H> where H:MulLoop;
+        // pub trait MulSupergroup<H> = MulGroup + MulSupermagma<H> + Div<H,Output=Self> + DivAssign<H> where H:MulGroup;
+        // pub trait MulAbelianSupergroup<H> = MulAbelianGroup + MulSupergroup<H> where H:MulAbelianGroup;
     }
 
 
