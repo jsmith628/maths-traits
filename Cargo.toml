@@ -5,4 +5,3 @@ authors = ["Joshua Smith <anvil775@gmail.com>"]
 
 [dependencies]
 num-traits = "0.2"
-trait-arith = {path = "../trait-arith/"}

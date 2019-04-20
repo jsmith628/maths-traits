@@ -152,7 +152,6 @@
 
 
 
-extern crate trait_arith;
 extern crate core;
 extern crate num_traits;
 

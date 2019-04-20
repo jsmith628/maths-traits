@@ -1,5 +1,4 @@
 pub use core::ops::{Add, AddAssign, Sub, SubAssign, Neg, Mul, MulAssign, Div, DivAssign, Index, IndexMut};
-use trait_arith::Number;
 
 use algebra::*;
 
@@ -8,7 +7,7 @@ pub trait QuadradicForm<K: UnitalRing> { fn q_form(&self) -> K; }
 
 pub trait ConvergentBasis<K>: Index<usize,Output=K> {fn basis(i:usize) -> Self;}
 pub trait CountableBasis<K>: ConvergentBasis<K> + IndexMut<usize, Output=K> {fn elements(&self) -> usize;}
-pub trait FiniteBasis<K>: CountableBasis<K> { type Elements:Number; }
+pub trait FiniteBasis<K>: CountableBasis<K> { }
 
 auto!{
     pub trait RingModule<K> = AddAbelianGroup + Mul<K, Output=Self> + MulAssign<K> where K: UnitalRing;
