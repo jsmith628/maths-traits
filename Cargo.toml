@@ -1,6 +1,6 @@
 [package]
 authors = ["Joshua Smith <anvil775@gmail.com>"]
-name = "math-traits"
+name = "maths-traits"
 description = "A simple to use yet abstract system of mathematical traits for the Rust language"
 version = "0.1.0"
 keywords = ["mathematics", "numerics", "algebra", "integer", "real"]

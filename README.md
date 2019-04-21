@@ -1,5 +1,5 @@
 
-# Math Traits
+# Maths Traits
 
 A simple to use yet abstract system of mathematical traits for the Rust language
 

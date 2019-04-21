@@ -1,5 +1,5 @@
 //!
-//!# Math Traits
+//!# Maths Traits
 //!
 //!A simple crate for sane and usable abstractions of common (and uncommon) mathematical constructs
 //!using the Rust trait system
