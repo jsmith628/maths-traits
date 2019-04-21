@@ -6,6 +6,7 @@ version = "0.1.0"
 keywords = ["mathematics", "numerics", "algebra", "integer", "real"]
 categories = ["algorithms", "science"]
 repository = "https://github.com/anvil777/maths-traits"
+documentation = "https://docs.rs/maths-traits"
 license = "MIT"
 readme = "README.md"
 
