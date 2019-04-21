@@ -436,7 +436,7 @@ fn mul_pow_helper<E:Natural, R:Clone, Op: Fn(R,R) -> R>(mut b: R, mut p: E, op: 
 }
 
 ///
-///Raises a [monoid](MulMonoid) element to a integral power using inversion and repeated squaring 
+///Raises a [monoid](MulMonoid) element to a integral power using inversion and repeated squaring
 ///
 ///# Panics
 ///If both the base and power are `0`

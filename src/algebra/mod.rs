@@ -9,7 +9,7 @@
 //! [semirings](algebra::Semiring), [division rings](algebra::DivisionRing), and [fields](algebra::Field).
 //! In addition, this module contains an added system for integer-like functionality like
 //! [divisibility](algebra::Divisibility) testing, [GCD](algebra::GCD), and
-//! [Euclidian division](algebra::EuclidianDiv).
+//! [Euclidean division](algebra::EuclideanDiv).
 //!* ["Module-Like"](algebra::module_like) traits for group-like structures with an added scalar multiplication.
 //!This includes [Vector Spaces](algebra::VectorSpace) and [Ring Modules](algebra::RingModule)
 //!with varying degrees of [bilinear](algebra::BilinearForm) and [quadradic](algebra::QuadradicForm)

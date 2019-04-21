@@ -15,7 +15,7 @@ auto!{
 }
 
 pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
-                        + EuclidianSemidomain
+                        + EuclideanSemidomain
                         + Primality
                         + ArchimedianSemiring
                         + Sub<Self, Output=Self> + Div<Self, Output=Self> + Rem<Self, Output=Self>
@@ -73,7 +73,7 @@ macro_rules! impl_int_subset {
 
         impl GCD for $name {
             #[inline] fn lcm(self, rhs: Self) -> Self { (self*rhs) / self.gcd(rhs) }
-            #[inline] fn gcd(self, rhs: Self) -> Self{ euclidian(self, rhs) }
+            #[inline] fn gcd(self, rhs: Self) -> Self{ euclidean(self, rhs) }
         }
 
         impl UniquelyFactorizable for $name {}
@@ -121,9 +121,9 @@ macro_rules! impl_int_subset {
             }
         }
 
-        impl EuclidianDiv for $name {
+        impl EuclideanDiv for $name {
             type Naturals = $unsigned;
-            #[inline] fn euclid_norm(&self) -> $unsigned {self.as_unsigned()}
+            #[inline] fn euclid_norm(&self) -> $unsigned {self.abs().as_unsigned()}
             #[inline] fn div_euc(self, rhs: Self) -> Self {(self / rhs)}
             #[inline] fn rem_euc(self, rhs: Self) -> Self {(self % rhs)}
             #[inline] fn div_alg(self, rhs: Self) -> (Self, Self) {(self / rhs, self % rhs)}
@@ -158,10 +158,10 @@ macro_rules! impl_int {
             impl Bezout for $s {
                 #[inline]
                 fn bezout_coefficients(self, rhs: Self) -> (Self, Self) {
-                    let (x, y, _g) = extended_euclidian(self, rhs);
+                    let (x, y, _g) = extended_euclidean(self, rhs);
                     (x, y)
                 }
-                #[inline] fn bezout_with_gcd(self, rhs: Self) -> (Self, Self, Self) { extended_euclidian(self, rhs) }
+                #[inline] fn bezout_with_gcd(self, rhs: Self) -> (Self, Self, Self) { extended_euclidean(self, rhs) }
             }
 
             impl_int_subset!($u:$s:$u @unsigned);
