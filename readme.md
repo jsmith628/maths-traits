@@ -12,8 +12,8 @@ The framework in this crate is written to fit four design goals:
  mathematical conventions.
 * Usage must be simple enough so that working with these generics instead of primitives add
  minimal complication
-* Implementation should utilize the [standard Rust][std::ops] or well established
- libraries (such as [`num_traits`]) as much as possible instead of creating new systems
+* Implementation should utilize the standard Rust or well established
+ libraries (such as `num_traits`) as much as possible instead of creating new systems
  requiring significant special attention to support.
 
 # Usage
@@ -24,14 +24,14 @@ implemented by grouping together functionality from the first set. This way, to 
 structs need only implement each relevant property, and end users can simply use the single
 trait for whichever mathematical struct fits their needs.
 
-For example, to implement the [algebraic](algebra) features for a `Rational` type,
-you would implement [`Clone`](Clone), [`Add`](std::ops::Add), [`Sub`](std::ops::Sub), [`Mul`](std::ops::Mul),
-[`Div`](std::ops::Div), [`Neg`](std::ops::Neg), [`Inv`](num_traits::Inv), [`Zero`](num_traits::Zero),
-[`One`](num_traits::One), and their assign variants as normal. Then, by implementing the new traits
-[`AddCommutative`](algebra::AddCommutative), [`AddAssociative`](algebra::AddAssociative),
-[`MulCommutative`](algebra::MulCommutative), [`MulCommutative`](algebra::MulAssociative), and
-[`Distributive`](algebra::Distributive), all of the categorization traits (such as [`Ring`](algebra::Ring)
-and [`MulMonoid`](algebra::MulMonoid)) will automatically be implemented and usable for our type.
+For example, to implement the algebraic features for a `Rational` type,
+one would implement `Clone`, `Add`, `Sub`, `Mul`,
+`Div`, `Neg`, `Inv`, `Zero`,
+`One`, and their assign variants as normal. Then, by implementing the new traits
+`AddCommutative`, `AddAssociative`,
+`MulCommutative`, `MulCommutative`, and
+`Distributive`, all of the categorization traits (such as `Ring`
+and `MulMonoid`) will automatically be implemented and usable for the type.
 
 ```
 use math_traits::algebra::*;
@@ -140,8 +140,8 @@ assert_eq!(repeated_squaring(half, 7u32), Rational::new(1, 128));
 # Supported Constructs
 
 Currently, the mathematical structures supported in `math_traits` consist of a system of
-[group-like](algebra::group_like), [ring-like](algebra::ring_like), [integer-like](algebra::integer),
-and [module-like](algebra::module_like) algebraic structures and a system of analytical constructions including
-[ordered and archimedian groups](analysis::ordered), [real and complex numbers](analysis::real),
-and [metric and inner product spaces](analysis::metric). For more information, see each respective
+group-like, ring-like, integer-like,
+and module-like algebraic structures and a system of analytical constructions including
+ordered and Archimedean groups, real and complex numbers,
+and metric and inner product spaces. For more information, see each respective
 module.

@@ -14,7 +14,7 @@ pub trait OrderedSemiring: OrderedMonoid + UnitalSemiring {
     fn abs(self) -> Self;
 }
 
-pub trait ArchimedianMonoid: OrderedMonoid {
+pub trait ArchimedeanMonoid: OrderedMonoid {
     fn div_arch(self, rhs: Self) -> Self;
     fn rem_arch(self, rhs: Self) -> Self;
     fn div_alg_arch(self, rhs: Self) -> (Self, Self);
@@ -25,10 +25,10 @@ auto!{
     pub trait OrderedRing = OrderedSemiring + Ring;
     pub trait OrderedField = OrderedRing + Field;
 
-    pub trait ArchimedianGroup = ArchimedianMonoid + AddGroup;
-    pub trait ArchimedianSemiring = ArchimedianMonoid + OrderedSemiring;
-    pub trait ArchimedianRing = ArchimedianSemiring + Ring;
-    pub trait ArchimedianField = ArchimedianRing + Field;
+    pub trait ArchimedeanGroup = ArchimedeanMonoid + AddGroup;
+    pub trait ArchimedeanSemiring = ArchimedeanMonoid + OrderedSemiring;
+    pub trait ArchimedeanRing = ArchimedeanSemiring + Ring;
+    pub trait ArchimedeanField = ArchimedeanRing + Field;
 }
 
 macro_rules! impl_ordered_int {
@@ -41,7 +41,7 @@ macro_rules! impl_ordered_int {
             #[inline] fn signum(self) -> Self { $t::signum(self) }
             #[inline] fn abs(self) -> Self { self.abs() }
         }
-        impl ArchimedianMonoid for $t {
+        impl ArchimedeanMonoid for $t {
             #[inline] fn div_arch(self, rhs:Self) -> Self {self / rhs}
             #[inline] fn rem_arch(self, rhs:Self) -> Self {self % rhs}
             #[inline] fn div_alg_arch(self, rhs:Self) -> (Self, Self) {(self / rhs, self % rhs)}
@@ -59,7 +59,7 @@ macro_rules! impl_ordered_uint {
             #[inline] fn signum(self) -> Self { if self==0 { 0 } else { 1 } }
             #[inline] fn abs(self) -> Self { self }
         }
-        impl ArchimedianMonoid for $t {
+        impl ArchimedeanMonoid for $t {
             #[inline] fn div_arch(self, rhs:Self) -> Self {self / rhs}
             #[inline] fn rem_arch(self, rhs:Self) -> Self {self % rhs}
             #[inline] fn div_alg_arch(self, rhs:Self) -> (Self, Self) {(self / rhs, self % rhs)}
@@ -77,7 +77,7 @@ macro_rules! impl_ordered_float {
             #[inline] fn signum(self) -> Self { $t::signum(self) }
             #[inline] fn abs(self) -> Self { self.abs() }
         }
-        impl ArchimedianMonoid for $t {
+        impl ArchimedeanMonoid for $t {
             #[inline] fn div_arch(self, rhs:Self) -> Self {self / rhs - self % rhs}
             #[inline] fn rem_arch(self, rhs:Self) -> Self {self % rhs}
             #[inline] fn div_alg_arch(self, rhs:Self) -> (Self, Self) {(self.div_arch(rhs), self.rem_arch(rhs))}

@@ -142,7 +142,7 @@
 //!Currently, the mathematical structures supported in `math_traits` consist of a system of
 //![group-like](algebra::group_like), [ring-like](algebra::ring_like), [integer-like](algebra::integer),
 //!and [module-like](algebra::module_like) algebraic structures and a system of analytical constructions including
-//![ordered and archimedian groups](analysis::ordered), [real and complex numbers](analysis::real),
+//![ordered and Archimedean groups](analysis::ordered), [real and complex numbers](analysis::real),
 //!and [metric and inner product spaces](analysis::metric). For more information, see each respective
 //!module.
 //!

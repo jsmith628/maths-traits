@@ -124,7 +124,7 @@ auto!{
 }
 
 pub trait Real:
-    ArchimedianField +
+    ArchimedeanField +
     ComplexSubset<Real=Self> + /*CastFloat +*/
     RealConstants + Trig + Exponential +
     PowN + PowZ
