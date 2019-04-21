@@ -133,8 +133,14 @@ macro_rules! impl_int_subset {
         impl IntegerSubset for $name {
             type Signed = $signed;
             type Unsigned = $unsigned;
-            #[inline] fn as_signed(&self) -> $signed {((*self) as $signed)}
-            #[inline] fn as_unsigned(&self) -> $unsigned {((*self) as $unsigned)}
+            #[inline] fn as_signed(&self) -> $signed { *self as $signed }
+            #[inline] fn as_unsigned(&self) -> $unsigned {
+                if cfg!(debug_assertions) && self.negative() {
+                    panic!("Cannot make unsigned: {} < 0", self)
+                } else {
+                    *self as $unsigned
+                }
+            }
 
             #[inline] fn two() -> Self { 2 }
             #[inline] fn mul_two(self) -> Self { self << 1 }
