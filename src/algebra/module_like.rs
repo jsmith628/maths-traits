@@ -7,7 +7,7 @@ pub trait QuadradicForm<K: UnitalRing> { fn q_form(&self) -> K; }
 
 pub trait ConvergentBasis<K>: Index<usize,Output=K> {fn basis(i:usize) -> Self;}
 pub trait CountableBasis<K>: ConvergentBasis<K> + IndexMut<usize, Output=K> {fn elements(&self) -> usize;}
-pub trait FiniteBasis<K>: CountableBasis<K> {  }
+pub trait FiniteBasis<K>: CountableBasis<K> { fn dimensions() -> usize; }
 
 auto!{
     ///An abelian additive group with a distributive scalar multiplication with a unital ring
