@@ -8,11 +8,11 @@ pub trait Divisibility: Sized {
     fn unit(&self) -> bool;
     fn inverse(self) -> Option<Self>;
 }
-pub trait Primality: Sized {
+pub trait Primality {
     fn irreducible(&self) -> bool;
     fn prime(&self) -> bool;
 }
-pub trait NoZeroDivisors: Sized {}
+pub trait NoZeroDivisors {}
 pub trait GCD: Sized {
     fn gcd(self, rhs: Self) -> Self;
     fn lcm(self, rhs: Self) -> Self;
@@ -33,10 +33,7 @@ pub trait EuclidianDiv: Sized {
     fn euclid_norm(&self) -> Self::Naturals;
     fn div_euc(self, rhs: Self) -> Self;
     fn rem_euc(self, rhs: Self) -> Self;
-
-    #[inline]
     fn div_alg(self, rhs: Self) -> (Self, Self);
-
 }
 
 auto! {
@@ -66,9 +63,6 @@ auto! {
 
     pub trait Field = CommutativeRing + MulGroup;
 }
-
-
-
 
 //
 //Implementation for primitives
