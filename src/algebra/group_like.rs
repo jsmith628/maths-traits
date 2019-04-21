@@ -90,11 +90,13 @@ pub use self::multiplicative::*;
 pub mod additive {
     pub use core::ops::{Add, Sub, Neg, AddAssign, SubAssign};
     pub use num_traits::{Zero};
-    use core::convert::{From, Into};
+    use core::convert::{From};
     use core::ops::{Mul};
 
     use super::{repeated_doubling, repeated_doubling_neg};
     use algebra::{Natural, IntegerSubset, Semiring, Ring};
+
+    #[allow(unused_imports)] use algebra::Integer;
 
     ///
     ///A marker trait for stucts whose addition operation is evaluation order independent,
@@ -122,10 +124,38 @@ pub mod additive {
     ///
     pub trait AddCommutative {}
 
-    pub trait MulN: AddSemigroup + Zero { fn mul_n<N:Natural>(self, n:N) -> Self; }
-    pub trait MulZ: AddMonoid + Negatable { fn mul_z<Z:IntegerSubset>(self, n:Z) -> Self; }
-
-    impl<G:AddSemigroup + Zero> MulN for G {
+    ///
+    ///An auto-implemented trait for multiplication by [natural numbers](Natural) with
+    ///[associative](AddAssociative) types using repeated addition
+    ///
+    ///This is intended as a simple and easy way to compute object multiples in abstract algebraic
+    ///algorithms without resorting to explicitly applying addition repeatedly. For this reason, the
+    ///trait is automatically implemented for any relevant associative algebraic structure and
+    ///the supplied function is generic over the [`Natural`] type.
+    ///
+    ///```
+    ///# use math_traits::algebra::*;
+    ///
+    /// assert_eq!(2.5f32.mul_n(4u8), 10.0);
+    /// assert_eq!(2.5f32.mul_n(4u16), 10.0);
+    /// assert_eq!(2.5f32.mul_n(4u128), 10.0);
+    /// assert_eq!(2.5f64.mul_n(4u8), 10.0);
+    /// assert_eq!(2.5f64.mul_n(4u16), 10.0);
+    /// assert_eq!(2.5f64.mul_n(4u128), 10.0);
+    ///
+    ///```
+    ///
+    ///Note, however, that while multiplication by natural numbers is very simply defined using
+    ///repeated addition, in order to add flexibility in implementation and the possibility for
+    ///proper optimization, the automatic implmentation of this trait will first try to use other
+    ///traits as a base before defaulting to the general [repeated_doubling] algorithm
+    ///
+    ///Specifically, for a given [Natural] type `N`, the auto-impl will first attempt to use
+    ///[`Mul<N>`](Mul), if implemented. If that fails, it will then try to convert using [`From<N>`](From)
+    ///and multiplying if if it implemented and the struct is a [Semiring].
+    ///Finally, in the general case, it will use the [repeated_doubling] function.
+    ///
+    pub trait MulN: AddSemigroup + Zero {
         #[inline]
         fn mul_n<N:Natural>(self, n:N) -> Self {
 
@@ -142,14 +172,48 @@ pub mod additive {
                 #[inline] default fn _mul2(self, n:Z) -> Self {repeated_doubling(self, n)}
             }
             impl<H: Semiring + From<Z>, Z:Natural> Helper2<Z> for H {
-                #[inline] fn _mul2(self, n:Z) -> Self {self * n.into()}
+                #[inline] fn _mul2(self, n:Z) -> Self {H::from(n) * self}
             }
 
             self._mul1(n)
         }
     }
 
-    impl<G:AddMonoid + Negatable> MulZ for G {
+    impl<G:AddSemigroup + Zero> MulN for G {}
+
+    ///
+    ///An auto-implemented trait for multiplication by [integers](Integer) with
+    ///[associative](AddAssociative) and [negatable](Negatable) types using
+    ///negation and repeated addition
+    ///
+    ///This is intended as a simple and easy way to compute object multiples in abstract algebraic
+    ///algorithms without resorting to explicitly applying addition repeatedly. For this reason, the
+    ///trait is automatically implemented for any relevant associative and negatable algebraic structure and
+    ///the supplied function is generic over the [`Integer`] type.
+    ///
+    ///```
+    ///# use math_traits::algebra::*;
+    ///
+    /// assert_eq!(2.5f32.mul_z(5u8), 12.5);
+    /// assert_eq!(2.5f32.mul_z(5u128), 12.5);
+    /// assert_eq!(2.5f64.mul_z(5u8), 12.5);
+    /// assert_eq!(2.5f64.mul_z(5u128), 12.5);
+    /// assert_eq!(2.5f32.mul_z(-5i8), -12.5);
+    /// assert_eq!(2.5f32.mul_z(-5i64), -12.5);
+    ///
+    ///```
+    ///
+    ///Note, however, that while multiplication by integers is very simply defined using
+    ///repeated addition and subtraction, in order to add flexibility in implementation and the possibility for
+    ///proper optimization, the automatic implmentation of this trait will first try to use other
+    ///traits as a base before defaulting to the general [repeated_doubling_neg] algorithm
+    ///
+    ///Specifically, for a given [Integer] type `Z`, the auto-impl will first attempt to use
+    ///[`Mul<Z>`](Mul), if implemented. If that fails, it will then try to convert using [`From<Z>`](From)
+    ///and multiplying if if it implemented and the struct is a [Ring].
+    ///Finally, in the general case, it will use the [repeated_doubling_neg] function.
+    ///
+    pub trait MulZ: AddMonoid + Negatable {
         #[inline]
         fn mul_z<N:IntegerSubset>(self, n:N) -> Self {
 
@@ -166,12 +230,14 @@ pub mod additive {
                 #[inline] default fn _mul2(self, n:Z) -> Self {repeated_doubling_neg(self, n)}
             }
             impl<H: Ring + From<Z>, Z:IntegerSubset> Helper2<Z> for H {
-                #[inline] fn _mul2(self, n:Z) -> Self {self * n.into()}
+                #[inline] fn _mul2(self, n:Z) -> Self {H::from(n) * self}
             }
 
             self._mul1(n)
         }
     }
+
+    impl<G:AddMonoid + Negatable> MulZ for G {}
 
     auto!{
 
@@ -191,19 +257,6 @@ pub mod additive {
         ///A commutative additive group
         pub trait AddAbelianGroup = AddGroup + AddCommutative;
 
-        // pub trait AddSubmagma<G> = AddMagma + Add<G,Output=G> where G:AddMagma;
-        // pub trait AddSubsemigroup<G> = AddSemigroup + AddSubmagma<G> where G:AddMagma;
-        // pub trait AddSubmonoid<G> = AddMonoid + AddSubmagma<G> where G:AddMonoid;
-        // pub trait AddSubloop<G> = AddLoop + AddSubmagma<G> + Sub<G,Output=G> where G:AddLoop;
-        // pub trait AddSubgroup<G> = AddGroup + AddSubmagma<G> + Sub<G,Output=G> where G:AddGroup;
-        // pub trait AddAbelianSubgroup<G> = AddAbelianGroup + AddSubgroup<G> where G:AddGroup;
-        //
-        // pub trait AddSupermagma<H> = AddMagma + Add<H,Output=Self> + AddAssign<H> where H:AddMagma;
-        // pub trait AddSupersemigroup<H> = AddSemigroup + AddSupermagma<H> where H:AddSemigroup;
-        // pub trait AddSupermonoid<H> = AddMonoid + AddSupermagma<H> where H:AddMonoid;
-        // pub trait AddSuperloop<H> = AddLoop + AddSupermagma<H> + Sub<H,Output=Self> + SubAssign<H> where H:AddLoop;
-        // pub trait AddSupergroup<H> = AddGroup + AddSupermagma<H> + Sub<H,Output=Self> + SubAssign<H> where H:AddGroup;
-        // pub trait AddAbelianSupergroup<H> = AddAbelianGroup + AddSupergroup<H> where H:AddAbelianGroup;
     }
 
 }
@@ -216,6 +269,8 @@ pub mod multiplicative {
 
     use super::{repeated_squaring, repeated_squaring_inv};
     use algebra::{Natural, IntegerSubset};
+
+    #[allow(unused_imports)] use algebra::Integer;
 
     ///
     ///A marker trait for stucts whose multiplication operation is evaluation order independent,
@@ -237,30 +292,99 @@ pub mod multiplicative {
     ///
     pub trait MulCommutative {}
 
-    trait PowNHelper<N:Natural>: MulSemigroup + One { fn _pow_n(self, n:N) -> Self; }
-    impl<G:MulSemigroup+One+Pow<N,Output=Self>, N:Natural> PowNHelper<N> for G {
-        #[inline] fn _pow_n(self, n:N) -> Self {self.pow(n)}
-    }
-    impl<G:MulSemigroup+One, N:Natural> PowNHelper<N> for G {
-        #[inline] default fn _pow_n(self, n:N) -> Self {repeated_squaring(self, n)}
-    }
-
-    trait PowZHelper<Z:IntegerSubset>: MulSemigroup + One { fn _pow_z(self, n:Z) -> Self; }
-    impl<G:MulMonoid+Invertable+Pow<Z,Output=Self>, Z:IntegerSubset> PowZHelper<Z> for G {
-        #[inline] fn _pow_z(self, n:Z) -> Self {self.pow(n)}
-    }
-    impl<G:MulMonoid+Invertable, Z:IntegerSubset> PowZHelper<Z> for G {
-        #[inline] default fn _pow_z(self, n:Z) -> Self {repeated_squaring_inv(self, n)}
-    }
-
+    ///
+    ///An auto-implemented trait for exponentiation by [natural numbers](Natural) with
+    ///[associative](MulAssociative) types using repeated multiplication
+    ///
+    ///This is intended as a simple and easy way to compute object powers in abstract algebraic
+    ///algorithms without resorting to explicitly applying multiplication repeatedly. For this reason, the
+    ///trait is automatically implemented for any relevant associative algebraic structure and
+    ///the supplied function is generic over the [`Natural`] type.
+    ///
+    ///```
+    ///# use math_traits::algebra::*;
+    ///
+    /// assert_eq!(2.0f32.pow_n(4u8), 16.0);
+    /// assert_eq!(2.0f32.pow_n(4u16), 16.0);
+    /// assert_eq!(2.0f32.pow_n(4u128), 16.0);
+    /// assert_eq!(2.0f64.pow_n(4u8), 16.0);
+    /// assert_eq!(2.0f64.pow_n(4u16), 16.0);
+    /// assert_eq!(2.0f64.pow_n(4u128), 16.0);
+    ///
+    ///```
+    ///
+    ///Note, however, that while exponentiation by natural numbers is very simply defined using
+    ///repeated multiplication, in order to add flexibility in implementation and the possibility for
+    ///proper optimization, the automatic implmentation of this trait will first try to use other
+    ///traits as a base before defaulting to the general [repeated_squaring] algorithm
+    ///
+    ///Specifically, for a given [Natural] type `N`, the auto-impl will first attempt to use
+    ///[`Pow<N>`](Pow), if implemented, then if that fails, it will use the general
+    ///[repeated_squaring] algorithm
+    ///
     pub trait PowN: MulSemigroup + One {
-        #[inline] fn pow_n<N:Natural>(self, n:N) -> Self {self._pow_n(n)}
-    }
-    pub trait PowZ: MulMonoid + Invertable {
-        #[inline] fn pow_z<Z:IntegerSubset>(self, n:Z) -> Self {self._pow_z(n)}
+        #[inline]
+        fn pow_n<N:Natural>(self, n:N) -> Self {
+            trait Helper<Z:Natural>: MulSemigroup + One { fn _pow_n(self, n:Z) -> Self; }
+            impl<G:MulSemigroup+One, Z:Natural> Helper<Z> for G {
+                #[inline] default fn _pow_n(self, n:Z) -> Self {repeated_squaring(self, n)}
+            }
+            impl<G:MulSemigroup+One+Pow<Z,Output=Self>, Z:Natural> Helper<Z> for G {
+                #[inline] fn _pow_n(self, n:Z) -> Self {self.pow(n)}
+            }
+
+            self._pow_n(n)
+        }
     }
     impl<G:MulSemigroup+One> PowN for G {}
+
+    ///
+    ///An auto-implemented trait for exponentiation by [integers](Integer) with
+    ///[associative](MulAssociative) and [invertable](Invertable) types using
+    ///inversion and repeated multiplication
+    ///
+    ///This is intended as a simple and easy way to compute object powers in abstract algebraic
+    ///algorithms without resorting to explicitly applying multiplication repeatedly. For this reason, the
+    ///trait is automatically implemented for any relevant associative and invertable algebraic structure and
+    ///the supplied function is generic over the [`Integer`] type.
+    ///
+    ///```
+    ///# use math_traits::algebra::*;
+    ///
+    /// assert_eq!(2.0f32.pow_z(3u8), 8.0);
+    /// assert_eq!(2.0f32.pow_z(3u128), 8.0);
+    /// assert_eq!(2.0f64.pow_z(3u8), 8.0);
+    /// assert_eq!(2.0f64.pow_z(3u128), 8.0);
+    /// assert_eq!(2.0f32.pow_z(-3i8), 0.125);
+    /// assert_eq!(2.0f32.pow_z(-3i64), 0.125);
+    ///
+    ///```
+    ///
+    ///Note, however, that while exponentiation by integers is very simply defined using
+    ///repeated multiplication and inversion, in order to add flexibility in implementation and the possibility for
+    ///proper optimization, the automatic implmentation of this trait will first try to use other
+    ///traits as a base before defaulting to the general [repeated_squaring_inv] algorithm
+    ///
+    ///Specifically, for a given [Natural] type `N`, the auto-impl will first attempt to use
+    ///[`Pow<N>`](Pow), if implemented, then if that fails, it will use the general
+    ///[repeated_squaring_inv] algorithm
+    ///
+    pub trait PowZ: MulMonoid + Invertable {
+        #[inline]
+        fn pow_z<Z:IntegerSubset>(self, n:Z) -> Self {
+            trait Helper<N:IntegerSubset>: MulMonoid + Invertable { fn _pow_z(self, n:N) -> Self; }
+            impl<G:MulMonoid+Invertable, N:IntegerSubset> Helper<N> for G {
+                #[inline] default fn _pow_z(self, n:N) -> Self {repeated_squaring_inv(self, n)}
+            }
+            impl<G:MulMonoid+Invertable+Pow<N,Output=Self>, N:IntegerSubset> Helper<N> for G {
+                #[inline] fn _pow_z(self, n:N) -> Self {self.pow(n)}
+            }
+
+            self._pow_z(n)
+        }
+    }
     impl<G:MulMonoid+Invertable> PowZ for G {}
+
 
     auto!{
 
@@ -280,19 +404,6 @@ pub mod multiplicative {
         ///A commutative multiplicative group
         pub trait MulAbelianGroup = MulGroup + MulCommutative;
 
-        // pub trait MulSubmagma<G> = MulMagma + Mul<G,Output=G> where G:MulMagma;
-        // pub trait MulSubsemigroup<G> = MulSemigroup + MulSubmagma<G> where G:MulMagma;
-        // pub trait MulSubmonoid<G> = MulMonoid + MulSubmagma<G> where G:MulMonoid;
-        // pub trait MulSubloop<G> = MulLoop + MulSubmagma<G> + Div<G,Output=G> where G:MulLoop;
-        // pub trait MulSubgroup<G> = MulGroup + MulSubmagma<G> + Div<G,Output=G> where G:MulGroup;
-        // pub trait MulAbelianSubgroup<G> = MulAbelianGroup + MulSubgroup<G> where G:MulGroup;
-        //
-        // pub trait MulSupermagma<H> = MulMagma + Mul<H,Output=Self> + MulAssign<H> where H:MulMagma;
-        // pub trait MulSupersemigroup<H> = MulSemigroup + MulSupermagma<H> where H:MulSemigroup;
-        // pub trait MulSupermonoid<H> = MulMonoid + MulSupermagma<H> where H:MulMonoid;
-        // pub trait MulSuperloop<H> = MulLoop + MulSupermagma<H> + Div<H,Output=Self> + DivAssign<H> where H:MulLoop;
-        // pub trait MulSupergroup<H> = MulGroup + MulSupermagma<H> + Div<H,Output=Self> + DivAssign<H> where H:MulGroup;
-        // pub trait MulAbelianSupergroup<H> = MulAbelianGroup + MulSupergroup<H> where H:MulAbelianGroup;
     }
 
 
@@ -301,9 +412,9 @@ pub mod multiplicative {
 
 use algebra::{Natural, IntegerSubset};
 
-trait IsZero { fn _is_zero(&self) -> bool; }
-impl<Z> IsZero for Z {  #[inline(always)] default fn _is_zero(&self) -> bool {false} }
-impl<Z:Zero> IsZero for Z {  #[inline(always)] fn _is_zero(&self) -> bool {self.is_zero()} }
+trait IsZero:Sized { fn _is_zero(&self) -> bool; }
+impl<Z> IsZero for Z { #[inline(always)] default fn _is_zero(&self) -> bool {false} }
+impl<Z:Zero> IsZero for Z { #[inline(always)] fn _is_zero(&self) -> bool {self.is_zero()} }
 
 fn mul_pow_helper<E:Natural, R:Clone, Op: Fn(R,R) -> R>(mut b: R, mut p: E, op: Op) -> R {
     //repeated squaring/doubling
@@ -318,21 +429,34 @@ fn mul_pow_helper<E:Natural, R:Clone, Op: Fn(R,R) -> R>(mut b: R, mut p: E, op: 
         } else {
             //else b^(p+1)=(b^p)*b or (p+1)*b = p*b + b
             res = op(res, b.clone());
-            p = p - E::one();
+            p -= E::one();
         }
     }
     res
 }
 
+///
+///Raises a [monoid](MulMonoid) element to a integral power using the repeated squaring algorithm and
+///inverting when the power is negative
+///
+///# Panics
+///If both the base and power are `0`
+///
 #[inline]
 pub fn repeated_squaring_inv<E:IntegerSubset, R:MulGroup+Clone>(b: R, p: E) -> R {
     if p.negative() {
-        repeated_squaring(b, p.as_unsigned()).inv()
+        repeated_squaring(b, p.abs().as_unsigned()).inv()
     } else {
         repeated_squaring(b, p.as_unsigned())
     }
 }
 
+///
+///Raises a [monoid](MulMonoid) element to a positive integer power using the repeated squaring algorithm
+///
+///# Panics
+///If both the base and power are `0`
+///
 #[inline]
 pub fn repeated_squaring<E:Natural, R:MulMonoid+Clone>(b: R, p: E) -> R {
     if p.is_zero() {
@@ -343,17 +467,20 @@ pub fn repeated_squaring<E:Natural, R:MulMonoid+Clone>(b: R, p: E) -> R {
     }
 }
 
+
+///Multiplies a [monoid](AddMonoid) by a positive integer using negation and repeated doublings
 #[inline]
-pub fn repeated_doubling_neg<E:IntegerSubset, R:AddGroup+Clone>(b: R, p: E) -> R {
+pub fn repeated_doubling_neg<E:IntegerSubset, R:AddGroup>(b: R, p: E) -> R {
     if p.negative() {
-        -repeated_doubling(b, p.as_unsigned())
+        -repeated_doubling(b, p.abs().as_unsigned())
     } else {
         repeated_doubling(b, p.as_unsigned())
     }
 }
 
+///Multiplies a [monoid](AddMonoid) by a positive integer using repeated doublings
 #[inline]
-pub fn repeated_doubling<E:Natural, R:AddMonoid+Clone>(b: R, p: E) -> R {
+pub fn repeated_doubling<E:Natural, R:AddMonoid>(b: R, p: E) -> R {
     if p.is_zero() {
         R::zero()
     } else {
@@ -367,15 +494,16 @@ macro_rules! impl_props {
         $(impl_props!(@float $f);)*
     };
 
-    (@int $z:ty) => {impl_props!(@props $z);};
+    (@int $z:ty) => {
+        impl_props!(@props $z);
+        impl_props!(@props core::num::Wrapping<$z>);
+    };
     (@float $f:ty) => {impl_props!(@props $f);};
     (@props $t:ty) => {
         impl AddAssociative for $t {}
         impl AddCommutative for $t {}
-
         impl MulAssociative for $t {}
         impl MulCommutative for $t {}
-
     };
 }
 
