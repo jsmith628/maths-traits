@@ -207,32 +207,3 @@ macro_rules! auto {
 
 pub mod algebra;
 pub mod analysis;
-
-#[cfg(test)]
-mod tests {
-    use algebra::*;
-
-    #[test]
-    fn primality() {
-
-        assert!(18446744073709551557u64.prime());
-        assert!(!18446744073709551559u64.prime());
-        assert!(!18446744073709551555u64.prime());
-
-        assert!(2147483647u32.prime());
-        assert!(!2147483649u32.prime());
-        assert!(!2147483645u32.prime());
-
-        assert!(65521u16.prime());
-        assert!(65519u16.prime());
-        assert!(!65523u16.prime());
-
-        assert!(251u8.prime());
-        assert!(!253u8.prime());
-        assert!(!249u8.prime());
-
-        assert!(13u8.prime());
-        assert!(!15u8.prime());
-    }
-
-}
