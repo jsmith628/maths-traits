@@ -17,7 +17,7 @@ auto!{
 pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
                         + EuclideanSemidomain
                         + Primality
-                        + ArchimedianSemiring
+                        + ArchimedeanSemiring
                         + Sub<Self, Output=Self> + Div<Self, Output=Self> + Rem<Self, Output=Self>
                         + SubAssign<Self> + DivAssign<Self> + RemAssign<Self>
 {
