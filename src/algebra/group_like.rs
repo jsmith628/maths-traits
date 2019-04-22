@@ -80,7 +80,7 @@ pub use self::multiplicative::*;
 use analysis::ordered::Sign;
 
 //Note: we do not have additive or multiplicative quasigroups because some types
-//override operators while guarranteeing too little.
+//override operators while guaranteeing too little.
 //For example, to have a multiplicative quasigroup, we'd need true division, but all
 //primitive int types have a division operation that is mathematically incorrect
 //(even if convenient). So the best way to weed these out is with the inv trait, but

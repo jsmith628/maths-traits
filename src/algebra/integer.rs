@@ -124,7 +124,7 @@ macro_rules! impl_int_subset {
         impl EuclideanDiv for $name {
             type Naturals = $unsigned;
             #[inline] fn euclid_norm(&self) -> $unsigned {self.as_signed().abs().as_unsigned()}
-            
+
             ///Euclidean division implemented using the `/` operator
             #[inline] fn div_euc(self, rhs: Self) -> Self {self / rhs}
 
@@ -135,7 +135,7 @@ macro_rules! impl_int_subset {
             ///Euclidean division implemented using the `/` and `%` operators
             ///
             ///Note that this does mean that the remainder may be negative and this method
-            ///only guarrantees that it satisfies the basic [Eucldidean division](EuclideanDiv::div_alg)
+            ///only guarantees that it satisfies the basic [Eucldidean division](EuclideanDiv::div_alg)
             ///axioms
             #[inline] fn div_alg(self, rhs: Self) -> (Self, Self) {(self / rhs, self % rhs)}
         }

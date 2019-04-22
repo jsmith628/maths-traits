@@ -160,7 +160,7 @@ pub trait EuclideanDiv: Sized {
     ///can have _infinite_ possible options.
     ///
     ///As such, it is up to the implementor to decide what the canonical form of this result is
-    ///and to communicate it as such, and this trait makes no guarrantees that this has happened
+    ///and to communicate it as such, and this trait makes no guarantees that this has happened
     ///
     fn div_alg(self, rhs: Self) -> (Self, Self);
 }
@@ -297,7 +297,7 @@ pub fn extended_euclidean<T>(lhs: T, rhs: T) -> (T, T, T) where T:CommutativeRin
 ///the right examples, it is possible to turn this into a deterministic test. \*
 ///
 ///Furthermore, this particular algorithm has the surprising benefit of having a runtime that is
-///polynomial in the number of bits in the input. Of course, this does not guarrantee that this function
+///polynomial in the number of bits in the input. Of course, this does not guarantee that this function
 ///is particularly "fast" per se, but in testing, the algorithm runs reasonable fast for all primitive
 ///integer types.
 ///
