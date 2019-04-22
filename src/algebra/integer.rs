@@ -17,7 +17,7 @@ auto!{
 pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
                         + EuclideanSemidomain
                         + Primality
-                        + ArchimedeanSemiring
+                        + ArchSemiring
                         + Sub<Self, Output=Self> + Div<Self, Output=Self> + Rem<Self, Output=Self>
                         + SubAssign<Self> + DivAssign<Self> + RemAssign<Self>
 {
@@ -36,7 +36,7 @@ pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
 }
 
 pub trait Natural: IntegerSubset<Unsigned=Self> {}
-pub trait Integer: IntegerSubset<Signed=Self> + Ring {}
+pub trait Integer: IntegerSubset<Signed=Self> + ArchUnitalRing {}
 
 macro_rules! impl_int_subset {
 
@@ -123,7 +123,7 @@ macro_rules! impl_int_subset {
 
         impl EuclideanDiv for $name {
             type Naturals = $unsigned;
-            #[inline] fn euclid_norm(&self) -> $unsigned {self.abs().as_unsigned()}
+            #[inline] fn euclid_norm(&self) -> $unsigned {self.as_signed().abs().as_unsigned()}
             #[inline] fn div_euc(self, rhs: Self) -> Self {(self / rhs)}
             #[inline] fn rem_euc(self, rhs: Self) -> Self {(self % rhs)}
             #[inline] fn div_alg(self, rhs: Self) -> (Self, Self) {(self / rhs, self % rhs)}

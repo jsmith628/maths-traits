@@ -116,19 +116,10 @@ pub trait ComplexSubset: PartialEq + Clone + Semiring {
 // auto!(trait CastFloat = TryFrom<f32> + TryFrom<f64> + TryInto<f32> + TryInto<f64>;);
 
 auto!{
-    pub trait ComplexField =
-        Field +
-        ComplexSubset + /*CastFloat +*/
-        RealConstants + Trig + Exponential +
-        PowN + PowZ;
+    pub trait ComplexField = Field + ComplexSubset + RealConstants + Trig + Exponential;
 }
 
-pub trait Real:
-    ArchimedeanField +
-    ComplexSubset<Real=Self> + /*CastFloat +*/
-    RealConstants + Trig + Exponential +
-    PowN + PowZ
-{
+pub trait Real: ArchField + ComplexSubset<Real=Self> + RealConstants + Trig + Exponential {
     fn approx(self) -> f32;
     fn repr(f: f64) -> Self;
 }

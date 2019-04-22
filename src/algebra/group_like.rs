@@ -77,6 +77,7 @@
 
 pub use self::additive::*;
 pub use self::multiplicative::*;
+use analysis::ordered::Sign;
 
 //Note: we do not have additive or multiplicative quasigroups because some types
 //override operators while guarranteeing too little.
@@ -134,7 +135,7 @@ pub mod additive {
     ///the supplied function is generic over the [`Natural`] type.
     ///
     ///```
-    ///# use math_traits::algebra::*;
+    ///# use maths_traits::algebra::*;
     ///
     /// assert_eq!(2.5f32.mul_n(4u8), 10.0);
     /// assert_eq!(2.5f32.mul_n(4u16), 10.0);
@@ -192,7 +193,7 @@ pub mod additive {
     ///the supplied function is generic over the [`Integer`] type.
     ///
     ///```
-    ///# use math_traits::algebra::*;
+    ///# use maths_traits::algebra::*;
     ///
     /// assert_eq!(2.5f32.mul_z(5u8), 12.5);
     /// assert_eq!(2.5f32.mul_z(5u128), 12.5);
@@ -302,7 +303,7 @@ pub mod multiplicative {
     ///the supplied function is generic over the [`Natural`] type.
     ///
     ///```
-    ///# use math_traits::algebra::*;
+    ///# use maths_traits::algebra::*;
     ///
     /// assert_eq!(2.0f32.pow_n(4u8), 16.0);
     /// assert_eq!(2.0f32.pow_n(4u16), 16.0);
@@ -349,7 +350,7 @@ pub mod multiplicative {
     ///the supplied function is generic over the [`Integer`] type.
     ///
     ///```
-    ///# use math_traits::algebra::*;
+    ///# use maths_traits::algebra::*;
     ///
     /// assert_eq!(2.0f32.pow_z(3u8), 8.0);
     /// assert_eq!(2.0f32.pow_z(3u128), 8.0);
@@ -444,7 +445,7 @@ fn mul_pow_helper<E:Natural, R:Clone, Op: Fn(R,R) -> R>(mut b: R, mut p: E, op: 
 #[inline]
 pub fn repeated_squaring_inv<E:IntegerSubset, R:MulGroup+Clone>(b: R, p: E) -> R {
     if p.negative() {
-        repeated_squaring(b, p.abs().as_unsigned()).inv()
+        repeated_squaring(b, p.as_signed().abs().as_unsigned()).inv()
     } else {
         repeated_squaring(b, p.as_unsigned())
     }
@@ -471,7 +472,7 @@ pub fn repeated_squaring<E:Natural, R:MulMonoid+Clone>(b: R, p: E) -> R {
 #[inline]
 pub fn repeated_doubling_neg<E:IntegerSubset, R:AddGroup>(b: R, p: E) -> R {
     if p.negative() {
-        -repeated_doubling(b, p.abs().as_unsigned())
+        -repeated_doubling(b, p.as_signed().abs().as_unsigned())
     } else {
         repeated_doubling(b, p.as_unsigned())
     }

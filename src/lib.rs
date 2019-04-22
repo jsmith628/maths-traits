@@ -34,7 +34,7 @@
 //!and [`MulMonoid`](algebra::MulMonoid)) will automatically be implemented and usable for our type.
 //!
 //!```
-//!use math_traits::algebra::*;
+//!use maths_traits::algebra::*;
 //!
 //!#[derive(Clone)] //necessary to auto-implement Ring and MulMonoid
 //!#[derive(Copy, PartialEq, Eq, Debug)] //for convenience and displaying output
@@ -127,7 +127,7 @@
 //!//Now, Ring and MulMonoid are automatically implemented for us
 //!
 //!fn mul_add<R:Ring>(a:R, b:R, c:R) -> R { a*b + c }
-//!use math_traits::algebra::group_like::repeated_squaring;
+//!use maths_traits::algebra::group_like::repeated_squaring;
 //!
 //!let half = Rational::new(1, 2);
 //!let two_thirds = Rational::new(2, 3);
