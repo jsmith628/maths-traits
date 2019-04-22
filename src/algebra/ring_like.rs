@@ -153,6 +153,15 @@ pub trait EuclideanDiv: Sized {
     /// * `a = q*b + r`
     /// * `r.euclid_norm() < q.euclid_norm()`
     ///
+    ///Do note that in general, this result is **not** unique, the most striking example
+    ///simply being the Integers, for which **every** division with a remainder has the choice
+    ///of a positive or negative remainder. (Take `13 = 4*3 + 1 = 5*3 - 2` for example) Furthermore,
+    ///other rings, like the Guassian Integers, can have even more options, and others, like polynomials,
+    ///can have _infinite_ possible options.
+    ///
+    ///As such, it is up to the implementor to decide what the canonical form of this result is
+    ///and to communicate it as such, and this trait makes no guarrantees that this has happened
+    ///
     fn div_alg(self, rhs: Self) -> (Self, Self);
 }
 
