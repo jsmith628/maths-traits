@@ -148,8 +148,11 @@ module.
 # Release Stability
 
 At the moment, this project is considered to be in Alpha, so expect to see changes
-to the API over time. As it stands however, those planned changes are almost
-certainly going to be centered around the analysis module, with maybe a couple
-minor tweaks happening to integer and module_like. Hence, I would consider
-much of the algebra module, especially group_like and ring_like, to be mostly
-stable.
+to the API in the near future. As it stands, however, these changes almost
+certainly will centered around the `analysis` module, with a couple
+minor tweaks to `integer` and `module_like`. Hence, on that note,
+I would actually consider much of the `algebra` module,
+especially `group_like` and `ring_like`, to be mostly stable, though not guaranteed.
+
+Once the general API is stable, the crate will probably signify this with an
+update to version 0.2.0.
