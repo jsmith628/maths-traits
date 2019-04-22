@@ -144,3 +144,12 @@ and module-like algebraic structures and a system of analytical constructions in
 ordered and Archimedean groups, real and complex numbers,
 and metric and inner product spaces. For more information, see each respective
 module.
+
+# Release Stability
+
+At the moment, this project is considered to be in Alpha, so expect to see changes
+to the API over time. As it stands however, those planned changes are almost
+certainly going to be centered around the analysis module, with maybe a couple
+minor tweaks happening to integer and module_like. Hence, I would consider
+much of the algebra module, especially group_like and ring_like, to be mostly
+stable.
