@@ -104,9 +104,9 @@ macro_rules! impl_ordered_int {
         }
         impl ArchimedeanDiv for $t {
             #[inline] fn embed_nat<N:Natural>(n:N) -> Self { (1).mul_n(n) }
-            #[inline] fn div_arch(self, rhs:Self) -> Self {self / rhs}
-            #[inline] fn rem_arch(self, rhs:Self) -> Self {self % rhs}
-            #[inline] fn div_alg_arch(self, rhs:Self) -> (Self, Self) {(self / rhs, self % rhs)}
+            #[inline] fn div_arch(self, rhs:Self) -> Self {$name::div_euc(self, rhs)}
+            #[inline] fn rem_arch(self, rhs:Self) -> Self {$name::rem_euc(self, rhs)}
+            #[inline] fn div_alg_arch(self, rhs:Self) -> (Self, Self) {(self.div_arch(rhs), self.rem_arch(rhs))}
         }
     )*}
 }

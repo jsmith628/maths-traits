@@ -124,9 +124,9 @@ macro_rules! impl_int_subset {
         impl EuclideanDiv for $name {
             type Naturals = $unsigned;
             #[inline] fn euclid_norm(&self) -> $unsigned {self.as_signed().abs().as_unsigned()}
-            #[inline] fn div_euc(self, rhs: Self) -> Self {(self / rhs)}
-            #[inline] fn rem_euc(self, rhs: Self) -> Self {(self % rhs)}
-            #[inline] fn div_alg(self, rhs: Self) -> (Self, Self) {(self / rhs, self % rhs)}
+            #[inline] fn div_euc(self, rhs: Self) -> Self {$name::div_euc(self, rhs)}
+            #[inline] fn rem_euc(self, rhs: Self) -> Self {$name::rem_euc(self, rhs)}
+            #[inline] fn div_alg(self, rhs: Self) -> (Self, Self) {(self.div_euc(rhs), self.rem_euc(rhs))}
 
         }
 
