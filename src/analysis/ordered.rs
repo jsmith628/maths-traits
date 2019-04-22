@@ -140,8 +140,8 @@ macro_rules! impl_ordered_float {
         }
         impl ArchimedeanDiv for $t {
             #[inline] fn embed_nat<N:Natural>(n:N) -> Self { (1.0).mul_n(n) }
-            #[inline] fn div_arch(self, rhs:Self) -> Self {self / rhs - self % rhs}
-            #[inline] fn rem_arch(self, rhs:Self) -> Self {self % rhs}
+            #[inline] fn div_arch(self, rhs:Self) -> Self {self.div_euclid(rhs)}
+            #[inline] fn rem_arch(self, rhs:Self) -> Self {self.rem_euclid(rhs)}
             #[inline] fn div_alg_arch(self, rhs:Self) -> (Self, Self) {(self.div_arch(rhs), self.rem_arch(rhs))}
         }
     )*}
