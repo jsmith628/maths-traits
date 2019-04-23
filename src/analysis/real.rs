@@ -125,7 +125,7 @@ auto!{
 }
 
 pub trait Real: ArchField + ComplexSubset<Real=Self> + RealConstants + Trig + Exponential {
-    fn approx(self) -> f32;
+    fn approx(self) -> f64;
     fn repr(f: f64) -> Self;
 }
 
@@ -285,7 +285,7 @@ macro_rules! impl_real {
         }
 
         impl Real for $f {
-            #[inline(always)] fn approx(self) -> f32 {self as f32}
+            #[inline(always)] fn approx(self) -> f64 {self as f64}
             #[inline(always)] fn repr(f: f64) -> Self {f as $f}
         }
 
