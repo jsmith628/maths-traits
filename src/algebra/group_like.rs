@@ -77,7 +77,6 @@
 
 pub use self::additive::*;
 pub use self::multiplicative::*;
-use analysis::ordered::Sign;
 
 //Note: we do not have additive or multiplicative quasigroups because some types
 //override operators while guaranteeing too little.
@@ -445,7 +444,7 @@ fn mul_pow_helper<E:Natural, R:Clone, Op: Fn(R,R) -> R>(mut b: R, mut p: E, op: 
 #[inline]
 pub fn repeated_squaring_inv<E:IntegerSubset, R:MulGroup+Clone>(b: R, p: E) -> R {
     if p.negative() {
-        repeated_squaring(b, p.as_signed().abs().as_unsigned()).inv()
+        repeated_squaring(b, p.abs_unsigned()).inv()
     } else {
         repeated_squaring(b, p.as_unsigned())
     }
@@ -472,7 +471,7 @@ pub fn repeated_squaring<E:Natural, R:MulMonoid+Clone>(b: R, p: E) -> R {
 #[inline]
 pub fn repeated_doubling_neg<E:IntegerSubset, R:AddGroup>(b: R, p: E) -> R {
     if p.negative() {
-        -repeated_doubling(b, p.as_signed().abs().as_unsigned())
+        -repeated_doubling(b, p.abs_unsigned())
     } else {
         repeated_doubling(b, p.as_unsigned())
     }

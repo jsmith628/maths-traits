@@ -17,15 +17,17 @@ auto!{
 pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
                         + EuclideanSemidomain
                         + Primality
-                        + ArchSemiring
+                        + ArchSemiring + ArchimedeanDiv
                         + Sub<Self, Output=Self> + Div<Self, Output=Self> + Rem<Self, Output=Self>
                         + SubAssign<Self> + DivAssign<Self> + RemAssign<Self>
 {
     type Signed: Integer + IntegerSubset<Signed=Self::Signed, Unsigned=Self::Unsigned>;
     type Unsigned: Natural + IntegerSubset<Signed=Self::Signed, Unsigned=Self::Unsigned>;
 
-    fn as_signed(&self) -> Self::Signed;
-    fn as_unsigned(&self) -> Self::Unsigned;
+    fn as_signed(self) -> Self::Signed;
+    fn as_unsigned(self) -> Self::Unsigned;
+
+    #[inline] fn abs_unsigned(self) -> Self::Unsigned { self.as_signed().abs().as_unsigned() }
 
     #[inline] fn two() -> Self { Self::one()+Self::one() }
     #[inline] fn mul_two(self) -> Self { self * Self::two() }
@@ -123,7 +125,7 @@ macro_rules! impl_int_subset {
 
         impl EuclideanDiv for $name {
             type Naturals = $unsigned;
-            #[inline] fn euclid_norm(&self) -> $unsigned {self.as_signed().abs().as_unsigned()}
+            #[inline] fn euclid_norm(&self) -> $unsigned {self.abs_unsigned()}
 
             ///Euclidean division implemented using the `/` operator
             #[inline] fn div_euc(self, rhs: Self) -> Self {self / rhs}
@@ -143,14 +145,8 @@ macro_rules! impl_int_subset {
         impl IntegerSubset for $name {
             type Signed = $signed;
             type Unsigned = $unsigned;
-            #[inline] fn as_signed(&self) -> $signed { *self as $signed }
-            #[inline] fn as_unsigned(&self) -> $unsigned {
-                if cfg!(debug_assertions) && self.negative() {
-                    panic!("Cannot make unsigned: {} < 0", self)
-                } else {
-                    *self as $unsigned
-                }
-            }
+            #[inline] fn as_signed(self) -> $signed { self as $signed }
+            #[inline] fn as_unsigned(self) -> $unsigned { self as $unsigned }
 
             #[inline] fn two() -> Self { 2 }
             #[inline] fn mul_two(self) -> Self { self << 1 }
