@@ -4,11 +4,18 @@ name = "maths-traits"
 description = "A simple to use yet abstract system of mathematical traits for the Rust language"
 version = "0.1.2"
 keywords = ["mathematics", "numerics", "algebra", "integer", "real-numbers"]
-categories = ["algorithms", "science"]
+categories = ["algorithms", "science", "no-std"]
 repository = "https://github.com/anvil777/maths-traits"
 documentation = "https://docs.rs/maths-traits"
 license = "MIT"
 readme = "README.md"
 
 [dependencies]
-num-traits = "0.2"
+num-traits = {version = "0.2", default-features = false}
+
+[package.metadata.docs.rs]
+features = ["std"]
+
+[features]
+default = ["std"]
+std = []

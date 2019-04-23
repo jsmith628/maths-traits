@@ -56,7 +56,7 @@ macro_rules! impl_metric {
 
             #[inline(always)]
             fn angle(self, rhs: Self) -> $f {
-                if self.orthogonal(rhs) {::std::$f::consts::PI} else {0.0}
+                if self.orthogonal(rhs) {::core::$f::consts::PI} else {0.0}
             }
         }
     )*}

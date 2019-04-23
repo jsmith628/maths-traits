@@ -1,5 +1,5 @@
 
-use std::convert::{TryFrom, TryInto};
+use core::convert::{TryFrom, TryInto};
 use core::ops::{Rem, RemAssign};
 
 use analysis::ordered::*;

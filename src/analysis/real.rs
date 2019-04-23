@@ -153,10 +153,10 @@ macro_rules! impl_real {
         }
 
         impl Exponential for $f {
-            #[inline(always)] fn pow(self, power:Self) -> Self {$f::powf(self,power)}
+            #[inline(always)] fn pow(self, power:Self) -> Self {self.powf(power)}
             #[inline(always)] fn exp(self) -> Self {$f::exp(self)}
             #[inline(always)] fn exp2(self) -> Self {$f::exp2(self)}
-            #[inline(always)] fn exp10(self) -> Self {$f::powf(self, 10.0)}
+            #[inline(always)] fn exp10(self) -> Self {$f::from(10.0).pow(self)}
 
             #[inline(always)] fn log(self, base:Self) -> Self {$f::log(self,base)}
             #[inline(always)] fn ln(self) -> Self {$f::ln(self)}
@@ -172,25 +172,25 @@ macro_rules! impl_real {
         }
 
         impl RealConstants for $f {
-            #[inline(always)] fn e() -> Self {::std::$f::consts::E}
-            #[inline(always)] fn ln_2() -> Self {::std::$f::consts::LN_2}
-            #[inline(always)] fn ln_10() -> Self {::std::$f::consts::LN_10}
-            #[inline(always)] fn log2_e() -> Self {::std::$f::consts::LOG2_E}
-            #[inline(always)] fn log10_e() -> Self {::std::$f::consts::LOG10_E}
-            #[inline(always)] fn log2_10() -> Self {::std::$f::consts::LOG2_10}
-            #[inline(always)] fn log10_2() -> Self {::std::$f::consts::LOG10_2}
+            #[inline(always)] fn e() -> Self {::core::$f::consts::E}
+            #[inline(always)] fn ln_2() -> Self {::core::$f::consts::LN_2}
+            #[inline(always)] fn ln_10() -> Self {::core::$f::consts::LN_10}
+            #[inline(always)] fn log2_e() -> Self {::core::$f::consts::LOG2_E}
+            #[inline(always)] fn log10_e() -> Self {::core::$f::consts::LOG10_E}
+            #[inline(always)] fn log2_10() -> Self {::core::$f::consts::LOG2_10}
+            #[inline(always)] fn log10_2() -> Self {::core::$f::consts::LOG10_2}
 
-            #[inline(always)] fn pi() -> Self {::std::$f::consts::PI}
-            #[inline(always)] fn frac_2_pi() -> Self {::std::$f::consts::FRAC_2_PI}
-            #[inline(always)] fn frac_2_sqrt_pi() -> Self {::std::$f::consts::FRAC_2_SQRT_PI}
-            #[inline(always)] fn frac_pi_2() -> Self {::std::$f::consts::FRAC_PI_2}
-            #[inline(always)] fn frac_pi_3() -> Self {::std::$f::consts::FRAC_PI_3}
-            #[inline(always)] fn frac_pi_4() -> Self {::std::$f::consts::FRAC_PI_4}
-            #[inline(always)] fn frac_pi_6() -> Self {::std::$f::consts::FRAC_PI_6}
-            #[inline(always)] fn frac_pi_8() -> Self {::std::$f::consts::FRAC_PI_8}
+            #[inline(always)] fn pi() -> Self {::core::$f::consts::PI}
+            #[inline(always)] fn frac_2_pi() -> Self {::core::$f::consts::FRAC_2_PI}
+            #[inline(always)] fn frac_2_sqrt_pi() -> Self {::core::$f::consts::FRAC_2_SQRT_PI}
+            #[inline(always)] fn frac_pi_2() -> Self {::core::$f::consts::FRAC_PI_2}
+            #[inline(always)] fn frac_pi_3() -> Self {::core::$f::consts::FRAC_PI_3}
+            #[inline(always)] fn frac_pi_4() -> Self {::core::$f::consts::FRAC_PI_4}
+            #[inline(always)] fn frac_pi_6() -> Self {::core::$f::consts::FRAC_PI_6}
+            #[inline(always)] fn frac_pi_8() -> Self {::core::$f::consts::FRAC_PI_8}
 
-            #[inline(always)] fn sqrt_2() -> Self {::std::$f::consts::SQRT_2}
-            #[inline(always)] fn frac_1_sqrt_2() -> Self {::std::$f::consts::FRAC_1_SQRT_2}
+            #[inline(always)] fn sqrt_2() -> Self {::core::$f::consts::SQRT_2}
+            #[inline(always)] fn frac_1_sqrt_2() -> Self {::core::$f::consts::FRAC_1_SQRT_2}
 
             #[inline(always)] fn to_degrees(self) -> Self { $f::to_degrees(self) }
             #[inline(always)] fn to_radians(self) -> Self { $f::to_radians(self) }
