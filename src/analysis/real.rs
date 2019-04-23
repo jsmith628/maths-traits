@@ -39,27 +39,34 @@ pub trait Trig: Field {
     #[inline] fn acoth(self) -> Self { self.inv().atanh() }
 }
 
-pub trait Exponential: Field {
-    fn pow(self, power:Self) -> Self;
+pub trait Exponential: UnitalRing + Divisibility {
+
     fn exp(self) -> Self;
-    #[inline] fn exp2(self) -> Self {self.pow(Self::one().mul_z(2))}
-    #[inline] fn exp10(self) -> Self {
-        self.pow(Self::one().mul_z(10))
+    fn try_ln(self) -> Option<Self>;
+
+    #[inline] fn try_pow(self, power:Self) -> Option<Self> { self.try_ln().map(move |x| (x * power).exp()) }
+    #[inline] fn try_root(self, index:Self) -> Option<Self> { index.inverse().and_then(move |x| self.try_pow(x)) }
+    #[inline] fn try_log(self, base: Self) -> Option<Self> {
+        self.try_ln().and_then(move |x| base.try_ln().and_then(move |y| x.divide(y)))
     }
 
-    fn log(self, base:Self) -> Self;
-    fn ln(self) -> Self;
-    #[inline] fn log2(self) -> Self {self.log(Self::one()+Self::one())}
-    #[inline] fn log10(self) -> Self {
-        self.log(Self::one().mul_z(10))
-    }
+    #[inline] fn ln(self) -> Self {self.try_ln().unwrap()}
+    #[inline] fn log(self, base: Self) -> Self {self.try_log(base).unwrap()}
+    #[inline] fn pow(self, p: Self) -> Self {self.try_pow(p).unwrap()}
+    #[inline] fn root(self, r: Self) -> Self {self.try_root(r).unwrap()}
 
-    #[inline] fn root(self, index:Self) -> Self {self.pow(index.inv())}
-    #[inline] fn sqrt(self) -> Self {self.root(Self::one().mul_z(2))}
-    #[inline] fn cbrt(self) -> Self {self.root(Self::one().mul_z(3))}
+    #[inline] fn exp2(self) -> Self {self.pow(Self::one().mul_n(2u32))}
+    #[inline] fn exp10(self) -> Self { self.pow(Self::one().mul_n(10u32)) }
+
+    #[inline] fn log2(self) -> Self {self.log(Self::one().mul_n(2u32))}
+    #[inline] fn log10(self) -> Self { self.log(Self::one().mul_n(10u32)) }
+
+    #[inline] fn sqrt(self) -> Self {self.root(Self::one().mul_n(2u32))}
+    #[inline] fn cbrt(self) -> Self {self.root(Self::one().mul_n(3u32))}
 
     #[inline] fn ln_1p(self) -> Self {(self-Self::one()).ln()}
     #[inline] fn exp_m1(self) -> Self {self.exp()-Self::one()}
+
 }
 
 pub trait RealConstants: Field + Trig + Exponential {
@@ -113,8 +120,6 @@ pub trait ComplexSubset: PartialEq + Clone + Semiring {
     fn conj(self) -> Self;
 }
 
-// auto!(trait CastFloat = TryFrom<f32> + TryFrom<f64> + TryInto<f32> + TryInto<f64>;);
-
 auto!{
     pub trait ComplexField = Field + ComplexSubset + RealConstants + Trig + Exponential;
 }
@@ -128,6 +133,19 @@ pub trait Complex: ComplexField {
     fn i() -> Self;
     fn mul_i(self) -> Self;
     fn div_i(self) -> Self;
+}
+
+macro_rules! float_to_option {
+    ($expr:expr) => {
+        {
+            let result = $expr;
+            if result.is_infinite() || result.is_nan() {
+                None
+            } else {
+                Some(result)
+            }
+        }
+    }
 }
 
 macro_rules! impl_real {
@@ -153,8 +171,15 @@ macro_rules! impl_real {
         }
 
         impl Exponential for $f {
-            #[inline(always)] fn pow(self, power:Self) -> Self {self.powf(power)}
+
             #[inline(always)] fn exp(self) -> Self {$f::exp(self)}
+
+            #[inline] fn try_ln(self) -> Option<Self> { float_to_option!($f::ln(self)) }
+            #[inline] fn try_pow(self, power:Self) -> Option<Self> { float_to_option!(self.pow(power)) }
+            #[inline] fn try_root(self, index:Self) -> Option<Self> { float_to_option!(self.root(index)) }
+            #[inline] fn try_log(self, base: Self) -> Option<Self> { float_to_option!($f::log(self,base)) }
+
+            #[inline(always)] fn pow(self, power:Self) -> Self {self.powf(power)}
             #[inline(always)] fn exp2(self) -> Self {$f::exp2(self)}
             #[inline(always)] fn exp10(self) -> Self {$f::from(10.0).pow(self)}
 

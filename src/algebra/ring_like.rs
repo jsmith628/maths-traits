@@ -232,6 +232,25 @@ macro_rules! impl_dist {
 }
 impl_dist!(usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128 f32 f64);
 
+macro_rules! impl_for_field {
+    ($($t:ty)*) => {
+        $(
+            impl Divisibility for $t {
+                #[inline(always)] fn divides(self, _rhs: Self) -> bool {true}
+                #[inline(always)] fn divide(self, rhs: Self) -> Option<Self> {Some(rhs / self)}
+                #[inline(always)] fn unit(&self) -> bool {true}
+                #[inline(always)] fn inverse(self) -> Option<Self> {Some(self.inv())}
+            }
+
+            impl NoZeroDivisors for $t {}
+            impl UniquelyFactorizable for $t {}
+
+        )*
+    }
+}
+
+impl_for_field!(f32 f64);
+
 ///Uses the [Euclidean Algorithm](https://en.wikipedia.org/wiki/Euclidean_algorithm)
 ///to find the [GCD] of two ring elements using [division with remainder](EuclideanDiv)
 pub fn euclidean<T>(lhs: T, rhs: T) -> T where T:CommutativeSemiring+EuclideanDiv {
