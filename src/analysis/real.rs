@@ -121,7 +121,7 @@ pub trait ComplexSubset: PartialEq + Clone + Semiring {
 }
 
 auto!{
-    pub trait ComplexField = Field + ComplexSubset + RealConstants + Trig + Exponential;
+    pub trait ComplexField = Field + ComplexSubset;
 }
 
 pub trait Real: ArchField + ComplexSubset<Real=Self> + RealConstants + Trig + Exponential {
@@ -129,7 +129,7 @@ pub trait Real: ArchField + ComplexSubset<Real=Self> + RealConstants + Trig + Ex
     fn repr(f: f64) -> Self;
 }
 
-pub trait Complex: ComplexField {
+pub trait Complex: ComplexField + RealConstants + Trig + Exponential + From<<Self as ComplexSubset>::Real> {
     fn i() -> Self;
     fn mul_i(self) -> Self;
     fn div_i(self) -> Self;
