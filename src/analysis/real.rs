@@ -118,6 +118,9 @@ pub trait ComplexSubset: PartialEq + Clone + Semiring {
     fn im(self) -> Self;
     fn re(self) -> Self;
     fn conj(self) -> Self;
+
+    #[inline] fn modulus_sqrd(self) -> Self { self.clone() * self.conj()}
+    #[inline] fn modulus(self) -> Self::Real { (self.clone() * self.conj()).as_real().sqrt()}
 }
 
 auto!{
@@ -240,6 +243,9 @@ macro_rules! impl_real {
             #[inline(always)] fn im(self) -> Self {self}
             #[inline(always)] fn re(self) -> Self {self}
             #[inline(always)] fn conj(self) -> Self {self}
+
+            #[inline(always)] fn modulus_sqrd(self) -> Self { self * self }
+            #[inline(always)] fn modulus(self) -> Self::Real { self.abs() }
         }
 
         impl ComplexSubset for $n {
@@ -261,6 +267,9 @@ macro_rules! impl_real {
             #[inline(always)] fn im(self) -> Self {self}
             #[inline(always)] fn re(self) -> Self {self}
             #[inline(always)] fn conj(self) -> Self {self}
+
+            #[inline(always)] fn modulus_sqrd(self) -> Self { self * self }
+            #[inline(always)] fn modulus(self) -> Self::Real { self as $f }
         }
 
         impl ComplexSubset for $z {
@@ -282,6 +291,9 @@ macro_rules! impl_real {
             #[inline(always)] fn im(self) -> Self {self}
             #[inline(always)] fn re(self) -> Self {self}
             #[inline(always)] fn conj(self) -> Self {self}
+
+            #[inline(always)] fn modulus_sqrd(self) -> Self { self * self }
+            #[inline(always)] fn modulus(self) -> Self::Real { self.abs() as $f }
         }
 
         impl Real for $f {
