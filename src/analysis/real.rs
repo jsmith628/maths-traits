@@ -8,6 +8,20 @@ pub trait Trig: Field {
     fn tan(self) -> Self;
     #[inline] fn sin_cos(self) -> (Self, Self) {(self.clone().sin(), self.cos())}
 
+    fn pi() -> Self;
+    #[inline] fn frac_2_pi() -> Self {Self::one().mul_n(2u32) / Self::pi()}
+    #[inline] fn frac_pi_2() -> Self {Self::pi() / Self::one().mul_n(2u32)}
+    #[inline] fn frac_pi_3() -> Self {Self::pi() / Self::one().mul_n(3u32)}
+    #[inline] fn frac_pi_4() -> Self {Self::pi() / Self::one().mul_n(4u32)}
+    #[inline] fn frac_pi_6() -> Self {Self::pi() / Self::one().mul_n(6u32)}
+    #[inline] fn frac_pi_8() -> Self {Self::pi() / Self::one().mul_n(8u32)}
+
+    #[inline] fn pythag_const() -> Self {Self::frac_pi_4().csc()}
+    #[inline] fn pythag_const_inv() -> Self {Self::frac_pi_4().sin()}
+
+    #[inline] fn to_degrees(self) -> Self {self * (Self::one().mul_n(180u32) / Self::pi())}
+    #[inline] fn to_radians(self) -> Self {self * (Self::pi() / Self::one().mul_n(180u32))}
+
     #[inline] fn sec(self) -> Self { self.cos().inv() }
     #[inline] fn csc(self) -> Self { self.sin().inv() }
     #[inline] fn cot(self) -> Self { self.tan().inv() }
@@ -44,6 +58,17 @@ pub trait Exponential: UnitalRing + Divisibility {
     fn exp(self) -> Self;
     fn try_ln(self) -> Option<Self>;
 
+    #[inline] fn e() -> Self {Self::one().exp()}
+    #[inline] fn ln_2() -> Self {Self::one().mul_n(2u32).ln()}
+    #[inline] fn ln_10() -> Self {Self::one().mul_n(10u32).ln()}
+    #[inline] fn log2_e() -> Self {Self::ln_2().inverse().unwrap()}
+    #[inline] fn log10_e() -> Self {Self::ln_10().inverse().unwrap()}
+    #[inline] fn log2_10() -> Self {Self::ln_10().divide(Self::ln_2()).unwrap()}
+    #[inline] fn log10_2() -> Self {Self::ln_2().divide(Self::ln_10()).unwrap()}
+
+    #[inline] fn sqrt_2() -> Self {Self::one().mul_n(2u32).sqrt()}
+    #[inline] fn frac_1_sqrt_2() -> Self {Self::sqrt_2().inverse().unwrap()}
+
     #[inline] fn try_pow(self, power:Self) -> Option<Self> { self.try_ln().map(move |x| (x * power).exp()) }
     #[inline] fn try_root(self, index:Self) -> Option<Self> { index.inverse().and_then(move |x| self.try_pow(x)) }
     #[inline] fn try_log(self, base: Self) -> Option<Self> {
@@ -67,31 +92,6 @@ pub trait Exponential: UnitalRing + Divisibility {
     #[inline] fn ln_1p(self) -> Self {(self-Self::one()).ln()}
     #[inline] fn exp_m1(self) -> Self {self.exp()-Self::one()}
 
-}
-
-pub trait RealConstants: Field + Trig + Exponential {
-    fn e() -> Self;
-    fn ln_2() -> Self;
-    fn ln_10() -> Self;
-    fn log2_e() -> Self;
-    fn log10_e() -> Self;
-    fn log2_10() -> Self;
-    fn log10_2() -> Self;
-
-    fn pi() -> Self;
-    fn frac_2_pi() -> Self;
-    fn frac_2_sqrt_pi() -> Self;
-    fn frac_pi_2() -> Self;
-    fn frac_pi_3() -> Self;
-    fn frac_pi_4() -> Self;
-    fn frac_pi_6() -> Self;
-    fn frac_pi_8() -> Self;
-
-    fn sqrt_2() -> Self;
-    fn frac_1_sqrt_2() -> Self;
-
-    fn to_degrees(self) -> Self;
-    fn to_radians(self) -> Self;
 }
 
 pub trait ComplexSubset: PartialEq + Clone + Semiring {
@@ -127,12 +127,12 @@ auto!{
     pub trait ComplexField = Field + ComplexSubset;
 }
 
-pub trait Real: ArchField + ComplexSubset<Real=Self> + RealConstants + Trig + Exponential {
+pub trait Real: ArchField + ComplexSubset<Real=Self> + Trig + Exponential {
     fn approx(self) -> f64;
     fn repr(f: f64) -> Self;
 }
 
-pub trait Complex: ComplexField + RealConstants + Trig + Exponential + From<<Self as ComplexSubset>::Real> {
+pub trait Complex: ComplexField + Trig + Exponential + From<<Self as ComplexSubset>::Real> {
     fn i() -> Self;
     fn mul_i(self) -> Self;
     fn div_i(self) -> Self;
@@ -171,16 +171,30 @@ macro_rules! impl_real {
             #[inline(always)] fn asinh(self) -> Self {$f::asinh(self)}
             #[inline(always)] fn acosh(self) -> Self {$f::acosh(self)}
             #[inline(always)] fn atanh(self) -> Self {$f::atanh(self)}
+
+            #[inline(always)] fn pi() -> Self {::core::$f::consts::PI}
+            #[inline(always)] fn frac_2_pi() -> Self {::core::$f::consts::FRAC_2_PI}
+            #[inline(always)] fn frac_pi_2() -> Self {::core::$f::consts::FRAC_PI_2}
+            #[inline(always)] fn frac_pi_3() -> Self {::core::$f::consts::FRAC_PI_3}
+            #[inline(always)] fn frac_pi_4() -> Self {::core::$f::consts::FRAC_PI_4}
+            #[inline(always)] fn frac_pi_6() -> Self {::core::$f::consts::FRAC_PI_6}
+            #[inline(always)] fn frac_pi_8() -> Self {::core::$f::consts::FRAC_PI_8}
+
+            #[inline(always)] fn pythag_const() -> Self {::core::$f::consts::SQRT_2}
+            #[inline(always)] fn pythag_const_inv() -> Self {::core::$f::consts::FRAC_1_SQRT_2}
+
+            #[inline(always)] fn to_degrees(self) -> Self { $f::to_degrees(self) }
+            #[inline(always)] fn to_radians(self) -> Self { $f::to_radians(self) }
         }
 
         impl Exponential for $f {
 
             #[inline(always)] fn exp(self) -> Self {$f::exp(self)}
+            #[inline(always)] fn try_ln(self) -> Option<Self> { float_to_option!($f::ln(self)) }
 
-            #[inline] fn try_ln(self) -> Option<Self> { float_to_option!($f::ln(self)) }
-            #[inline] fn try_pow(self, power:Self) -> Option<Self> { float_to_option!(self.pow(power)) }
-            #[inline] fn try_root(self, index:Self) -> Option<Self> { float_to_option!(self.root(index)) }
-            #[inline] fn try_log(self, base: Self) -> Option<Self> { float_to_option!($f::log(self,base)) }
+            #[inline(always)] fn try_pow(self, power:Self) -> Option<Self> { float_to_option!(self.pow(power)) }
+            #[inline(always)] fn try_root(self, index:Self) -> Option<Self> { float_to_option!(self.root(index)) }
+            #[inline(always)] fn try_log(self, base: Self) -> Option<Self> { float_to_option!($f::log(self,base)) }
 
             #[inline(always)] fn pow(self, power:Self) -> Self {self.powf(power)}
             #[inline(always)] fn exp2(self) -> Self {$f::exp2(self)}
@@ -197,9 +211,7 @@ macro_rules! impl_real {
 
             #[inline(always)] fn ln_1p(self) -> Self {$f::ln_1p(self)}
             #[inline(always)] fn exp_m1(self) -> Self {$f::exp_m1(self)}
-        }
 
-        impl RealConstants for $f {
             #[inline(always)] fn e() -> Self {::core::$f::consts::E}
             #[inline(always)] fn ln_2() -> Self {::core::$f::consts::LN_2}
             #[inline(always)] fn ln_10() -> Self {::core::$f::consts::LN_10}
@@ -207,21 +219,8 @@ macro_rules! impl_real {
             #[inline(always)] fn log10_e() -> Self {::core::$f::consts::LOG10_E}
             #[inline(always)] fn log2_10() -> Self {::core::$f::consts::LOG2_10}
             #[inline(always)] fn log10_2() -> Self {::core::$f::consts::LOG10_2}
-
-            #[inline(always)] fn pi() -> Self {::core::$f::consts::PI}
-            #[inline(always)] fn frac_2_pi() -> Self {::core::$f::consts::FRAC_2_PI}
-            #[inline(always)] fn frac_2_sqrt_pi() -> Self {::core::$f::consts::FRAC_2_SQRT_PI}
-            #[inline(always)] fn frac_pi_2() -> Self {::core::$f::consts::FRAC_PI_2}
-            #[inline(always)] fn frac_pi_3() -> Self {::core::$f::consts::FRAC_PI_3}
-            #[inline(always)] fn frac_pi_4() -> Self {::core::$f::consts::FRAC_PI_4}
-            #[inline(always)] fn frac_pi_6() -> Self {::core::$f::consts::FRAC_PI_6}
-            #[inline(always)] fn frac_pi_8() -> Self {::core::$f::consts::FRAC_PI_8}
-
             #[inline(always)] fn sqrt_2() -> Self {::core::$f::consts::SQRT_2}
             #[inline(always)] fn frac_1_sqrt_2() -> Self {::core::$f::consts::FRAC_1_SQRT_2}
-
-            #[inline(always)] fn to_degrees(self) -> Self { $f::to_degrees(self) }
-            #[inline(always)] fn to_radians(self) -> Self { $f::to_radians(self) }
         }
 
         impl ComplexSubset for $f {
