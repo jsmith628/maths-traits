@@ -2,7 +2,7 @@
 use algebra::*;
 use analysis::*;
 
-pub trait Trig: Field {
+pub trait Trig: DivisionRing {
     fn sin(self) -> Self;
     fn cos(self) -> Self;
     fn tan(self) -> Self;
