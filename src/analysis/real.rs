@@ -2,21 +2,133 @@
 use algebra::*;
 use analysis::*;
 
+///
+///Functions and constants for evaluative trigonometric values
+///
+///For the most part, these methods are meant for struct representing [real numbers](Real),
+///and so, for those, the included functions have their normal meaning. However, in order to
+///include the useful generalizations of the trigonometric functions (such as the complex numbers),
+///this trait also supports mathematical constructions that can satisfy other characterizations.
+///
+///In particular, all of the included methods should satisfy the relevant differential equation definition
+///of its function. Specifically:
+/// * [Sine](Trig::sin) and [Cosine](Trig::cos) should satisfy
+///     * `d/dx cos(x) = -sin(x)`
+///     * `d/dx sin(x) = cos(x)`
+///     * `cos(0) = 1`
+///     * `sin(0) = 0`
+/// * [Tangent](Trig::tan) should satisfy
+///     * `d/dx tan(x) = 1 + tan²(x)`
+///     * `tan(0) = 0`
+/// * [Hyperbolic Sine](Trig::sinh) and [Hyperbolic Cosine](Trig::cosh) should satisfy
+///     * `d/dx cosh(x) = sinh(x)`
+///     * `d/dx sinh(x) = cosh(x)`
+///     * `cosh(0) = 1`
+///     * `sinh(0) = 0`
+/// * [Hyperbolic Tangent](Trig::tanh) should satisfy
+///     * `d/dx tanh(x) = 1 - tanh²(x)`
+///     * `tanh(0) = 0`
+///
 pub trait Trig: UnitalRing + Divisibility {
+
+    ///
+    ///Finds the Sine of the given value
+    ///
+    ///For more general inputs, this is defined as the solution to:
+    /// * `f"(x) = -f(x)`
+    /// * `f(0) = 0`
+    /// * `f'(0) = 1`
+    ///
     fn sin(self) -> Self;
+
+    ///
+    ///Finds the Cosine of the given value
+    ///
+    ///For more general inputs, this is defined as the solution to:
+    /// * `f"(x) = -f(x)`
+    /// * `f(0) = 1`
+    /// * `f'(0) = 0`
+    ///
     fn cos(self) -> Self;
+
+    ///
+    ///Finds the Tangent of the given value
+    ///
+    ///For more general inputs, this is defined as the solution to:
+    /// * `f'(x) = 1 + f(x)²`
+    /// * `f(0) = 0`
+    ///
     fn tan(self) -> Self;
+
+    ///
+    ///Finds both the [Sine](Trig::sin) and [Cosine](Trig::cos) as a tuple
+    ///
+    ///This is supposed to mirror f32::sin_cos() and f64::sin_cos()
+    ///
     #[inline] fn sin_cos(self) -> (Self, Self) {(self.clone().sin(), self.cos())}
 
+    ///
+    ///Finds the Hyperbolic Sine of the given value
+    ///
+    ///For more general inputs, this is defined as the solution to:
+    /// * `f"(x) = f(x)`
+    /// * `f(0) = 0`
+    /// * `f'(0) = 1`
+    ///
     fn sinh(self) -> Self;
-    fn cosh(self) -> Self;
-    fn tanh(self) -> Self;
-    #[inline] fn sinh_cosh(self) -> (Self, Self) {(self.clone().sinh(), self.cosh())}
 
+    ///
+    ///Finds the Hyperbolic Cosine of the given value
+    ///
+    ///For more general inputs, this is defined as the solution to:
+    /// * `f"(x) = f(x)`
+    /// * `f(0) = 1`
+    /// * `f'(0) = 0`
+    ///
+    fn cosh(self) -> Self;
+
+    ///
+    ///Finds the Hyperbolic Tangent of the given value
+    ///
+    ///For more general inputs, this is defined as the solution to:
+    /// * `f'(x) = 1 - f(x)²`
+    /// * `f(0) = 0`
+    ///
+    fn tanh(self) -> Self;
+
+    ///
+    ///A continuous inverse function of [Sine](Trig::sin) such that `asin(1) = π/2` and `asin(-1) = -π/2`
+    ///
+    ///Returns a `None` value if and only if the inverse doesn't exist for the given input
     fn try_asin(self) -> Option<Self>;
+
+    ///
+    ///A continuous inverse function of [Cosine](Trig::cos) such that `acos(1) = 0` and `asin(-1) = π`
+    ///
+    ///Returns a `None` value if and only if the inverse doesn't exist for the given input
     fn try_acos(self) -> Option<Self>;
+
+    ///
+    ///A continuous inverse function of [Sine](Trig::sin) such that `asin(1) = π/2` and `asin(-1) = -π/2`
+    ///
+    ///If the inverse does not exist for the given input, then the implementation can
+    ///decide between a `panic!` or returning some form of error value (like `NaN`). In general though,
+    ///there is no guarrantee which of these will occur, so it is suggested to use [Trig::try_asin]
+    ///in such cases.
+    ///
     #[inline] fn asin(self) -> Self {self.try_asin().unwrap()}
+
+    ///
+    ///A continuous inverse function of [Cosine](Trig::cos) such that `acos(1) = 0` and `asin(-1) = π`
+    ///
+    ///If the inverse does not exist for the given input, then the implementation can
+    ///decide between a `panic!` or returning some form of error value (like `NaN`). In general though,
+    ///there is no guarrantee which of these will occur, so it is suggested to use [Trig::try_acos]
+    ///in such cases.
+    ///
     #[inline] fn acos(self) -> Self {self.try_acos().unwrap()}
+
+    ///A continuous inverse function of [Tangent](Trig::tan) such that `atan(0) = 0` and `atan(1) = π/4`
     fn atan(self) -> Self;
     fn atan2(y: Self, x: Self) -> Self;
 
@@ -26,6 +138,13 @@ pub trait Trig: UnitalRing + Divisibility {
     #[inline] fn acosh(self) -> Self {self.try_asin().unwrap()}
     fn atanh(self) -> Self;
 
+    ///
+    ///The classic cicle constant
+    ///
+    ///For real-algebras, this should be exactly what you expect: the ratio of a circle's cicumferance
+    ///to its diameter. However, in keeping with the generalized trig function definitions, this should
+    ///give the value of [`acos(-1)`](Trig::acos) and be a zero of [Sine](Trig::sin) and [Tangent](Trig::tan)
+    ///
     fn pi() -> Self;
     #[inline] fn frac_2_pi() -> Self {Self::one().mul_n(2u32).divide(Self::pi()).unwrap()}
     #[inline] fn frac_pi_2() -> Self {Self::pi().divide(Self::one().mul_n(2u32)).unwrap()}
@@ -34,7 +153,18 @@ pub trait Trig: UnitalRing + Divisibility {
     #[inline] fn frac_pi_6() -> Self {Self::pi().divide(Self::one().mul_n(6u32)).unwrap()}
     #[inline] fn frac_pi_8() -> Self {Self::pi().divide(Self::one().mul_n(8u32)).unwrap()}
 
+    ///
+    ///The length of the hypotenuse of a unit right-triangle
+    ///
+    ///In other words... `2*sin(π/4)` or `√2`
+    ///
     #[inline] fn pythag_const() -> Self {Self::one().mul_n(2u32) * Self::pythag_const_inv()}
+
+    ///
+    ///The ratio of the sides of a unit right-triangle to its hypotenuse
+    ///
+    ///In other words... `sin(π/4)` or `1/√2`
+    ///
     #[inline] fn pythag_const_inv() -> Self {Self::frac_pi_4().sin()}
 
     #[inline] fn to_degrees(self) -> Self {self * (Self::one().mul_n(180u32).divide(Self::pi()).unwrap())}
