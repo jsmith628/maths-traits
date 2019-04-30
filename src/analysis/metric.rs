@@ -1,57 +1,60 @@
 
 use analysis::*;
 
-pub trait MetricSpace<R: Real>: Sized {
-    fn distance(self, rhs: Self) -> R;
+pub trait Metric<X, R:Real> {
+    fn distance(x1:X, x2:X) -> R;
 }
 
-pub trait SemiNormedSpace<R: Real>: Sized + VectorSpace<R> {
-    fn norm(&self) -> R;
-    #[inline] fn normalize(self) -> Self { let l = self.norm(); self/l }
+pub trait SemiNormedMetric<X, R:Real>: Metric<X,R> {
+    fn norm(x:X) -> R;
 }
 
-pub trait NormedSpace<R: Real>: SemiNormedSpace<R> + MetricSpace<R> {}
+pub trait NormedMetric<X, R:Real>: SemiNormedMetric<X,R> {}
 
-pub trait InnerProductSpace<F: ComplexField>: Sized + VectorSpace<F> + NormedSpace<F::Real> {
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+pub struct EuclideanMetric;
+
+impl<R:Real, V:InnerProductSpace<R>> Metric<V,R> for EuclideanMetric {
+    #[inline(always)] fn distance(x1:V, x2:V) -> R {x1.dist_euclid(x2)}
+}
+
+impl<R:Real, V:InnerProductSpace<R>> SemiNormedMetric<V,R> for EuclideanMetric {
+    #[inline(always)] fn norm(x:V) -> R {x.norm()}
+}
+
+impl<R:Real, V:InnerProductSpace<R>> NormedMetric<V,R> for EuclideanMetric {}
+
+pub trait InnerProductSpace<F: ComplexField + From<<F as ComplexSubset>::Real>>: VectorSpace<F> {
     fn inner_product(self, rhs: Self) -> F;
-    fn norm_sqrd(&self) -> F::Real;
+
+    #[inline] fn norm_sqrd(self) -> F::Real {self.clone().inner_product(self).as_real()}
+    #[inline] fn norm(self) -> F::Real {self.norm_sqrd().sqrt()}
+    #[inline] fn dist_euclid(self, rhs: Self) -> F::Real {(self - rhs).norm()}
 
     #[inline] fn orthogonal(self, rhs: Self) -> bool { self.inner_product(rhs).is_zero() }
 
+    #[inline] fn normalize(self) -> Self {self.clone() / self.norm().into()}
+
     #[inline]
     fn angle(self, rhs: Self) -> F::Real {
-        let l1 = self.norm();
-        let l2 = rhs.norm();
+        let l1 = self.clone().norm();
+        let l2 = rhs.clone().norm();
         (self.inner_product(rhs).as_real()/(l1*l2)).acos()
     }
 }
 
 auto!{
-    pub trait HilbertSpace<F> = InnerProductSpace<F> + ConvergentBasis<F> where F:ComplexField;
+    pub trait HilbertSpace<F> = InnerProductSpace<F> + ConvergentBasis<F> where F:ComplexField + From<<F as ComplexSubset>::Real>;
     pub trait EuclidianSpace<R> = InnerProductSpace<R> + FiniteBasis<R> where R:Real;
 }
 
 
 macro_rules! impl_metric {
     ($($f:ident)*) => {$(
-        impl MetricSpace<$f> for $f {
-            #[inline(always)] fn distance(self, rhs: Self) -> $f {(rhs - self).abs()}
-        }
-
-        impl SemiNormedSpace<$f> for $f {
-            #[inline(always)] fn norm(&self) -> $f {self.abs()}
-
-            #[inline(always)]
-            fn normalize(self) -> $f {
-                if self==0.0 {panic!("Cannot normalize 0")} else {1.0}
-            }
-        }
-
-        impl NormedSpace<$f> for $f {}
-
         impl InnerProductSpace<$f> for $f {
             #[inline(always)] fn inner_product(self, rhs: Self) -> $f {self * rhs}
-            #[inline(always)] fn norm_sqrd(&self) -> $f {self * self}
+            #[inline(always)] fn norm_sqrd(self) -> $f {self * self}
+            #[inline(always)] fn norm(self) -> $f {self.abs()}
             #[inline(always)] fn orthogonal(self, rhs: Self) -> bool {self==0.0 || rhs==0.0}
 
             #[inline(always)]
