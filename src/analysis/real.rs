@@ -2,55 +2,43 @@
 use algebra::*;
 use analysis::*;
 
-pub trait Trig: DivisionRing {
+pub trait Trig: UnitalRing + Divisibility {
     fn sin(self) -> Self;
     fn cos(self) -> Self;
     fn tan(self) -> Self;
     #[inline] fn sin_cos(self) -> (Self, Self) {(self.clone().sin(), self.cos())}
 
-    fn pi() -> Self;
-    #[inline] fn frac_2_pi() -> Self {Self::one().mul_n(2u32) / Self::pi()}
-    #[inline] fn frac_pi_2() -> Self {Self::pi() / Self::one().mul_n(2u32)}
-    #[inline] fn frac_pi_3() -> Self {Self::pi() / Self::one().mul_n(3u32)}
-    #[inline] fn frac_pi_4() -> Self {Self::pi() / Self::one().mul_n(4u32)}
-    #[inline] fn frac_pi_6() -> Self {Self::pi() / Self::one().mul_n(6u32)}
-    #[inline] fn frac_pi_8() -> Self {Self::pi() / Self::one().mul_n(8u32)}
-
-    #[inline] fn pythag_const() -> Self {Self::frac_pi_4().csc()}
-    #[inline] fn pythag_const_inv() -> Self {Self::frac_pi_4().sin()}
-
-    #[inline] fn to_degrees(self) -> Self {self * (Self::one().mul_n(180u32) / Self::pi())}
-    #[inline] fn to_radians(self) -> Self {self * (Self::pi() / Self::one().mul_n(180u32))}
-
-    #[inline] fn sec(self) -> Self { self.cos().inv() }
-    #[inline] fn csc(self) -> Self { self.sin().inv() }
-    #[inline] fn cot(self) -> Self { self.tan().inv() }
-
     fn sinh(self) -> Self;
     fn cosh(self) -> Self;
     fn tanh(self) -> Self;
+    #[inline] fn sinh_cosh(self) -> (Self, Self) {(self.clone().sinh(), self.cosh())}
 
-    #[inline] fn sech(self) -> Self { self.cosh().inv() }
-    #[inline] fn csch(self) -> Self { self.sinh().inv() }
-    #[inline] fn coth(self) -> Self { self.tanh().inv() }
-
-    fn asin(self) -> Self;
-    fn acos(self) -> Self;
+    fn try_asin(self) -> Option<Self>;
+    fn try_acos(self) -> Option<Self>;
+    #[inline] fn asin(self) -> Self {self.try_asin().unwrap()}
+    #[inline] fn acos(self) -> Self {self.try_acos().unwrap()}
     fn atan(self) -> Self;
     fn atan2(y: Self, x: Self) -> Self;
 
-    #[inline] fn asec(self) -> Self { self.inv().acos() }
-    #[inline] fn acsc(self) -> Self { self.inv().asin() }
-    #[inline] fn acot(self) -> Self { self.inv().atan() }
-    #[inline] fn acot2(x: Self, y: Self) -> Self { Self::atan2(y, x) }
-
-    fn asinh(self) -> Self;
-    fn acosh(self) -> Self;
+    fn try_asinh(self) -> Option<Self>;
+    fn try_acosh(self) -> Option<Self>;
+    #[inline] fn asinh(self) -> Self {self.try_asin().unwrap()}
+    #[inline] fn acosh(self) -> Self {self.try_asin().unwrap()}
     fn atanh(self) -> Self;
 
-    #[inline] fn asech(self) -> Self { self.inv().acosh() }
-    #[inline] fn acsch(self) -> Self { self.inv().asinh() }
-    #[inline] fn acoth(self) -> Self { self.inv().atanh() }
+    fn pi() -> Self;
+    #[inline] fn frac_2_pi() -> Self {Self::one().mul_n(2u32).divide(Self::pi()).unwrap()}
+    #[inline] fn frac_pi_2() -> Self {Self::pi().divide(Self::one().mul_n(2u32)).unwrap()}
+    #[inline] fn frac_pi_3() -> Self {Self::pi().divide(Self::one().mul_n(3u32)).unwrap()}
+    #[inline] fn frac_pi_4() -> Self {Self::pi().divide(Self::one().mul_n(4u32)).unwrap()}
+    #[inline] fn frac_pi_6() -> Self {Self::pi().divide(Self::one().mul_n(6u32)).unwrap()}
+    #[inline] fn frac_pi_8() -> Self {Self::pi().divide(Self::one().mul_n(8u32)).unwrap()}
+
+    #[inline] fn pythag_const() -> Self {Self::one().mul_n(2u32) * Self::pythag_const_inv()}
+    #[inline] fn pythag_const_inv() -> Self {Self::frac_pi_4().sin()}
+
+    #[inline] fn to_degrees(self) -> Self {self * (Self::one().mul_n(180u32).divide(Self::pi()).unwrap())}
+    #[inline] fn to_radians(self) -> Self {self * (Self::pi().divide(Self::one().mul_n(180u32)).unwrap())}
 }
 
 pub trait Exponential: UnitalRing + Divisibility {
@@ -163,11 +151,15 @@ macro_rules! impl_real {
             #[inline(always)] fn cosh(self) -> Self {$f::cosh(self)}
             #[inline(always)] fn tanh(self) -> Self {$f::tanh(self)}
 
+            #[inline] fn try_asin(self) -> Option<Self> {float_to_option!($f::asin(self))}
+            #[inline] fn try_acos(self) -> Option<Self> {float_to_option!($f::acos(self))}
             #[inline(always)] fn asin(self) -> Self {$f::asin(self)}
             #[inline(always)] fn acos(self) -> Self {$f::acos(self)}
             #[inline(always)] fn atan(self) -> Self {$f::atan(self)}
             #[inline(always)] fn atan2(y:Self, x:Self) -> Self {$f::atan2(y,x)}
 
+            #[inline] fn try_asinh(self) -> Option<Self> {float_to_option!($f::asinh(self))}
+            #[inline] fn try_acosh(self) -> Option<Self> {float_to_option!($f::acosh(self))}
             #[inline(always)] fn asinh(self) -> Self {$f::asinh(self)}
             #[inline(always)] fn acosh(self) -> Self {$f::acosh(self)}
             #[inline(always)] fn atanh(self) -> Self {$f::atanh(self)}
@@ -190,11 +182,11 @@ macro_rules! impl_real {
         impl Exponential for $f {
 
             #[inline(always)] fn exp(self) -> Self {$f::exp(self)}
-            #[inline(always)] fn try_ln(self) -> Option<Self> { float_to_option!($f::ln(self)) }
+            #[inline] fn try_ln(self) -> Option<Self> { float_to_option!($f::ln(self)) }
 
-            #[inline(always)] fn try_pow(self, power:Self) -> Option<Self> { float_to_option!(self.pow(power)) }
-            #[inline(always)] fn try_root(self, index:Self) -> Option<Self> { float_to_option!(self.root(index)) }
-            #[inline(always)] fn try_log(self, base: Self) -> Option<Self> { float_to_option!($f::log(self,base)) }
+            #[inline] fn try_pow(self, power:Self) -> Option<Self> { float_to_option!(self.pow(power)) }
+            #[inline] fn try_root(self, index:Self) -> Option<Self> { float_to_option!(self.root(index)) }
+            #[inline] fn try_log(self, base: Self) -> Option<Self> { float_to_option!($f::log(self,base)) }
 
             #[inline(always)] fn pow(self, power:Self) -> Self {self.powf(power)}
             #[inline(always)] fn exp2(self) -> Self {$f::exp2(self)}
