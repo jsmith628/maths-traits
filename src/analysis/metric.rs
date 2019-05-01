@@ -5,11 +5,12 @@ pub trait Metric<X, R:Real> {
     fn distance(&self, x1:X, x2:X) -> R;
 }
 
-pub trait SemiNormedMetric<X, R:Real>: Metric<X,R> {
+pub trait SemiNormedMetric<X:VectorSpace<R>, R:Real>: Metric<X,R> {
     fn norm(&self, x:X) -> R;
+    #[inline] fn normalize(&self, x:X) -> X {x.clone() / self.norm(x)}
 }
 
-pub trait NormedMetric<X, R:Real>: SemiNormedMetric<X,R> {}
+pub trait NormedMetric<X:VectorSpace<R>, R:Real>: SemiNormedMetric<X,R> {}
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
 pub struct EuclideanMetric;
@@ -30,13 +31,10 @@ pub trait InnerProductSpace<F: ComplexField + From<<F as ComplexSubset>::Real>>:
     #[inline] fn norm_sqrd(self) -> F::Real {self.clone().inner_product(self).as_real()}
     #[inline] fn norm(self) -> F::Real {self.norm_sqrd().sqrt()}
     #[inline] fn dist_euclid(self, rhs: Self) -> F::Real {(self - rhs).norm()}
-
-    #[inline] fn orthogonal(self, rhs: Self) -> bool { self.inner_product(rhs).is_zero() }
-
     #[inline] fn normalize(self) -> Self {self.clone() / self.norm().into()}
 
-    #[inline]
-    fn angle(self, rhs: Self) -> F::Real {
+    #[inline] fn orthogonal(self, rhs: Self) -> bool { self.inner_product(rhs).is_zero() }
+    #[inline] fn angle(self, rhs: Self) -> F::Real {
         let l1 = self.clone().norm();
         let l2 = rhs.clone().norm();
         (self.inner_product(rhs).as_real()/(l1*l2)).acos()
