@@ -130,13 +130,62 @@ pub trait Trig: UnitalRing + Divisibility {
 
     ///A continuous inverse function of [Tangent](Trig::tan) such that `atan(0) = 0` and `atan(1) = π/4`
     fn atan(self) -> Self;
+
+    ///
+    ///A continuous function of two variables where `tan(atan2(y,x)) = y/x` for `y!=0` and `atan2(0,1) = 0`
+    ///
+    ///This is particularly useful for real numbers, where this gives the angle a vector `(x,y)` makes
+    ///with the x-axis, without the singularities and ambiguity of computing [`atan(y/x)`](Trig::atan)
+    ///
     fn atan2(y: Self, x: Self) -> Self;
 
+    ///
+    ///A continuous inverse function of [Hyperbolic Sine](Trig::sinh) such that `asinh(0)=0`
+    ///
+    ///Returns a `None` value if and only if the inverse doesn't exist for the given input
     fn try_asinh(self) -> Option<Self>;
+
+    ///
+    ///A continuous inverse function of [Hyperbolic Cosine](Trig::cosh) such that `acosh(0)=1`
+    ///
+    ///Returns a `None` value if and only if the inverse doesn't exist for the given input
     fn try_acosh(self) -> Option<Self>;
-    #[inline] fn asinh(self) -> Self {self.try_asin().unwrap()}
-    #[inline] fn acosh(self) -> Self {self.try_asin().unwrap()}
-    fn atanh(self) -> Self;
+
+    ///
+    ///A continuous inverse function of [Hyperbolic Tangent](Trig::tanh) such that `atanh(0)=0`
+    ///
+    ///Returns a `None` value if and only if the inverse doesn't exist for the given input
+    fn try_atanh(self) -> Option<Self>;
+
+    ///
+    ///A continuous inverse function of [Hyperbolic Sine](Trig::sinh) such that `asinh(0)=0`
+    ///
+    ///If the inverse does not exist for the given input, then the implementation can
+    ///decide between a `panic!` or returning some form of error value (like `NaN`). In general though,
+    ///there is no guarrantee which of these will occur, so it is suggested to use [Trig::try_asinh]
+    ///in such cases.
+    ///
+    #[inline] fn asinh(self) -> Self {self.try_asinh().unwrap()}
+
+    ///
+    ///A continuous inverse function of [Hyperbolic Cosine](Trig::cosh) such that `acosh(0)=1`
+    ///
+    ///If the inverse does not exist for the given input, then the implementation can
+    ///decide between a `panic!` or returning some form of error value (like `NaN`). In general though,
+    ///there is no guarrantee which of these will occur, so it is suggested to use [Trig::try_acosh]
+    ///in such cases.
+    ///
+    #[inline] fn acosh(self) -> Self {self.try_acosh().unwrap()}
+
+    ///
+    ///A continuous inverse function of [Hyperbolic Tangent](Trig::tanh) such that `atanh(0)=0`
+    ///
+    ///If the inverse does not exist for the given input, then the implementation can
+    ///decide between a `panic!` or returning some form of error value (like `NaN`). In general though,
+    ///there is no guarrantee which of these will occur, so it is suggested to use [Trig::try_atanh]
+    ///in such cases.
+    ///
+    #[inline] fn atanh(self) -> Self {self.try_atanh().unwrap()}
 
     ///
     ///The classic cicle constant
@@ -144,6 +193,7 @@ pub trait Trig: UnitalRing + Divisibility {
     ///For real-algebras, this should be exactly what you expect: the ratio of a circle's cicumferance
     ///to its diameter. However, in keeping with the generalized trig function definitions, this should
     ///give the value of [`acos(-1)`](Trig::acos) and be a zero of [Sine](Trig::sin) and [Tangent](Trig::tan)
+    ///regardless of if it is the circle constant for the euclidean metric
     ///
     fn pi() -> Self;
     #[inline] fn frac_2_pi() -> Self {Self::one().mul_n(2u32).divide(Self::pi()).unwrap()}
@@ -290,6 +340,7 @@ macro_rules! impl_real {
 
             #[inline] fn try_asinh(self) -> Option<Self> {float_to_option!($f::asinh(self))}
             #[inline] fn try_acosh(self) -> Option<Self> {float_to_option!($f::acosh(self))}
+            #[inline] fn try_atanh(self) -> Option<Self> {float_to_option!($f::atanh(self))}
             #[inline(always)] fn asinh(self) -> Self {$f::asinh(self)}
             #[inline(always)] fn acosh(self) -> Self {$f::acosh(self)}
             #[inline(always)] fn atanh(self) -> Self {$f::atanh(self)}
