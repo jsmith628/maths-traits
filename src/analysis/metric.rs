@@ -2,11 +2,11 @@
 use analysis::*;
 
 pub trait Metric<X, R:Real> {
-    fn distance(x1:X, x2:X) -> R;
+    fn distance(&self, x1:X, x2:X) -> R;
 }
 
 pub trait SemiNormedMetric<X, R:Real>: Metric<X,R> {
-    fn norm(x:X) -> R;
+    fn norm(&self, x:X) -> R;
 }
 
 pub trait NormedMetric<X, R:Real>: SemiNormedMetric<X,R> {}
@@ -15,11 +15,11 @@ pub trait NormedMetric<X, R:Real>: SemiNormedMetric<X,R> {}
 pub struct EuclideanMetric;
 
 impl<R:Real, V:InnerProductSpace<R>> Metric<V,R> for EuclideanMetric {
-    #[inline(always)] fn distance(x1:V, x2:V) -> R {x1.dist_euclid(x2)}
+    #[inline(always)] fn distance(&self, x1:V, x2:V) -> R {x1.dist_euclid(x2)}
 }
 
 impl<R:Real, V:InnerProductSpace<R>> SemiNormedMetric<V,R> for EuclideanMetric {
-    #[inline(always)] fn norm(x:V) -> R {x.norm()}
+    #[inline(always)] fn norm(&self, x:V) -> R {x.norm()}
 }
 
 impl<R:Real, V:InnerProductSpace<R>> NormedMetric<V,R> for EuclideanMetric {}
