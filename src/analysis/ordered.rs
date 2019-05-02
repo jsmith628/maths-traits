@@ -242,14 +242,20 @@ macro_rules! impl_ordered_float {
         impl ArchimedeanProperty for $t {}
 
         impl Sign for $t {
-            #[inline] fn signum(self) -> Self { $t::signum(self) }
-            #[inline] fn abs(self) -> Self { self.abs() }
+            #[cfg(feature = "std")] #[inline] fn signum(self) -> Self { $t::signum(self) }
+            #[cfg(feature = "std")] #[inline] fn abs(self) -> Self { self.abs() }
         }
         impl ArchimedeanDiv for $t {
             #[inline] fn embed_nat<N:Natural>(n:N) -> Self { (1.0).mul_n(n) }
-            #[inline] fn div_arch(self, rhs:Self) -> Self {self.div_euclid(rhs)}
-            #[inline] fn rem_arch(self, rhs:Self) -> Self {self.rem_euclid(rhs)}
-            #[inline] fn div_alg_arch(self, rhs:Self) -> (Self, Self) {(self.div_arch(rhs), self.rem_arch(rhs))}
+            #[inline] fn rem_arch(self, rhs:Self) -> Self {
+                let rem = self % rhs;
+                if rem < 0.0 { rem + rhs.abs() } else { rem }
+            }
+            #[inline] fn div_arch(self, rhs:Self) -> Self { self.div_alg_arch(rhs).0 }
+            #[inline] fn div_alg_arch(self, rhs:Self) -> (Self, Self) {
+                let rem = self.rem_arch(rhs);
+                ((self - rem) / self, rem)
+            }
         }
     )*}
 }

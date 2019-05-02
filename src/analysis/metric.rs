@@ -1,4 +1,5 @@
 
+use algebra::*;
 use analysis::*;
 
 ///

@@ -166,7 +166,7 @@
 
 #![no_std]
 
-// #[cfg(feature = "std")] 
+#[cfg(feature = "std")] 
 extern crate std;
 
 extern crate num_traits;

@@ -436,7 +436,7 @@ macro_rules! impl_real {
             #[inline] fn try_root(self, index:Self) -> Option<Self> { float_to_option!(self.root(index)) }
             #[inline] fn try_log(self, base: Self) -> Option<Self> { float_to_option!($f::log(self,base)) }
 
-            #[inline(always)] fn pow(self, power:Self) -> Self {self.powf(power)}
+            #[inline(always)] fn pow(self, power:Self) -> Self { self.powf(power)}
             #[inline(always)] fn exp2(self) -> Self {$f::exp2(self)}
             #[inline(always)] fn exp10(self) -> Self {$f::from(10.0).pow(self)}
 
