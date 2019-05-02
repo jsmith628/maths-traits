@@ -196,36 +196,100 @@ pub trait Trig: UnitalRing + Divisibility {
     ///regardless of if it is the circle constant for the euclidean metric
     ///
     fn pi() -> Self;
+
+    ///`2/π`. Mirrors [FRAC_2_PI](::std::f32::consts::FRAC_2_PI)
     #[inline] fn frac_2_pi() -> Self {Self::one().mul_n(2u32).divide(Self::pi()).unwrap()}
+    ///`π/2`. Mirrors [FRAC_PI_2](::std::f32::consts::FRAC_PI_2)
     #[inline] fn frac_pi_2() -> Self {Self::pi().divide(Self::one().mul_n(2u32)).unwrap()}
+    ///`π/3`. Mirrors [FRAC_PI_3](::std::f32::consts::FRAC_PI_3)
     #[inline] fn frac_pi_3() -> Self {Self::pi().divide(Self::one().mul_n(3u32)).unwrap()}
+    ///`π/4`. Mirrors [FRAC_PI_4](::std::f32::consts::FRAC_PI_4)
     #[inline] fn frac_pi_4() -> Self {Self::pi().divide(Self::one().mul_n(4u32)).unwrap()}
+    ///`π/6`. Mirrors [FRAC_PI_6](::std::f32::consts::FRAC_PI_6)
     #[inline] fn frac_pi_6() -> Self {Self::pi().divide(Self::one().mul_n(6u32)).unwrap()}
+    ///`π/8`. Mirrors [FRAC_PI_8](::std::f32::consts::FRAC_PI_8)
     #[inline] fn frac_pi_8() -> Self {Self::pi().divide(Self::one().mul_n(8u32)).unwrap()}
 
-    ///
-    ///The length of the hypotenuse of a unit right-triangle
-    ///
-    ///In other words... `2*sin(π/4)` or `√2`
-    ///
+    ///The length of the hypotenuse of a unit right-triangle. Mirrors [SQRT_2](::std::f32::consts::SQRT_2)
     #[inline] fn pythag_const() -> Self {Self::one().mul_n(2u32) * Self::pythag_const_inv()}
 
-    ///
-    ///The ratio of the sides of a unit right-triangle to its hypotenuse
-    ///
-    ///In other words... `sin(π/4)` or `1/√2`
-    ///
+    ///The sine of [`π/4`](Trig::frac_pi_4()). Mirrors [FRAC_1_SQRT_2](::std::f32::consts::FRAC_1_SQRT_2)
     #[inline] fn pythag_const_inv() -> Self {Self::frac_pi_4().sin()}
 
     #[inline] fn to_degrees(self) -> Self {self * (Self::one().mul_n(180u32).divide(Self::pi()).unwrap())}
     #[inline] fn to_radians(self) -> Self {self * (Self::pi().divide(Self::one().mul_n(180u32)).unwrap())}
 }
 
+///
+///Functions for computing exponential based quantities
+///
+/// # Definitions
+///
+///For real and complex numbers, there are a [multitude][1] of equivalent definitions of e<sup>x</sup>
+///and its related functions, but for specificity, any implementors should use the following characterization:
+/// * for any `x` and `y` where `x*y=y*x`, `exp(x+y) = exp(x)*exp(y)`
+/// * `exp(x) != 0` for all `x`
+/// * if applicable, `exp(x)` is continuous at all `x`
+/// * if applicable, `d/dx exp(1) = 1`
+///
+///The advantage of such a definition is that it generalizes well for systems beyond the real and complex
+///numbers, such as matrices, quaternions, and Clifford algebras; where such a function has a very
+///real practical use, such as solving differential equations and interpolating rotations.
+///
+///Furthermore, do note that the second two requirements can be relaxed to a claim about the existence
+///one _one_ such `x`, since their applicability to _all_ `x` can be proven from the existence of
+///a single point using the first requirement. Additionally, given this, using simple derivative properties,
+///it is easy to show that if the last requirement is fullfilled, that the second two are satisfied
+///as well.
+///
+///The other functions included in the trait are based on e<sup>x</sup> and their definitions are
+///included in the appropriate documentation
+///
+/// # Notable Implications on Ring Structure
+///
+///Given the above definition, a series of algebraic arguments show that any [Unital Ring](UnitalRing)
+///with an exponential function not only has characteristic 0 (ie. 1+1+...+1 is never 0), but that
+///there is a natural embedding of the rational numbers and their integral roots into the ring. As such,
+///this can be assumed to be the case (within rounding error) for any implementing structs as well,
+///and it is up to the implementor to guarrantee that this is the case.
+///
+///[1]: https://en.wikipedia.org/wiki/Characterizations_of_the_exponential_function
+///
 pub trait Exponential: UnitalRing + Divisibility {
 
+    ///
+    ///The exponential of this ring element
+    ///
+    ///Here, `exp(x)` is defined such that:
+    /// * `exp(x+y) = exp(x)*exp(y)` for all `x` and `y` where `x*y=y*x`
+    /// * `exp(x) != 0`
+    /// * `exp(x)` is continuous (if applicable)
+    /// * `d/dx exp(1) = 1` (if applicable)
+    ///
+    ///For most structures, this function is equivalent to the infinite series Σ x<sup>n</sup>/n!
+    ///
+    ///
     fn exp(self) -> Self;
+
+    ///
+    ///An inverse of [exp(x)](Exponential::exp) where `ln(1) = 0`
+    ///
+    ///This returns a `None` value if and only if the inverse does not exist for the given input,
+    ///like with negative real numbers and the real-valued logarithm.
+    ///
+    /// ## Uniqueness and Continuity
+    ///
+    ///Do note, however, that for almost all non-[Real] structures, this function
+    ///is not unique and can *never* be continuous. Of course, some of this ambiguity is resolved by
+    ///stipulating that `ln(1) = 0`, but even so, some remains,
+    ///so it is entirely up to the implementor to guarrantee an canonical form if one exists.
+    ///
+    ///A noteworthy example are the [Complex] numbers, where there are infinitely many choices as
+    ///to where to have the mandatory discontinuity
+    ///
     fn try_ln(self) -> Option<Self>;
 
+    ///The [exponential](Exponential::exp) of 1
     #[inline] fn e() -> Self {Self::one().exp()}
     #[inline] fn ln_2() -> Self {Self::one().mul_n(2u32).ln()}
     #[inline] fn ln_10() -> Self {Self::one().mul_n(10u32).ln()}
@@ -237,8 +301,11 @@ pub trait Exponential: UnitalRing + Divisibility {
     #[inline] fn sqrt_2() -> Self {Self::one().mul_n(2u32).sqrt()}
     #[inline] fn frac_1_sqrt_2() -> Self {Self::sqrt_2().inverse().unwrap()}
 
+    ///This element raised to the given power as defined by `x^y = exp(ln(x)*y)`, if `ln(x)` exists
     #[inline] fn try_pow(self, power:Self) -> Option<Self> { self.try_ln().map(move |x| (x * power).exp()) }
+    ///This element taken to the given root as defined as `root(x, y) = x^(1/y)`, if `ln(x)` and `1/y` exist
     #[inline] fn try_root(self, index:Self) -> Option<Self> { index.inverse().and_then(move |x| self.try_pow(x)) }
+    ///The inverse of [pow()](Exponential::try_pow), if it exists
     #[inline] fn try_log(self, base: Self) -> Option<Self> {
         self.try_ln().and_then(move |x| base.try_ln().and_then(move |y| x.divide(y)))
     }
