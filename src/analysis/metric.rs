@@ -81,6 +81,10 @@ impl<R:Real, V:InnerProductSpace<R>> NormedMetric<V,R> for InnerProductMetric {}
 /// * `<x+y,z> = <x,z> + <y,z>`
 /// * `<c*x,z> = c*<x,z>`
 ///
+///Do note that like with [Metric], there are usually multiple inner products for any given vector
+///space. However, since most implementations use coordinates an orthonormal bases, the inner product
+///can usually be taken as intrinsic to the struct.
+///
 pub trait InnerProductSpace<F: ComplexField + Trig + From<<F as ComplexSubset>::Real>>: VectorSpace<F> {
     fn inner_product(self, rhs: Self) -> F;
 
