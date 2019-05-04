@@ -2,8 +2,8 @@
 pub use core::ops::{Add, AddAssign, Sub, SubAssign, Neg, Mul, MulAssign, Div, DivAssign, Index, IndexMut};
 use algebra::*;
 
-pub trait BilinearForm<K: UnitalRing> { fn bi_form(self, rhs: Self) -> K; }
-pub trait QuadradicForm<K: UnitalRing> { fn q_form(&self) -> K; }
+pub trait BilinearForm<K: UnitalRing> { fn dot(self, rhs: Self) -> K; }
+pub trait QuadradicForm<K: UnitalRing> { fn q_form(self) -> K; }
 
 pub trait ConvergentBasis<K>: Index<usize,Output=K> {fn basis(i:usize) -> Self;}
 pub trait CountableBasis<K>: ConvergentBasis<K> + IndexMut<usize, Output=K> {fn elements(&self) -> usize;}
