@@ -2,7 +2,23 @@
 pub use core::ops::{Add, AddAssign, Sub, SubAssign, Neg, Mul, MulAssign, Div, DivAssign, Index, IndexMut};
 use algebra::*;
 
+///
+///A bi-linear scalar product between [vectors](VectorSpace) or [module](RingModule) elements
+///
+///Rigorously, a bilinear form is a function `B:X⨯X -> K` from a [RingModule] `X` over `K` into `K` such that:
+/// * `B(x+y,z) = B(x,z) + B(y,z)`
+/// * `B(x,y+z) = B(x,y) + B(x,z)`
+/// * `B(c*x,y) = c*B(x,y)`
+/// * `B(x,c*y) = c*B(x,y)`
+///
+///It is of note, however, that commutivity is not immediately implied by this definition, and to
+///assert this is 
+///
 pub trait BilinearForm<K: UnitalRing> { fn dot(self, rhs: Self) -> K; }
+pub trait SymmetricForm<K: UnitalRing>: BilinearForm<K> {}
+pub trait AlternatingForm<K: UnitalRing>: BilinearForm<K> {}
+pub trait SesquilinearForm<K: UnitalRing>: BilinearForm<K> {}
+
 pub trait QuadradicForm<K: UnitalRing> { fn q_form(self) -> K; }
 
 pub trait ConvergentBasis<K>: Index<usize,Output=K> {fn basis(i:usize) -> Self;}
