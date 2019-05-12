@@ -12,12 +12,11 @@ use algebra::*;
 /// * `B(x,c*y) = c*B(x,y)`
 ///
 ///It is of note, however, that commutivity is not immediately implied by this definition, and to
-///assert this is 
+///assert this is
 ///
 pub trait BilinearForm<K: UnitalRing> { fn dot(self, rhs: Self) -> K; }
 pub trait SymmetricForm<K: UnitalRing>: BilinearForm<K> {}
 pub trait AlternatingForm<K: UnitalRing>: BilinearForm<K> {}
-pub trait SesquilinearForm<K: UnitalRing>: BilinearForm<K> {}
 
 pub trait QuadradicForm<K: UnitalRing> { fn q_form(self) -> K; }
 
