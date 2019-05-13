@@ -359,7 +359,7 @@ pub trait ComplexSubset: PartialEq + Clone + InvolutiveSemiring {
 }
 
 auto!{
-    pub trait ComplexField = Field + ComplexSubset;
+    pub trait ComplexField = Field + ComplexSubset + From<<Self as ComplexSubset>::Real>;
 }
 
 pub trait Real: ArchField + ComplexSubset<Real=Self> + Trig + Exponential {
@@ -367,7 +367,7 @@ pub trait Real: ArchField + ComplexSubset<Real=Self> + Trig + Exponential {
     fn repr(f: f64) -> Self;
 }
 
-pub trait Complex: ComplexField + Trig + Exponential + From<<Self as ComplexSubset>::Real> {
+pub trait Complex: ComplexField + Trig + Exponential {
     fn i() -> Self;
     fn mul_i(self) -> Self;
     fn div_i(self) -> Self;

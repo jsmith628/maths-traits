@@ -72,7 +72,7 @@ impl<R:Real, V:InnerProductSpace<R>> Seminorm<V,R> for InnerProductMetric {
 
 impl<R:Real, V:InnerProductSpace<R>> NormedMetric<V,R> for InnerProductMetric {}
 
-pub trait InnerProductSpace<F: ComplexField + From<<F as ComplexSubset>::Real>>: HermitianSpace<F> {
+pub trait InnerProductSpace<F: ComplexField>: HermitianSpace<F> {
 
     #[inline] fn norm_sqrd(self) -> F::Real {self.squared().as_real()}
     #[inline] fn norm(self) -> F::Real {self.norm_sqrd().sqrt()}

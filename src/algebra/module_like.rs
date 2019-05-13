@@ -46,13 +46,10 @@ auto!{
     pub trait SkewSymmetricSpace<K> = SkewSymmetricModule<K> + VectorSpace<K> where K: Field;
 }
 
-macro_rules! impl_dot {
+
+macro_rules! impl_forms {
     ($($t:ident)*) => {
         $(
-            impl DotProduct<$t> for $t {
-                #[inline(always)] fn dot(self, rhs:Self) -> Self {self * rhs}
-            }
-
             impl ReflexiveModule<$t> for $t {}
             impl SesquilinearModule<$t> for $t {}
             impl HermitianModule<$t> for $t {}
@@ -62,4 +59,31 @@ macro_rules! impl_dot {
     }
 }
 
-impl_dot!(i8 i16 i32 i64 isize i128 f32 f64);
+macro_rules! impl_dot_int {
+    ($($t:ident)*) => {
+        $(
+            impl DotProduct<$t> for $t {
+                #[inline(always)] fn dot(self, rhs:Self) -> Self {self * rhs}
+                #[inline(always)] fn orthogonal(self, rhs: Self) -> bool {self.is_zero() || rhs.is_zero()}
+            }
+            impl_forms!($t);
+        )*
+    }
+}
+
+macro_rules! impl_dot_float {
+    ($($t:ident)*) => {
+        $(
+            impl DotProduct<$t> for $t {
+                #[inline(always)] fn dot(self, rhs:Self) -> Self {self * rhs}
+                #[inline(always)] fn orthogonal(self, rhs: Self) -> bool {self.is_zero() || rhs.is_zero()}
+                #[inline(always)] fn reject(self, rhs: Self) -> Self { if self==0.0 {rhs} else {0.0} }
+                #[inline(always)] fn project(self, rhs: Self) -> Self { if self==0.0 {0.0} else {rhs} }
+            }
+            impl_forms!($t);
+        )*
+    }
+}
+
+impl_dot_int!(i8 i16 i32 i64 isize i128);
+impl_dot_float!(f32 f64);
