@@ -72,33 +72,17 @@ impl<R:Real, V:InnerProductSpace<R>> Seminorm<V,R> for InnerProductMetric {
 
 impl<R:Real, V:InnerProductSpace<R>> NormedMetric<V,R> for InnerProductMetric {}
 
-///
-///A [VectorSpace] over a subset of the complex numbers with a "sesquilinear" binary operation
-///
-///Rigorously, the inner product is a function `<•,•>:V⨯V -> F` for a vector space `V` over a field
-///`F⊆ℂ` such that:
-/// * `<x,x> ∈ ℝ` and `<x,x> > 0` for all `x!=0`
-/// * `<x,y> = conj(<y,x>)` (where conj() is the complex conjugate)
-/// * `<x+y,z> = <x,z> + <y,z>`
-/// * `<c*x,z> = c*<x,z>`
-///
-///Do note that like with [Metric], there are usually multiple inner products for any given vector
-///space. However, since most implementations use coordinates an orthonormal bases, the inner product
-///can usually be taken as intrinsic to the struct.
-///
-pub trait InnerProductSpace<F: ComplexField + Trig + From<<F as ComplexSubset>::Real>>: VectorSpace<F> {
-    fn inner_product(self, rhs: Self) -> F;
+pub trait InnerProductSpace<F: ComplexField + From<<F as ComplexSubset>::Real>>: HermitianSpace<F> {
 
-    #[inline] fn norm_sqrd(self) -> F::Real {self.clone().inner_product(self).as_real()}
+    #[inline] fn norm_sqrd(self) -> F::Real {self.squared().as_real()}
     #[inline] fn norm(self) -> F::Real {self.norm_sqrd().sqrt()}
     #[inline] fn dist_euclid(self, rhs: Self) -> F::Real {(self - rhs).norm()}
     #[inline] fn normalize(self) -> Self {self.clone() / self.norm().into()}
 
-    #[inline] fn orthogonal(self, rhs: Self) -> bool { self.inner_product(rhs).is_zero() }
-    #[inline] fn angle(self, rhs: Self) -> F {
+    #[inline] fn angle(self, rhs: Self) -> F where F:Trig {
         let l1 = self.clone().norm();
         let l2 = rhs.clone().norm();
-        (self.inner_product(rhs)/(l1*l2).into()).acos()
+        (self.dot(rhs)/(l1*l2).into()).acos()
     }
 }
 
@@ -111,10 +95,8 @@ auto!{
 macro_rules! impl_metric {
     ($($f:ident)*) => {$(
         impl InnerProductSpace<$f> for $f {
-            #[inline(always)] fn inner_product(self, rhs: Self) -> $f {self * rhs}
             #[inline(always)] fn norm_sqrd(self) -> $f {self * self}
             #[inline(always)] fn norm(self) -> $f {self.abs()}
-            #[inline(always)] fn orthogonal(self, rhs: Self) -> bool {self==0.0 || rhs==0.0}
 
             #[inline(always)]
             fn angle(self, rhs: Self) -> $f {
