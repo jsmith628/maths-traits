@@ -24,10 +24,6 @@ pub trait BilinearModule<K: UnitalRing>: DotProduct<K> {}
 pub trait SymmetricModule<K: UnitalRing>: ReflexiveModule<K> + BilinearModule<K> {}
 pub trait SkewSymmetricModule<K: UnitalRing>: ReflexiveModule<K> + BilinearModule<K> {}
 
-pub trait ConvergentBasis<K>: Index<usize,Output=K> {fn basis(i:usize) -> Self;}
-pub trait CountableBasis<K>: ConvergentBasis<K> + IndexMut<usize, Output=K> {fn elements(&self) -> usize;}
-pub trait FiniteBasis<K>: CountableBasis<K> { fn dimensions() -> usize; }
-
 auto!{
     ///An abelian additive group with a distributive scalar multiplication with a unital ring
     pub trait RingModule<K> = AddAbelianGroup + Mul<K, Output=Self> + MulAssign<K> where K: UnitalRing;
@@ -39,15 +35,6 @@ auto!{
     pub trait AffineSpace<K, V> =
         Sized + Clone + Sub<Self, Output=V> + Add<V, Output=Self> + AddAssign<V> + Sub<V, Output=Self> + SubAssign<V>
         where K: Field, V: VectorSpace<K>;
-
-    ///A ring module with a countable basis
-    pub trait CountableModule<K> = RingModule<K> + CountableBasis<K> where K: UnitalRing;
-    ///A vector space with a countable basis
-    pub trait CountableVectorSpace<K> = VectorSpace<K> + CountableBasis<K> where K: Field;
-    ///A ring module with a finite dimension
-    pub trait FiniteModule<K> = RingModule<K> + FiniteBasis<K> where K: UnitalRing;
-    ///A vector space with a finite dimension
-    pub trait FiniteVectorSpace<K> = VectorSpace<K> + FiniteBasis<K> where K: Field;
 
     pub trait DotProductSpace<K> = DotProduct<K> + VectorSpace<K> where K: Field;
     pub trait ReflexiveSpace<K> = ReflexiveModule<K> + VectorSpace<K> where K: Field;

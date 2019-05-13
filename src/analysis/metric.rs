@@ -86,12 +86,6 @@ pub trait InnerProductSpace<F: ComplexField + From<<F as ComplexSubset>::Real>>:
     }
 }
 
-auto!{
-    pub trait HilbertSpace<F> = InnerProductSpace<F> + ConvergentBasis<F> where F:ComplexField + Trig + From<<F as ComplexSubset>::Real>;
-    pub trait EuclidianSpace<R> = InnerProductSpace<R> + FiniteBasis<R> where R:Real;
-}
-
-
 macro_rules! impl_metric {
     ($($f:ident)*) => {$(
         impl InnerProductSpace<$f> for $f {
