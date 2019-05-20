@@ -410,58 +410,6 @@ pub mod multiplicative {
 
 }
 
-///
-///A self-inverting operation on a Ring or Modules of Involuting Rings that distributes over
-///addition and in reverse over multiplication
-///
-///Rigorously, an involution `'` is a function on an algebraic structure `R` to itself such that:
-/// * `(x')' = x`
-/// * `(x + y)' = x' + y'` when addition is defined
-/// * `(x * y)' = y' * x'` when multiplication is defined
-/// * `1' = 1` when `R` has [One]
-///
-/// # Examples
-///
-/// * The Complex conjugate. In fact, Involutions could be said to be generalizations of the conjugate
-/// * More generally, extending a field with a square root (like `Q[√2]` for example) always
-///   an involution defined by mapping the extention element to its negative
-/// * Mapping `x` to `-x` in a Polynomial
-/// * The Matrix transpose and conjugate transpose
-/// * Quaternion and Hypercomplex conjugation
-/// * In any Clifford Algebra, reversing the order of each basis element
-/// * More generally, in any Free Algebra, reversing the multiplication order of each term of an element
-///   is an Involution
-/// * The identity mapping
-///
-/// # Uniqueness
-///
-///In general, this operation is *not* unique. For example, the matrix transpose _and_ conjugate
-///transpose are both involutions on Complex Matrices. However, for most cases, there is a natural
-///or canonical choice for the involution, or, if there is not, different involutions are taken as
-///different interpretations of a structure.
-///
-///
-pub trait Involution {
-
-    ///
-    ///An operation `':R -> R` on a ring, semiring, or algebra such that:
-    /// * `(x')' = x`
-    /// * `(x + y)' = x' + y'`
-    /// * `(x * y)' = y' * x'`
-    /// * `1' = 1` if `R` is [unital](One)
-    ///
-    fn involute(self) -> Self;
-}
-
-auto! {
-    ///A multiplicative semigroup with an involution
-    pub trait InvolutiveSemigroup = MulSemigroup + Involution;
-    ///A multiplicative group with an involution
-    pub trait InvolutiveMonoid = MulMonoid + Involution;
-    ///An abelian group with an involution
-    pub trait InvolutiveAbelianGroup = MulAbelianGroup + Involution;
-}
-
 use algebra::{Natural, IntegerSubset};
 
 trait IsZero:Sized { fn _is_zero(&self) -> bool; }
@@ -551,8 +499,6 @@ macro_rules! impl_props {
     };
     (@float $f:ty) => {impl_props!(@props $f);};
     (@props $t:ty) => {
-
-        impl Involution for $t { fn involute(self) -> Self {self} }
 
         impl AddAssociative for $t {}
         impl AddCommutative for $t {}

@@ -329,7 +329,7 @@ pub trait Exponential: UnitalRing + Divisibility {
 
 }
 
-pub trait ComplexSubset: PartialEq + Clone + InvolutiveSemiring {
+pub trait ComplexSubset: PartialEq + Clone + Semiring {
     type Real: Real
         + ComplexSubset<Natural = Self::Natural, Integer = Self::Integer, Real = Self::Real>;
     type Natural: Natural
@@ -352,7 +352,7 @@ pub trait ComplexSubset: PartialEq + Clone + InvolutiveSemiring {
 
     fn im(self) -> Self;
     fn re(self) -> Self;
-    #[inline] fn conj(self) -> Self {self.involute()}
+    fn conj(self) -> Self;
 
     #[inline] fn modulus_sqrd(self) -> Self { self.clone() * self.conj()}
     #[inline] fn modulus(self) -> Self::Real { (self.clone() * self.conj()).as_real().sqrt()}

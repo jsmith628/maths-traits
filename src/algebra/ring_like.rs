@@ -168,37 +168,21 @@ pub trait EuclideanDiv: Sized {
 auto! {
     ///A commutative and additive monoid with a distributive and associative multiplication operation
     pub trait Semiring = Distributive + AddMonoid + AddCommutative + MulSemigroup;
-    ///A semiring with an involution
-    pub trait InvolutiveSemiring = Semiring + Involution;
     ///A semiring with an identity element
     pub trait UnitalSemiring = Semiring + MulMonoid;
-    ///A unital semiring with an involution
-    pub trait InvolutiveUnitalSemiring = UnitalSemiring + Involution;
     ///A unital semiring where multiplication is commutative
     pub trait CommutativeSemiring = UnitalSemiring + MulCommutative;
-    ///A commutative semiring with an involution
-    pub trait InvolutiveCommutativeSemiring = CommutativeSemiring + Involution;
     ///A semiring with a multiplicative inverse
     pub trait DivisionSemiring = UnitalSemiring + MulGroup;
-    ///A division semiring with an involution
-    pub trait InvolutiveDivisionSemiring = DivisionSemiring + Involution;
 
     ///An additive abelian group with a distributive and associative multiplication operation
     pub trait Ring = Distributive + AddAbelianGroup + MulSemigroup;
-    ///A ring with an involution
-    pub trait InvolutiveRing = Ring + Involution;
     ///A ring with an identity element
     pub trait UnitalRing = Ring + MulMonoid;
-    ///A unital ring with an involution
-    pub trait InvolutiveUnitalRing = UnitalRing + Involution;
     ///A unital ring where multiplication is commutative
     pub trait CommutativeRing = UnitalRing + MulCommutative;
-    ///A commutative ring with an involution
-    pub trait InvolutiveCommutativeRing = CommutativeRing + Involution;
     ///A ring with a multiplicative inverse
     pub trait DivisionRing = UnitalRing + MulGroup;
-    ///A division ring with an involution
-    pub trait InvolutiveDivisionRing = DivisionRing + Involution;
 
     ///A unital semiring with no pairs of nonzero elements that multiply to zero
     pub trait Semidomain = UnitalSemiring + Divisibility + NoZeroDivisors;
@@ -232,8 +216,6 @@ auto! {
 
     ///A set that is both an additive and multiplicative abelian group where multiplication distributes
     pub trait Field = CommutativeRing + MulGroup;
-    ///A field with an involution
-    pub trait InvolutiveField = Field + Involution;
 }
 
 //
