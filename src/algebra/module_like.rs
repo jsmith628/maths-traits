@@ -117,7 +117,7 @@ pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
     ///then such a vector does not exist and this function may `panic!`
     ///
     #[inline] fn par_comp(&self, x:M, y: M) -> M where R:DivisionRing {
-        let l = self.product(y, x.clone()) * self.square(x.clone()).inv();
+        let l = self.product_of(y, x.clone()) * self.square(x.clone()).inv();
         x * l
     }
 

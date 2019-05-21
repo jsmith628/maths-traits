@@ -463,7 +463,7 @@ macro_rules! impl_real {
             #[inline(always)] fn to_radians(self) -> Self { $f::to_radians(self) }
         }
 
-        impl ExponentialRing for $f {
+        impl Exponential for $f {
             #[inline(always)] fn exp(self) -> Self {$f::exp(self)}
             #[inline] fn try_ln(self) -> Option<Self> { float_to_option!($f::ln(self)) }
         }
@@ -585,7 +585,7 @@ impl_real!(f32:u32:i32 f64:u64:i64);
 macro_rules! int_exp {
     ($($t:ident)*) => {
         $(
-            impl ExponentialRing for $t {
+            impl Exponential for $t {
                 #[inline] fn exp(self) -> Self { if self.even() {1} else {-1} }
                 #[inline] fn try_ln(self) -> Option<Self> {
                     match self {
