@@ -230,6 +230,19 @@ pub trait Trig: UnitalRing + Divisibility {
 ///In addition to these base properties, this trait also stipulates that this function _not_ map
 ///every element to 1, so as to rule out the trivial case.
 ///
+///Furthmore, to clear up ambiguity, it is important to note that different variations on this
+///definition exists. For instance:
+/// * As already mentioned, some may allow the mapping to be non-trivial
+/// * Some may also allow `E(x) = 0`
+/// * For the Real and Complex exponentials, there are a [multitude](1) of equivalent definitions
+///   that have no true effect on the mapping
+///
+///More importantly though, most authors specify that the `E(x+y) = E(x)*E(y)` for _all_ `x` and `y`
+///(such as on [Wikipedia](2))
+///However, doing so disallows both the Matrix exponential and Quaternion exponential as well
+///as the Clifford Algebra exponential, all of which are frankly the only reason to make the exponential
+///a separate trait on its own.
+///
 /// # Effects on Ring structure
 ///
 ///It is worth noting that _any_ ring that has a non-trivial exponential operation must automatically
@@ -254,7 +267,10 @@ pub trait Trig: UnitalRing + Divisibility {
 ///
 ///For example, all real-algebras have infinitely many exponentials, but we get a canonical form
 ///stipulating that the function satisfy the classic differential equation `E'(x) = E(x)` or some
-///variant
+///variant.
+///
+/// (1) https://en.wikipedia.org/wiki/Characterizations_of_the_exponential_function
+/// (2) https://en.wikipedia.org/wiki/Exponential_field
 ///
 pub trait Exponential: UnitalRing {
     ///
@@ -301,6 +317,10 @@ pub trait Exponential: UnitalRing {
 /// * The logarithm of any rational exists by `ln(p/q) = ln(p) - ln(q)`
 /// * We can take the nth-root of any rational with `exp(ln(x)/n)`
 /// * We have a way to raise any rational to the power of any rational with exp(ln(x)*y)
+///
+///This distinction between the "Real Exponential" and just an "Exponential" is important since
+///both the Integers and Gaussian Integers have non-trivial exponential functions that do not behave
+///in the way expected of the usual use of the term.
 ///
 pub trait RealExponential: Exponential + Divisibility {
 
