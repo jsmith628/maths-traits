@@ -3,15 +3,121 @@ pub use core::ops::{Add, AddAssign, Sub, SubAssign, Neg, Mul, MulAssign, Div, Di
 use analysis::{ComplexRing};
 use algebra::*;
 
+///
+///A product between two vectors or module elements resulting in a scalar that is semi-linear in both arguments
+///
+///Rigorously, a σ-sesquilinear form is a mapping `•:M⨯M->R` from a Ring Module to its base ring such that:
+/// * `(x + y)•z = x•z + y•z`
+/// * `x•(y + z) = x•y + x•y`
+/// * `(c*x)•y = c*(x•y)`
+/// * `x•(c*y) = (x•y)*σ(c)` where `σ:R->R` is some anti-automorphism, usually the complex conjugate
+///   or the identity map
+///
+/// # Notes on Definition
+///
+///It is additionally worth emphasizing that in general, while there are a number of other properties
+///commonly added to this list, none of them should be assumed without the addition of the appropriate
+///marker trait. In particular:
+/// * `x•(c*y)` may not equal `(x•y)*c`
+/// * `x•y` may not equal `y•x`
+/// * `x•y = 0` does not necessarily imply `y•x = 0`
+///
+///However, if these properties are desired, then the following additional traits can be implemented
+///or used:
+/// * [ReflexiveForm]: `x•y = 0` implies `y•x = 0`
+///     * as a consequence, [Orthogonality](SesquilinearForm::orthogonal) becomes a reflexive property
+/// * [SymSesquilinearForm]: `σ(x•y) = y•x`
+/// * [SkewSesquilinearForm]: `σ(x•y) = -y•x`
+/// * [BilinearForm]: `x•(c*y) = (x•y)*c`, ie, `σ(x) = x` for all `x`
+///     * If also a [SymSesquilinearForm], this implies `x•y = y•x`
+///     * If also a [SkewSesquilinearForm], this implies `x•y = -y•x`
+/// * [ComplexSesquilinearForm]: `x•(c*y) = (x•y)*c̅`, ie `R ⊆ ℂ` and `σ(x) = x̅` for all `x`
+///     * If also a [SymSesquilinearForm], this implies `x•y = conj(y•x)`
+///     * If also a [SkewSesquilinearForm], this implies `x•y = -conj(y•x)`
+///
+/// # Examples
+///
+/// * Dot product of finite dimensional spaces and modules: `x•y = Σ(xₖ*yₖ)`
+/// * Inner Product of real and complex vector spaces of any dimension
+/// * Complex and Hyper-complex moduli: `z*w̅`
+/// * The "Cross-Product" in 2D real-vector spaces: `x₁*y₂ - x₂*y₁`
+///     * Alternatively, the mapping taking two vectors to the determinant of the matrix with
+///      the vectors as its columns
+/// * Minkowski metric: `ds² = dx² + dy² + dz² - dt²`
+/// * Scalar product of the conformal model of Geometric algebra
+///
 pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
-    fn dot(&self, v1:M, v2:M) -> R;
-    #[inline] fn involute(&self, x:R) -> R {x}
-    #[inline] fn square(&self, v:M) -> R {self.dot(v.clone(),v)}
 
-    #[inline] fn orthogonal(&self, v1:M, v2:M) -> bool {self.dot(v1, v2).is_zero()}
-    #[inline] fn orth_comp(&self, lhs:M, rhs: M) -> M where R:DivisionRing { rhs.clone() - self.par_comp(lhs,rhs) }
-    #[inline] fn par_comp(&self, lhs:M, rhs: M) -> M where R:DivisionRing {
-        let l = self.square(lhs.clone()).inv() * self.dot(lhs.clone(), rhs);
+    ///
+    ///The function that applies the sesquilinear form
+    ///
+    ///Specifically, a mapping `•:M⨯M->R` such that
+    /// * `(x + y)•z = x•z + y•z`
+    /// * `x•(y + z) = x•y + x•y`
+    /// * `(c*x)•y = c*(x•y)`
+    /// * `x•(c*y) = (x•y)*σ(c)` where [`σ`](SesquilinearForm::sigma) is some anti-automorphism of `R`
+    ///
+    fn product(&self, v1:M, v2:M) -> R;
+
+    ///
+    ///The mapping on `R` that factors the second argument of the [sesquilinear form](SesquilinearForm::product)
+    ///
+    ///Specifically: a function `σ:R->R` such that:
+    /// * `x•(c*y) = (x•y)*σ(c)`
+    /// * `σ` is an anti-automorphism:
+    ///     * `σ(a + b) = σ(a) + σ(b)`
+    ///     * `σ(a*b) = σ(b)*σ(a)`
+    ///     * `σ(a)!=σ(b)` whenever `a!=b`
+    ///     * for all `a` in `R`, there is a `b` in `R` where `σ(b) = a`
+    ///
+    #[inline] fn sigma(&self, x:R) -> R {x}
+
+    ///The inverse of the [`σ`](SesquilinearForm::sigma)
+    #[inline] fn sigma_inv(&self, x:R) -> R {x}
+
+    ///An alias for `x•x`
+    #[inline] fn square(&self, x:M) -> R {self.dot(x.clone(),x)}
+
+    ///Returns true if `x•x = 0`
+    #[inline] fn is_null(&self, x:M) -> bool {self.square(x).is_zero()}
+
+    ///
+    ///Returns true if `x•y = 0`
+    ///
+    ///Note that this may not imply that `y` is orthogonal to `x`, unless the product is also a
+    ///[ReflexiveForm]
+    ///
+    #[inline] fn orthogonal(&self, x:M, y:M) -> bool {self.dot(x, y).is_zero()}
+
+    ///
+    ///The orthogonal component of `y` with respect to `x`, assuming x is not [null](SesquilinearForm::is_null)
+    ///
+    ///Specifically, this a vector or element `v` such that:
+    /// * `v•x = 0`
+    /// * `y-v = c*x` for some `c` in `R`
+    ///
+    ///Most of the time, this can be computed simply by subtracting the [parallel component](SesquilinearForm::par_comp)
+    ///from `y`
+    ///
+    ///Do note however, that if `x` is a [null-element](SesquilinearForm::is_null) (ie. `x•x = 0`),
+    ///then such a vector does not exist and this function may `panic!`
+    ///
+    #[inline] fn orth_comp(&self, x:M, y: M) -> M where R:DivisionRing { y.clone() - self.par_comp(x,y) }
+
+    ///
+    ///The parallel component of `y` with respect to `x`, assuming x is not [null](SesquilinearForm::is_null)
+    ///
+    ///Specifically, this a vector or element `w` such that:
+    /// * `w = c*x` for some `c` in `R`
+    /// * `(y-w)•x = 0`
+    ///
+    ///This can usually be computed simply with the formula `w = x*(y•x)*((x•x)⁻¹)`
+    ///
+    ///Do note however, that if `x` is a [null-element](SesquilinearForm::is_null) (ie. `x•x = 0`),
+    ///then such a vector does not exist and this function may `panic!`
+    ///
+    #[inline] fn par_comp(&self, x:M, y: M) -> M where R:DivisionRing {
+        let l = self.dot(rhs, lhs.clone()) * self.square(lhs.clone()).inv();
         lhs * l
     }
 
@@ -30,59 +136,6 @@ auto! {
     pub trait HermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SymSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
     pub trait SkewHermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
 }
-
-// ///
-// ///A product between two vectors or module elements resulting in a scalar that is semi-linear in both arguments
-// ///
-// ///Rigorously, the dot product is a mapping `•:M⨯M->R` from a Ring Module to its base ring such that:
-// /// * `(x + y)•z = x•z + y•z`
-// /// * `x•(y + z) = x•y + x•y`
-// /// * `(c*x)•y = c*(x•y)`
-// /// * `x•(c*y) = (x•y)*σ(c)` where `σ:R->R` is some anti-automorphism, usually the complex conjugate
-// ///   or the identity map
-// ///
-// /// # Notes on definition
-// ///
-// ///In pursuit of generality, the definition used here is noticeably less strict than the more commonly
-// ///dot product definition. Of course, the normal dot product is covered by this definition, but in order to
-// ///capture a number of other important mathematical operations, some properties have been relaxed
-// ///for greater abstraction. In particular:
-// /// * `x•y` might not equal `y•x`
-// /// * `x•(c*y)` does not necessarily equal `c*(x•y)` or even `(x•y)*c` in general
-// /// * `x•x` can equal 0
-// /// * `x•x` can be negative or non-real
-// ///
-// ///However, in exchange, this trait can represent the following in addition to the real inner product:
-// /// * The complex and hypercomplex inner products, which have `x•(c*y) = conj(c)*(x•y)`
-// /// * The Minkowski space-time interval, which requires the time-basis to square to -1
-// /// * The 2D cross product: `[x₁,y₁]•[x₂,y₂] = x₁*y₂ - x₂*y₁` which requires non-symmetry
-// /// * Conformal Models of Geometric Algebra, which require vector bases that square to 0
-// ///
-// /// # Additional properties
-// ///
-// ///In addition to the base properties, the dot product can have a number of additional restrictions
-// ///signified here by added the corresponding marker trait:
-// /// * A [Reflexive Form](ReflexiveModule) requires that `x•y = 0` implies `y•x = 0`
-// /// * If M and R have an involution `'`,
-// ///     * A [Sesquilinear Form](SesquilinearModule) requires `x•(c*y) = c'*(x•y)`
-// ///     * A [Hermitian Form](HermitianModule) requires `(x•y)' = y'•x'`
-// ///     * A [Skew-Hermitian Form](HermitianModule) requires `(x•y)' = -y'•x'`
-// /// * A [Bilinear Form](ReflexiveModule) requires that `x•(c*y) = (x•y)*c`
-// /// * A [Symmetric Form](ReflexiveModule) requires that `x•y = y•x`
-// /// * A [Skew-Symmetric Form](ReflexiveModule) requires that `x•y = -y•x`
-// ///
-// ///
-// pub trait DotProduct<K: UnitalRing>: RingModule<K> {
-//     fn dot(self, rhs: Self) -> K;
-//     #[inline] fn squared(self) -> K {self.clone().dot(self)}
-//
-//     #[inline] fn orthogonal(self, rhs: Self) -> bool {self.dot(rhs).is_zero()}
-//     #[inline] fn reject(self, rhs: Self) -> Self where K:DivisionRing { rhs.clone() - self.project(rhs) }
-//     #[inline] fn project(self, rhs: Self) -> Self where K:DivisionRing {
-//         let l = self.clone().squared().inv() * self.clone().dot(rhs);
-//         self * l
-//     }
-// }
 
 auto!{
     ///An abelian additive group with a distributive scalar multiplication with a unital ring
