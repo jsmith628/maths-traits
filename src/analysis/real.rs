@@ -221,42 +221,42 @@ pub trait Trig: UnitalRing + Divisibility {
 }
 
 ///
-///Functions for computing exponential based quantities
+///A ring with an exponential operation
 ///
-/// # Definitions
+///Rigourously, and exponential operation is a mapping `E:R->R` such that:
+/// * `E(x+y) = E(x)*E(y)` whenever `x*y = y*x`
+/// * `E(x) != 0`
 ///
-///For real and complex numbers, there are a [multitude][1] of equivalent definitions of e<sup>x</sup>
-///and its related functions, but for specificity, any implementors should use the following characterization:
-/// * for any `x` and `y` where `x*y=y*x`, `exp(x+y) = exp(x)*exp(y)`
-/// * `exp(x) != 0` for all `x`
-/// * if applicable, `exp(x)` is continuous at all `x`
-/// * if applicable, `d/dx exp(1) = 1`
+///In addition to these base properties, this trait also stipulates that this function _not_ map
+///every element to 1, so as to rule out the trivial case.
 ///
-///The advantage of such a definition is that it generalizes well for systems beyond the real and complex
-///numbers, such as matrices, quaternions, and Clifford algebras; where such a function has a very
-///real practical use, such as solving differential equations and interpolating rotations.
+/// # Effects on Ring structure
 ///
-///Furthermore, do note that the second two requirements can be relaxed to a claim about the existence
-///one _one_ such `x`, since their applicability to _all_ `x` can be proven from the existence of
-///a single point using the first requirement. Additionally, given this, using simple derivative properties,
-///it is easy to show that if the last requirement is fullfilled, that the second two are satisfied
-///as well.
+///It is worth noting that _any_ ring that has a non-trivial exponential operation must automatically
+///have a characteristic of 0 (that is, `1+1+1+...+1` will never equal zero) and hence, has an
+///embedding of the Integers within it.
 ///
-///The other functions included in the trait are based on e<sup>x</sup> and their definitions are
-///included in the appropriate documentation
+///This fact is easily proven as follows:
+/// * assume `char(R) = n != 0`
+/// * then, for any `x` in `R`, `nx = x+...+x = 0`, and,
+///   the Frobenious automorphism gives that `(x+y)ⁿ = xⁿ + yⁿ`
+/// * Hence, `(E(x) - 1)ⁿ = E(x)ⁿ - 1 = E(nx) - 1 = E(0) - 1 = 0`
+/// * Thus, we hae that that `E(x) = 1` contradicting our assumtions
 ///
-/// # Notable Implications on Ring Structure
+///Additionally, any element that is the output of the expoenential _must_ be an invertible element,
+///since `E(-x) = E(x)⁻¹`
 ///
-///Given the above definition, a series of algebraic arguments show that any [Unital Ring](UnitalRing)
-///with an exponential function not only has characteristic 0 (ie. 1+1+...+1 is never 0), but that
-///there is a natural embedding of the rational numbers and their integral roots into the ring. As such,
-///this can be assumed to be the case (within rounding error) for any implementing structs as well,
-///and it is up to the implementor to guarrantee that this is the case.
+/// # Uniqueness
 ///
-///[1]: https://en.wikipedia.org/wiki/Characterizations_of_the_exponential_function
+///In general, this characterization of the exponential function is *not* unique. However, in the
+///vast majority of cases, there is a canonical version that all others derive from _or_ there is only
+///one non-trivial case.
 ///
-pub trait Exponential: UnitalRing + Divisibility {
-
+///For example, all real-algebras have infinitely many exponentials, but we get a canonical form
+///stipulating that the function satisfy the classic differential equation `E'(x) = E(x)` or some
+///variant
+///
+pub trait ExponentialRing: UnitalRing {
     ///
     ///The exponential of this ring element
     ///
@@ -267,7 +267,6 @@ pub trait Exponential: UnitalRing + Divisibility {
     /// * `d/dx exp(1) = 1` (if applicable)
     ///
     ///For most structures, this function is equivalent to the infinite series Σ x<sup>n</sup>/n!
-    ///
     ///
     fn exp(self) -> Self;
 
@@ -284,22 +283,26 @@ pub trait Exponential: UnitalRing + Divisibility {
     ///stipulating that `ln(1) = 0`, but even so, some remains,
     ///so it is entirely up to the implementor to guarrantee an canonical form if one exists.
     ///
-    ///A noteworthy example are the [Complex] numbers, where there are infinitely many choices as
-    ///to where to have the mandatory discontinuity
+    ///For example, the [Complex] numbers, the natural logarithm *must* be discontinuous somewhere,
+    ///but there are infinitely many choices as to where that is.
     ///
     fn try_ln(self) -> Option<Self>;
+}
 
-    ///The [exponential](Exponential::exp) of 1
-    #[inline] fn e() -> Self {Self::one().exp()}
-    #[inline] fn ln_2() -> Self {Self::one().mul_n(2u32).ln()}
-    #[inline] fn ln_10() -> Self {Self::one().mul_n(10u32).ln()}
-    #[inline] fn log2_e() -> Self {Self::ln_2().inverse().unwrap()}
-    #[inline] fn log10_e() -> Self {Self::ln_10().inverse().unwrap()}
-    #[inline] fn log2_10() -> Self {Self::ln_10().divide(Self::ln_2()).unwrap()}
-    #[inline] fn log10_2() -> Self {Self::ln_2().divide(Self::ln_10()).unwrap()}
-
-    #[inline] fn sqrt_2() -> Self {Self::one().mul_n(2u32).sqrt()}
-    #[inline] fn frac_1_sqrt_2() -> Self {Self::sqrt_2().inverse().unwrap()}
+///
+///An exponential ring with Real-like properties
+///
+///The specifics of this are that this trait requires that the [logarithm](ExponentialRing::ln) of any integer be
+///defined.
+///
+///However, the essence of this is that as a result:
+/// * This ring contains a form of the Rationals
+///     * easily shown by `exp(-ln(x)) = 1/exp(ln(x)) = 1/x`
+/// * The logarithm of any rational exists by `ln(p/q) = ln(p) - ln(q)`
+/// * We can take the nth-root of any rational with `exp(ln(x)/n)`
+/// * We have a way to raise any rational to the power of any rational with exp(ln(x)*y)
+///
+pub trait RealExponential: ExponentialRing + Divisibility {
 
     ///This element raised to the given power as defined by `x^y = exp(ln(x)*y)`, if `ln(x)` exists
     #[inline] fn try_pow(self, power:Self) -> Option<Self> { self.try_ln().map(move |x| (x * power).exp()) }
@@ -327,6 +330,17 @@ pub trait Exponential: UnitalRing + Divisibility {
     #[inline] fn ln_1p(self) -> Self {(self-Self::one()).ln()}
     #[inline] fn exp_m1(self) -> Self {self.exp()-Self::one()}
 
+    ///The [exponential](Exponential::exp) of 1
+    #[inline] fn e() -> Self {Self::one().exp()}
+    #[inline] fn ln_2() -> Self {Self::one().mul_n(2u32).ln()}
+    #[inline] fn ln_10() -> Self {Self::one().mul_n(10u32).ln()}
+    #[inline] fn log2_e() -> Self {Self::ln_2().inverse().unwrap()}
+    #[inline] fn log10_e() -> Self {Self::ln_10().inverse().unwrap()}
+    #[inline] fn log2_10() -> Self {Self::ln_10().divide(Self::ln_2()).unwrap()}
+    #[inline] fn log10_2() -> Self {Self::ln_2().divide(Self::ln_10()).unwrap()}
+
+    #[inline] fn sqrt_2() -> Self {Self::one().mul_n(2u32).sqrt()}
+    #[inline] fn frac_1_sqrt_2() -> Self {Self::sqrt_2().inverse().unwrap()}
 }
 
 pub trait ComplexSubset: PartialEq + Clone + Semiring {
@@ -364,12 +378,12 @@ auto!{
     pub trait ComplexField = Field + ComplexSubset;
 }
 
-pub trait Real: ArchField + ComplexSubset<Real=Self> + Trig + Exponential {
+pub trait Real: ArchField + ComplexSubset<Real=Self> + Trig + RealExponential {
     fn approx(self) -> f64;
     fn repr(f: f64) -> Self;
 }
 
-pub trait Complex: ComplexField + Trig + Exponential + From<<Self as ComplexSubset>::Real> {
+pub trait Complex: ComplexField + Trig + RealExponential + From<<Self as ComplexSubset>::Real> {
     fn i() -> Self;
     fn mul_i(self) -> Self;
     fn div_i(self) -> Self;
@@ -429,11 +443,12 @@ macro_rules! impl_real {
             #[inline(always)] fn to_radians(self) -> Self { $f::to_radians(self) }
         }
 
-        impl Exponential for $f {
-
+        impl ExponentialRing for $f {
             #[inline(always)] fn exp(self) -> Self {$f::exp(self)}
             #[inline] fn try_ln(self) -> Option<Self> { float_to_option!($f::ln(self)) }
+        }
 
+        impl RealExponential for $f {
             #[inline] fn try_pow(self, power:Self) -> Option<Self> { float_to_option!(self.pow(power)) }
             #[inline] fn try_root(self, index:Self) -> Option<Self> { float_to_option!(self.root(index)) }
             #[inline] fn try_log(self, base: Self) -> Option<Self> { float_to_option!($f::log(self,base)) }
@@ -546,3 +561,22 @@ macro_rules! impl_real {
 }
 
 impl_real!(f32:u32:i32 f64:u64:i64);
+
+macro_rules! int_exp {
+    ($($t:ident)*) => {
+        $(
+            impl ExponentialRing for $t {
+                #[inline] fn exp(self) -> Self { if self.even() {1} else {-1} }
+                #[inline] fn try_ln(self) -> Option<Self> {
+                    match self {
+                         1 => Some(0),
+                        -1 => Some(1),
+                         _ => None
+                    }
+                }
+            }
+        )*
+    }
+}
+
+int_exp!(i8 i16 i32 i64 isize i128);

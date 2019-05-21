@@ -76,7 +76,7 @@ pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
     #[inline] fn sigma_inv(&self, x:R) -> R {x}
 
     ///An alias for `x•x`
-    #[inline] fn square(&self, x:M) -> R {self.dot(x.clone(),x)}
+    #[inline] fn square(&self, x:M) -> R {self.product(x.clone(),x)}
 
     ///Returns true if `x•x = 0`
     #[inline] fn is_null(&self, x:M) -> bool {self.square(x).is_zero()}
@@ -87,7 +87,7 @@ pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
     ///Note that this may not imply that `y` is orthogonal to `x`, unless the product is also a
     ///[ReflexiveForm]
     ///
-    #[inline] fn orthogonal(&self, x:M, y:M) -> bool {self.dot(x, y).is_zero()}
+    #[inline] fn orthogonal(&self, x:M, y:M) -> bool {self.product(x, y).is_zero()}
 
     ///
     ///The orthogonal component of `y` with respect to `x`, assuming x is not [null](SesquilinearForm::is_null)
@@ -117,8 +117,8 @@ pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
     ///then such a vector does not exist and this function may `panic!`
     ///
     #[inline] fn par_comp(&self, x:M, y: M) -> M where R:DivisionRing {
-        let l = self.dot(rhs, lhs.clone()) * self.square(lhs.clone()).inv();
-        lhs * l
+        let l = self.product(y, x.clone()) * self.square(x.clone()).inv();
+        x * l
     }
 
 }

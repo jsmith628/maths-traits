@@ -81,8 +81,9 @@ impl<K:ComplexRing, V:InnerProductSpace<K>> Seminorm<K,V,K::Real> for InnerProdu
 impl<K:ComplexRing, V:InnerProductSpace<K>> Norm<K,V,K::Real> for InnerProductMetric {}
 
 impl<K:ComplexRing, V:InnerProductSpace<K>> SesquilinearForm<K,V> for InnerProductMetric {
-    #[inline] fn dot(&self, v1:V, v2:V) -> K {v1.inner_product(v2)}
-    #[inline] fn involute(&self, x:K) -> K {x.conj()}
+    #[inline] fn product(&self, v1:V, v2:V) -> K {v1.inner_product(v2)}
+    #[inline] fn sigma(&self, x:K) -> K {x.conj()}
+    #[inline] fn sigma_inv(&self, x:K) -> K {x.conj()}
 }
 
 impl<K:ComplexRing, V:InnerProductSpace<K>> ReflexiveForm<K,V> for InnerProductMetric {}
