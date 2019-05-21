@@ -57,7 +57,7 @@ pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
     /// * `(c*x)•y = c*(x•y)`
     /// * `x•(c*y) = (x•y)*σ(c)` where [`σ`](SesquilinearForm::sigma) is some anti-automorphism of `R`
     ///
-    fn product(&self, v1:M, v2:M) -> R;
+    fn product_of(&self, v1:M, v2:M) -> R;
 
     ///
     ///The mapping on `R` that factors the second argument of the [sesquilinear form](SesquilinearForm::product)
@@ -76,7 +76,7 @@ pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
     #[inline] fn sigma_inv(&self, x:R) -> R {x}
 
     ///An alias for `x•x`
-    #[inline] fn square(&self, x:M) -> R {self.product(x.clone(),x)}
+    #[inline] fn square(&self, x:M) -> R {self.product_of(x.clone(),x)}
 
     ///Returns true if `x•x = 0`
     #[inline] fn is_null(&self, x:M) -> bool {self.square(x).is_zero()}
@@ -87,7 +87,7 @@ pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
     ///Note that this may not imply that `y` is orthogonal to `x`, unless the product is also a
     ///[ReflexiveForm]
     ///
-    #[inline] fn orthogonal(&self, x:M, y:M) -> bool {self.product(x, y).is_zero()}
+    #[inline] fn orthogonal(&self, x:M, y:M) -> bool {self.product_of(x, y).is_zero()}
 
     ///
     ///The orthogonal component of `y` with respect to `x`, assuming x is not [null](SesquilinearForm::is_null)
