@@ -256,7 +256,7 @@ pub trait Trig: UnitalRing + Divisibility {
 ///stipulating that the function satisfy the classic differential equation `E'(x) = E(x)` or some
 ///variant
 ///
-pub trait ExponentialRing: UnitalRing {
+pub trait Exponential: UnitalRing {
     ///
     ///The exponential of this ring element
     ///
@@ -302,7 +302,7 @@ pub trait ExponentialRing: UnitalRing {
 /// * We can take the nth-root of any rational with `exp(ln(x)/n)`
 /// * We have a way to raise any rational to the power of any rational with exp(ln(x)*y)
 ///
-pub trait RealExponential: ExponentialRing + Divisibility {
+pub trait RealExponential: Exponential + Divisibility {
 
     ///This element raised to the given power as defined by `x^y = exp(ln(x)*y)`, if `ln(x)` exists
     #[inline] fn try_pow(self, power:Self) -> Option<Self> { self.try_ln().map(move |x| (x * power).exp()) }
