@@ -1,6 +1,6 @@
 
-use algebra::*;
-use analysis::*;
+use crate::algebra::*;
+use crate::analysis::*;
 
 ///
 ///A real-valued function on a set `X` that quantifies the "distance" between objects

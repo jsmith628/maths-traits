@@ -94,9 +94,9 @@ pub mod additive {
     use core::ops::{Mul};
 
     use super::{repeated_doubling, repeated_doubling_neg};
-    use algebra::{Natural, IntegerSubset, Semiring, Ring};
+    use crate::algebra::{Natural, IntegerSubset, Semiring, Ring};
 
-    #[allow(unused_imports)] use algebra::Integer;
+    #[allow(unused_imports)] use crate::algebra::Integer;
 
     ///
     ///A marker trait for stucts whose addition operation is evaluation order independent,
@@ -268,9 +268,9 @@ pub mod multiplicative {
     use num_traits::Pow;
 
     use super::{repeated_squaring, repeated_squaring_inv};
-    use algebra::{Natural, IntegerSubset};
+    use crate::algebra::{Natural, IntegerSubset};
 
-    #[allow(unused_imports)] use algebra::Integer;
+    #[allow(unused_imports)] use crate::algebra::Integer;
 
     ///
     ///A marker trait for stucts whose multiplication operation is evaluation order independent,
@@ -410,7 +410,7 @@ pub mod multiplicative {
 
 }
 
-use algebra::{Natural, IntegerSubset};
+use crate::algebra::{Natural, IntegerSubset};
 
 trait IsZero:Sized { fn _is_zero(&self) -> bool; }
 impl<Z> IsZero for Z { #[inline(always)] default fn _is_zero(&self) -> bool {false} }

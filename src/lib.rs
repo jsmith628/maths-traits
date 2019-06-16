@@ -164,12 +164,7 @@
 #![feature(extra_log_consts)]
 #![recursion_limit="8096"]
 
-#![no_std]
-
-#[cfg(feature = "std")] 
-extern crate std;
-
-extern crate num_traits;
+#![cfg_attr(not(feature = "std"), no_std)]
 
 macro_rules! auto {
 

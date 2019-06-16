@@ -2,8 +2,8 @@
 use core::convert::{TryFrom, TryInto};
 use core::ops::{Rem, RemAssign};
 
-use analysis::ordered::*;
-use algebra::*;
+use crate::analysis::ordered::*;
+use crate::algebra::*;
 
 auto!{
     pub trait CastPrimInt =

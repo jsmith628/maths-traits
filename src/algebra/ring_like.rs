@@ -1,4 +1,4 @@
-use algebra::*;
+use crate::algebra::*;
 
 ///A marker trait for stucts whose multiplication operation preserves addition,
 ///ie `z*(x+y)=z*x+z*y` and `(x+y)*z=x*z+y*z` for all `x`, `y`, and `z`.
@@ -450,7 +450,7 @@ pub fn miller_rabin<Z:Natural>(n:Z) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use algebra::*;
+    use crate::algebra::*;
 
     //TODO: add tests for euclidean and extended_euclidean
 

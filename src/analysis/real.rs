@@ -1,6 +1,6 @@
 
-use algebra::*;
-use analysis::*;
+use crate::algebra::*;
+use crate::analysis::*;
 
 ///
 ///Functions and constants for evaluative trigonometric values

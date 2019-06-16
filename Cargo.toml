@@ -3,6 +3,7 @@ authors = ["Joshua Smith <anvil775@gmail.com>"]
 name = "maths-traits"
 description = "A simple to use yet abstract system of mathematical traits for the Rust language"
 version = "0.1.3"
+edition = "2018"
 keywords = ["mathematics", "numerics", "algebra", "integer", "real-numbers"]
 categories = ["algorithms", "science", "no-std"]
 repository = "https://github.com/anvil777/maths-traits"

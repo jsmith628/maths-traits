@@ -1,5 +1,5 @@
 
-use algebra::*;
+use crate::algebra::*;
 
 ///
 ///A marker trait signifying that for `x > y`, `x+z > x+z` and `z+x > z+x` for all `z`

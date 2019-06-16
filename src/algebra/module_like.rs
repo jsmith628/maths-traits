@@ -1,7 +1,7 @@
 
 pub use core::ops::{Add, AddAssign, Sub, SubAssign, Neg, Mul, MulAssign, Div, DivAssign, Index, IndexMut};
-use analysis::{ComplexRing};
-use algebra::*;
+use crate::analysis::{ComplexRing};
+use crate::algebra::*;
 
 ///
 ///A product between two vectors or module elements resulting in a scalar that is semi-linear in both arguments
