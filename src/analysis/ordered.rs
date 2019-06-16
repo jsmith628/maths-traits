@@ -131,72 +131,69 @@ pub trait ArchimedeanDiv: Sized + ArchimedeanProperty {
     fn div_alg_arch(self, rhs: Self) -> (Self, Self);
 }
 
-auto!{
-    ///An additive magma with an ordered addition operation
-    pub trait OrdMagma = AddMagma + AddOrdered;
-    ///An additive semigroup with an ordered addition operation
-    pub trait OrdSemigroup = OrdMagma + AddSemigroup;
-    ///An additive loop with an ordered addition operation
-    pub trait OrdLoop = OrdMagma + AddLoop;
-    ///An additive monoid with an ordered addition operation
-    pub trait OrdMonoid = OrdSemigroup + AddMonoid + Signed;
-    ///An additive group with an ordered addition operation
-    pub trait OrdGroup = OrdMonoid + AddGroup;
-    ///An additive abelian group with an ordered addition operation
-    pub trait OrdAbelianGroup = OrdGroup + AddAbelianGroup;
+///An additive magma with an ordered addition operation
+pub trait OrdMagma = AddMagma + AddOrdered;
+///An additive semigroup with an ordered addition operation
+pub trait OrdSemigroup = OrdMagma + AddSemigroup;
+///An additive loop with an ordered addition operation
+pub trait OrdLoop = OrdMagma + AddLoop;
+///An additive monoid with an ordered addition operation
+pub trait OrdMonoid = OrdSemigroup + AddMonoid + Signed;
+///An additive group with an ordered addition operation
+pub trait OrdGroup = OrdMonoid + AddGroup;
+///An additive abelian group with an ordered addition operation
+pub trait OrdAbelianGroup = OrdGroup + AddAbelianGroup;
 
-    ///A semiring with ordered addition and multiplication
-    pub trait OrdSemiring = Semiring + OrdMonoid + MulOrdered;
-    ///A unitial semiring with ordered addition and multiplication
-    pub trait OrdUnitalSemiring = OrdSemiring + UnitalSemiring;
-    ///A commutative semiring with ordered addition and multiplication
-    pub trait OrdCommutativeSemiring = OrdUnitalSemiring + CommutativeSemiring;
-    ///A division semiring with ordered addition and multiplication
-    pub trait OrdDivisionSemiring = OrdUnitalSemiring + DivisionSemiring;
+///A semiring with ordered addition and multiplication
+pub trait OrdSemiring = Semiring + OrdMonoid + MulOrdered;
+///A unitial semiring with ordered addition and multiplication
+pub trait OrdUnitalSemiring = OrdSemiring + UnitalSemiring;
+///A commutative semiring with ordered addition and multiplication
+pub trait OrdCommutativeSemiring = OrdUnitalSemiring + CommutativeSemiring;
+///A division semiring with ordered addition and multiplication
+pub trait OrdDivisionSemiring = OrdUnitalSemiring + DivisionSemiring;
 
-    ///A ring with ordered addition and multiplication
-    pub trait OrdRing = Ring + OrdAbelianGroup + MulOrdered;
-    ///A unital ring with ordered addition and multiplication
-    pub trait OrdUnitalRing = OrdRing + UnitalRing + Sign;
-    ///A commutative ring with ordered addition and multiplication
-    pub trait OrdCommutativeRing = OrdUnitalRing + CommutativeRing;
-    ///A division ring with ordered addition and multiplication
-    pub trait OrdDivisionRing = OrdCommutativeRing + DivisionRing;
+///A ring with ordered addition and multiplication
+pub trait OrdRing = Ring + OrdAbelianGroup + MulOrdered;
+///A unital ring with ordered addition and multiplication
+pub trait OrdUnitalRing = OrdRing + UnitalRing + Sign;
+///A commutative ring with ordered addition and multiplication
+pub trait OrdCommutativeRing = OrdUnitalRing + CommutativeRing;
+///A division ring with ordered addition and multiplication
+pub trait OrdDivisionRing = OrdCommutativeRing + DivisionRing;
 
-    ///A field with ordered addition and multiplication
-    pub trait OrdField = OrdUnitalRing + Field;
+///A field with ordered addition and multiplication
+pub trait OrdField = OrdUnitalRing + Field;
 
-    ///An ordered semigroup with the Archimedean property
-    pub trait ArchSemigroup = OrdSemigroup + ArchimedeanProperty;
-    ///An ordered monoid with the Archimedean property
-    pub trait ArchMonoid = ArchSemigroup + OrdMonoid;
-    ///An ordered group with the Archimedean property
-    pub trait ArchGroup = ArchMonoid + OrdGroup;
-    ///An ordered abeliean group with the Archimedean property
-    pub trait ArchAbelianGroup = ArchMonoid + OrdAbelianGroup;
+///An ordered semigroup with the Archimedean property
+pub trait ArchSemigroup = OrdSemigroup + ArchimedeanProperty;
+///An ordered monoid with the Archimedean property
+pub trait ArchMonoid = ArchSemigroup + OrdMonoid;
+///An ordered group with the Archimedean property
+pub trait ArchGroup = ArchMonoid + OrdGroup;
+///An ordered abeliean group with the Archimedean property
+pub trait ArchAbelianGroup = ArchMonoid + OrdAbelianGroup;
 
-    ///An ordered semiring with the Archimedean property
-    pub trait ArchSemiring = ArchMonoid + OrdSemiring;
-    ///An ordered unital semiring with the Archimedean property and Archimedean division
-    pub trait ArchUnitalSemiring = ArchSemiring + OrdUnitalSemiring + ArchimedeanDiv;
-    ///An ordered commutative semiring with the Archimedean property and Archimedean division
-    pub trait ArchCommutativeSemiring = ArchUnitalSemiring + OrdCommutativeSemiring;
-    ///An ordered division semiring with the Archimedean property and Archimedean division
-    pub trait ArchDivisionSemiring = ArchCommutativeSemiring + OrdDivisionSemiring;
+///An ordered semiring with the Archimedean property
+pub trait ArchSemiring = ArchMonoid + OrdSemiring;
+///An ordered unital semiring with the Archimedean property and Archimedean division
+pub trait ArchUnitalSemiring = ArchSemiring + OrdUnitalSemiring + ArchimedeanDiv;
+///An ordered commutative semiring with the Archimedean property and Archimedean division
+pub trait ArchCommutativeSemiring = ArchUnitalSemiring + OrdCommutativeSemiring;
+///An ordered division semiring with the Archimedean property and Archimedean division
+pub trait ArchDivisionSemiring = ArchCommutativeSemiring + OrdDivisionSemiring;
 
-    ///An ordered ring with the Archimedean property
-    pub trait ArchRing = ArchAbelianGroup + OrdRing;
-    ///An ordered unital ring with the Archimedean property and Archimedean division
-    pub trait ArchUnitalRing = ArchRing + OrdUnitalRing + ArchimedeanDiv;
-    ///An ordered commutative ring with the Archimedean property and Archimedean division
-    pub trait ArchCommutativeRing = ArchUnitalRing + OrdCommutativeRing;
-    ///An ordered division ring with the Archimedean property and Archimedean division
-    pub trait ArchDivisionRing = ArchCommutativeRing + OrdDivisionRing;
+///An ordered ring with the Archimedean property
+pub trait ArchRing = ArchAbelianGroup + OrdRing;
+///An ordered unital ring with the Archimedean property and Archimedean division
+pub trait ArchUnitalRing = ArchRing + OrdUnitalRing + ArchimedeanDiv;
+///An ordered commutative ring with the Archimedean property and Archimedean division
+pub trait ArchCommutativeRing = ArchUnitalRing + OrdCommutativeRing;
+///An ordered division ring with the Archimedean property and Archimedean division
+pub trait ArchDivisionRing = ArchCommutativeRing + OrdDivisionRing;
 
-    ///An ordered field ring with the Archimedean property and Archimedean division
-    pub trait ArchField = ArchUnitalRing + OrdField;
-
-}
+///An ordered field ring with the Archimedean property and Archimedean division
+pub trait ArchField = ArchUnitalRing + OrdField;
 
 macro_rules! impl_ordered_int {
     ($($t:ident)*) => {$(
@@ -242,7 +239,7 @@ macro_rules! impl_ordered_float {
         impl ArchimedeanProperty for $t {}
 
         impl Sign for $t {
-            #[cfg(feature = "std")] #[inline] fn signum(self) -> Self { $t::signum(self) }
+            #[cfg(feature = "std")] #[inline] fn signum(self) -> Self { self.signum() }
             #[cfg(feature = "std")] #[inline] fn abs(self) -> Self { self.abs() }
         }
         impl ArchimedeanDiv for $t {
@@ -260,6 +257,10 @@ macro_rules! impl_ordered_float {
     )*}
 }
 
-impl_ordered_int!(i8 i16 i32 i64 i128 isize);
-impl_ordered_uint!(u8 u16 u32 u64 u128 usize);
-impl_ordered_float!(f32 f64);
+// Necessary do to issue #60021
+mod impls {
+    use super::{ AddOrdered, MulOrdered, ArchimedeanProperty, Sign, ArchimedeanDiv, Natural, MulN };
+    impl_ordered_int!(i8 i16 i32 i64 i128 isize);
+    impl_ordered_uint!(u8 u16 u32 u64 u128 usize);
+    impl_ordered_float!(f32 f64);
+}

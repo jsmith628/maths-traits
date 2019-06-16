@@ -57,9 +57,7 @@ pub trait Norm<K:UnitalRing, X:RingModule<K>, R:Real>: Seminorm<K,X,R> {}
 
 pub trait InnerProduct<K:ComplexRing, M:RingModule<K>>: HermitianForm<K,M> + Norm<K,M,K::Real>{}
 
-auto! {
-    pub trait NormedMetric<K,X,R> = Norm<K,X,R> + Metric<X,R> where K:UnitalRing, X:RingModule<K>, R:Real;
-}
+pub trait NormedMetric<K,X,R> = Norm<K,X,R> + Metric<X,R> where K:UnitalRing, X:RingModule<K>, R:Real;
 
 ///
 ///A metric on vector-spaces using the [inner product](InnerProductSpace) of two vectors
@@ -147,5 +145,10 @@ macro_rules! impl_metric {
         }
     )*}
 }
-impl_metric!(@float f32 f64);
-impl_metric!(@int i32 i64);
+
+// Necessary do to issue #60021
+mod impls {
+    use super::{ ComplexSubset, InnerProductSpace };
+    impl_metric!(@float f32 f64);
+    impl_metric!(@int i32 i64);
+}
