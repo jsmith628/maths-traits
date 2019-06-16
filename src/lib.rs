@@ -172,52 +172,5 @@ extern crate std;
 
 extern crate num_traits;
 
-macro_rules! auto {
-
-    ({} @split ) => { };
-    ({$($line:tt)+} @split ) => { compile_error!("Expected ;"); };
-    ({$($line:tt)*} @split ; $($code:tt)*) => { auto!(@create $($line)*); auto!({} @split $($code)*); };
-    ({$($line:tt)*} @split $t:tt $($code:tt)*) => { auto!({$($line)* $t} @split $($code)*); };
-
-    //start the line parsing
-    (@create $($line:tt)*) => {auto!({} @create $($line)*);};
-
-    //parse the trait name and generic attributes
-    ({$($kw:tt)*} @create trait $t:ident = $($line:tt)*) => {
-        auto!({$($kw)*} {$t} {} {} @create $($line)*);
-    };
-    ({$($kw:tt)*} @create trait $t:ident<$($T:ident),*> = $($line:tt)*) => {
-        auto!({$($kw)*} {$t} {$($T),*} {} @create $($line)*);
-    };
-
-    //bucket the keywords and attributes at the beginning of the line
-    ({$($kws:tt)*} @create $kw:ident $($line:tt)*) => { auto!({$($kws)* $kw} @create $($line)*); };
-    ({$($kws:tt)*} @create #[$meta:meta] $($line:tt)*) => { auto!({$($kws)* #[$meta]} @create $($line)*); };
-    ({$($kw:tt)*} @create) => {compile_error!(concat!("Expected trait alias", stringify!($($line)*))); };
-    ({$($kw:tt)*} @create $t:tt $($line:tt)*) => {compile_error!(concat!("Expected trait alias, found ", stringify!($t)));};
-
-    //parse the trait dependencies and super traits
-    ({$($kw:tt)*} {$name:ident} {$($T:tt)*} {$($deps:tt)*} @create) => {
-        auto!({$($kw)*} {$name} {$($T)*} {$($deps)*} {} @create);
-    };
-    ({$($kw:tt)*} {$name:ident} {$($T:tt)*} {$($deps:tt)*} @create where $($line:tt)*) => {
-        auto!({$($kw)*} {$name} {$($T)*} {$($deps)*} {where $($line)*} @create);
-    };
-    ({$($kw:tt)*} {$name:ident} {$($T:tt)*} {$($deps:tt)*} @create $dep:tt $($line:tt)*) => {
-        auto!({$($kw)*} {$name} {$($T)*} {$($deps)* $dep} @create $($line)*);
-    };
-
-    //create the trait and its auto-implementation
-    ({$($kw:tt)*} {$name:ident} {$($T:tt)*} {$($deps:tt)*} {$($wh:tt)*} @create) => {
-        $($kw)* trait $name<$($T)*>: $($deps)* $($wh)* {}
-        impl<_G: $($deps)*, $($T)*> $name<$($T)*> for _G $($wh)* {}
-    };
-
-    //start the parsing
-    ($($code:tt)*) => { auto!({} @split $($code)*); };
-
-
-}
-
 pub mod algebra;
 pub mod analysis;

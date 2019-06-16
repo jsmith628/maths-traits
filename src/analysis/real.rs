@@ -392,11 +392,9 @@ pub trait ComplexSubset: PartialEq + Clone + Semiring {
     #[inline] fn modulus(self) -> Self::Real { (self.clone() * self.conj()).as_real().sqrt()}
 }
 
-auto!{
-    pub trait ComplexSemiring = CommutativeSemiring + ComplexSubset;
-    pub trait ComplexRing = CommutativeRing + ComplexSubset;
-    pub trait ComplexField = Field + ComplexSubset;
-}
+pub trait ComplexSemiring = CommutativeSemiring + ComplexSubset;
+pub trait ComplexRing = CommutativeRing + ComplexSubset;
+pub trait ComplexField = Field + ComplexSubset;
 
 pub trait Real: ArchField + ComplexSubset<Real=Self> + Trig + RealExponential {
     fn approx(self) -> f64;
@@ -580,7 +578,11 @@ macro_rules! impl_real {
     )*}
 }
 
-impl_real!(f32:u32:i32 f64:u64:i64);
+// Necessary do to issue #60021
+mod impls {
+    use super::{ Trig, Exponential, RealExponential, ComplexSubset, Real };
+    impl_real!(f32:u32:i32 f64:u64:i64);
+}
 
 macro_rules! int_exp {
     ($($t:ident)*) => {

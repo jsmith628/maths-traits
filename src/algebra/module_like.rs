@@ -132,10 +132,8 @@ pub trait ComplexSesquilinearForm<R:ComplexRing, M:RingModule<R>>: SesquilinearF
 
 pub trait SymmetricForm<R,M> = BilinearForm<R,M> + SymSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
 pub trait SkewSymmetricForm<R,M> = BilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
-auto! {
-    pub trait HermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SymSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
-    pub trait SkewHermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
-}
+pub trait HermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SymSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
+pub trait SkewHermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
 
 ///An abelian additive group with a distributive scalar multiplication with a unital ring
 pub trait RingModule<K: UnitalRing> = AddAbelianGroup + Mul<K, Output=Self> + MulAssign<K>;
