@@ -163,7 +163,6 @@
 #![feature(specialization)]
 #![feature(euclidean_division)]
 #![feature(extra_log_consts)]
-#![recursion_limit="8096"]
 
 #![no_std]
 
