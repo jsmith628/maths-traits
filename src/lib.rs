@@ -159,6 +159,7 @@
 //!update to version 0.2.0.
 //!
 
+#![feature(trait_alias)]
 #![feature(specialization)]
 #![feature(euclidean_division)]
 #![feature(extra_log_consts)]

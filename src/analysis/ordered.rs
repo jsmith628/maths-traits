@@ -131,31 +131,31 @@ pub trait ArchimedeanDiv: Sized + ArchimedeanProperty {
     fn div_alg_arch(self, rhs: Self) -> (Self, Self);
 }
 
+///An additive magma with an ordered addition operation
+pub trait OrdMagma = AddMagma + AddOrdered;
+///An additive semigroup with an ordered addition operation
+pub trait OrdSemigroup = OrdMagma + AddSemigroup;
+///An additive loop with an ordered addition operation
+pub trait OrdLoop = OrdMagma + AddLoop;
+///An additive monoid with an ordered addition operation
+pub trait OrdMonoid = OrdSemigroup + AddMonoid + Signed;
+///An additive group with an ordered addition operation
+pub trait OrdGroup = OrdMonoid + AddGroup;
+///An additive abelian group with an ordered addition operation
+pub trait OrdAbelianGroup = OrdGroup + AddAbelianGroup;
+
+///A semiring with ordered addition and multiplication
+pub trait OrdSemiring = Semiring + OrdMonoid + MulOrdered;
+///A unitial semiring with ordered addition and multiplication
+pub trait OrdUnitalSemiring = OrdSemiring + UnitalSemiring;
+///A commutative semiring with ordered addition and multiplication
+pub trait OrdCommutativeSemiring = OrdUnitalSemiring + CommutativeSemiring;
+///A division semiring with ordered addition and multiplication
+pub trait OrdDivisionSemiring = OrdUnitalSemiring + DivisionSemiring;
+
+///A ring with ordered addition and multiplication
+pub trait OrdRing = Ring + OrdAbelianGroup + MulOrdered;
 auto!{
-    ///An additive magma with an ordered addition operation
-    pub trait OrdMagma = AddMagma + AddOrdered;
-    ///An additive semigroup with an ordered addition operation
-    pub trait OrdSemigroup = OrdMagma + AddSemigroup;
-    ///An additive loop with an ordered addition operation
-    pub trait OrdLoop = OrdMagma + AddLoop;
-    ///An additive monoid with an ordered addition operation
-    pub trait OrdMonoid = OrdSemigroup + AddMonoid + Signed;
-    ///An additive group with an ordered addition operation
-    pub trait OrdGroup = OrdMonoid + AddGroup;
-    ///An additive abelian group with an ordered addition operation
-    pub trait OrdAbelianGroup = OrdGroup + AddAbelianGroup;
-
-    ///A semiring with ordered addition and multiplication
-    pub trait OrdSemiring = Semiring + OrdMonoid + MulOrdered;
-    ///A unitial semiring with ordered addition and multiplication
-    pub trait OrdUnitalSemiring = OrdSemiring + UnitalSemiring;
-    ///A commutative semiring with ordered addition and multiplication
-    pub trait OrdCommutativeSemiring = OrdUnitalSemiring + CommutativeSemiring;
-    ///A division semiring with ordered addition and multiplication
-    pub trait OrdDivisionSemiring = OrdUnitalSemiring + DivisionSemiring;
-
-    ///A ring with ordered addition and multiplication
-    pub trait OrdRing = Ring + OrdAbelianGroup + MulOrdered;
     ///A unital ring with ordered addition and multiplication
     pub trait OrdUnitalRing = OrdRing + UnitalRing + Sign;
     ///A commutative ring with ordered addition and multiplication
@@ -242,7 +242,7 @@ macro_rules! impl_ordered_float {
         impl ArchimedeanProperty for $t {}
 
         impl Sign for $t {
-            #[cfg(feature = "std")] #[inline] fn signum(self) -> Self { $t::signum(self) }
+            #[cfg(feature = "std")] #[inline] fn signum(self) -> Self { self.signum() }
             #[cfg(feature = "std")] #[inline] fn abs(self) -> Self { self.abs() }
         }
         impl ArchimedeanDiv for $t {

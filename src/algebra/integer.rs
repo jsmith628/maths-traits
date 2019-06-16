@@ -5,14 +5,12 @@ use core::ops::{Rem, RemAssign};
 use analysis::ordered::*;
 use algebra::*;
 
-auto!{
-    pub trait CastPrimInt =
-        TryFrom<i8>   + TryFrom<u8>   + TryInto<i8>   + TryInto<u8> +
-        TryFrom<i16>  + TryFrom<u16>  + TryInto<i16>  + TryInto<u16> +
-        TryFrom<i32>  + TryFrom<u32>  + TryInto<i32>  + TryInto<u32> +
-        TryFrom<i64>  + TryFrom<u64>  + TryInto<i64>  + TryInto<u64> +
-        TryFrom<i128> + TryFrom<u128> + TryInto<i128> + TryInto<u128>;
-}
+pub trait CastPrimInt =
+    TryFrom<i8>   + TryFrom<u8>   + TryInto<i8>   + TryInto<u8> +
+    TryFrom<i16>  + TryFrom<u16>  + TryInto<i16>  + TryInto<u16> +
+    TryFrom<i32>  + TryFrom<u32>  + TryInto<i32>  + TryInto<u32> +
+    TryFrom<i64>  + TryFrom<u64>  + TryInto<i64>  + TryInto<u64> +
+    TryFrom<i128> + TryFrom<u128> + TryInto<i128> + TryInto<u128>;
 
 pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
                         + EuclideanSemidomain

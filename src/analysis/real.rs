@@ -425,28 +425,28 @@ macro_rules! float_to_option {
 macro_rules! impl_real {
     ($($f:ident:$n:ident:$z:ident)*) => {$(
         impl Trig for $f {
-            #[inline(always)] fn sin(self) -> Self {$f::sin(self)}
-            #[inline(always)] fn cos(self) -> Self {$f::cos(self)}
-            #[inline(always)] fn tan(self) -> Self {$f::tan(self)}
-            #[inline(always)] fn sin_cos(self) -> (Self,Self) {$f::sin_cos(self)}
+            #[inline(always)] fn sin(self) -> Self {self.sin()}
+            #[inline(always)] fn cos(self) -> Self {self.cos()}
+            #[inline(always)] fn tan(self) -> Self {self.tan()}
+            #[inline(always)] fn sin_cos(self) -> (Self,Self) {self.sin_cos()}
 
-            #[inline(always)] fn sinh(self) -> Self {$f::sinh(self)}
-            #[inline(always)] fn cosh(self) -> Self {$f::cosh(self)}
-            #[inline(always)] fn tanh(self) -> Self {$f::tanh(self)}
+            #[inline(always)] fn sinh(self) -> Self {self.sinh()}
+            #[inline(always)] fn cosh(self) -> Self {self.cosh()}
+            #[inline(always)] fn tanh(self) -> Self {self.tanh()}
 
-            #[inline] fn try_asin(self) -> Option<Self> {float_to_option!($f::asin(self))}
-            #[inline] fn try_acos(self) -> Option<Self> {float_to_option!($f::acos(self))}
-            #[inline(always)] fn asin(self) -> Self {$f::asin(self)}
-            #[inline(always)] fn acos(self) -> Self {$f::acos(self)}
-            #[inline(always)] fn atan(self) -> Self {$f::atan(self)}
+            #[inline] fn try_asin(self) -> Option<Self> {float_to_option!(self.asin())}
+            #[inline] fn try_acos(self) -> Option<Self> {float_to_option!(self.acos())}
+            #[inline(always)] fn asin(self) -> Self {self.asin()}
+            #[inline(always)] fn acos(self) -> Self {self.acos()}
+            #[inline(always)] fn atan(self) -> Self {self.atan()}
             #[inline(always)] fn atan2(y:Self, x:Self) -> Self {$f::atan2(y,x)}
 
-            #[inline] fn try_asinh(self) -> Option<Self> {float_to_option!($f::asinh(self))}
-            #[inline] fn try_acosh(self) -> Option<Self> {float_to_option!($f::acosh(self))}
-            #[inline] fn try_atanh(self) -> Option<Self> {float_to_option!($f::atanh(self))}
-            #[inline(always)] fn asinh(self) -> Self {$f::asinh(self)}
-            #[inline(always)] fn acosh(self) -> Self {$f::acosh(self)}
-            #[inline(always)] fn atanh(self) -> Self {$f::atanh(self)}
+            #[inline] fn try_asinh(self) -> Option<Self> {float_to_option!(self.asinh())}
+            #[inline] fn try_acosh(self) -> Option<Self> {float_to_option!(self.acosh())}
+            #[inline] fn try_atanh(self) -> Option<Self> {float_to_option!(self.atanh())}
+            #[inline(always)] fn asinh(self) -> Self {self.asinh()}
+            #[inline(always)] fn acosh(self) -> Self {self.acosh()}
+            #[inline(always)] fn atanh(self) -> Self {self.atanh()}
 
             #[inline(always)] fn pi() -> Self {::core::$f::consts::PI}
             #[inline(always)] fn frac_2_pi() -> Self {::core::$f::consts::FRAC_2_PI}
@@ -459,35 +459,35 @@ macro_rules! impl_real {
             #[inline(always)] fn pythag_const() -> Self {::core::$f::consts::SQRT_2}
             #[inline(always)] fn pythag_const_inv() -> Self {::core::$f::consts::FRAC_1_SQRT_2}
 
-            #[inline(always)] fn to_degrees(self) -> Self { $f::to_degrees(self) }
-            #[inline(always)] fn to_radians(self) -> Self { $f::to_radians(self) }
+            #[inline(always)] fn to_degrees(self) -> Self { self.to_degrees() }
+            #[inline(always)] fn to_radians(self) -> Self { self.to_radians() }
         }
 
         impl Exponential for $f {
-            #[inline(always)] fn exp(self) -> Self {$f::exp(self)}
-            #[inline] fn try_ln(self) -> Option<Self> { float_to_option!($f::ln(self)) }
+            #[inline(always)] fn exp(self) -> Self {self.exp()}
+            #[inline] fn try_ln(self) -> Option<Self> { float_to_option!(self.ln()) }
         }
 
         impl RealExponential for $f {
             #[inline] fn try_pow(self, power:Self) -> Option<Self> { float_to_option!(self.pow(power)) }
             #[inline] fn try_root(self, index:Self) -> Option<Self> { float_to_option!(self.root(index)) }
-            #[inline] fn try_log(self, base: Self) -> Option<Self> { float_to_option!($f::log(self,base)) }
+            #[inline] fn try_log(self, base: Self) -> Option<Self> { float_to_option!(self.log(base)) }
 
             #[inline(always)] fn pow(self, power:Self) -> Self { self.powf(power)}
-            #[inline(always)] fn exp2(self) -> Self {$f::exp2(self)}
+            #[inline(always)] fn exp2(self) -> Self {self.exp2()}
             #[inline(always)] fn exp10(self) -> Self {$f::from(10.0).pow(self)}
 
-            #[inline(always)] fn log(self, base:Self) -> Self {$f::log(self,base)}
-            #[inline(always)] fn ln(self) -> Self {$f::ln(self)}
-            #[inline(always)] fn log2(self) -> Self {$f::log2(self)}
-            #[inline(always)] fn log10(self) -> Self {$f::log10(self)}
+            #[inline(always)] fn log(self, base:Self) -> Self {self.log(base)}
+            #[inline(always)] fn ln(self) -> Self {self.ln()}
+            #[inline(always)] fn log2(self) -> Self {self.log2()}
+            #[inline(always)] fn log10(self) -> Self {self.log10()}
 
             #[inline(always)] fn root(self, index:Self) -> Self {self.pow(index.recip())}
-            #[inline(always)] fn sqrt(self) -> Self {$f::sqrt(self)}
-            #[inline(always)] fn cbrt(self) -> Self {$f::cbrt(self)}
+            #[inline(always)] fn sqrt(self) -> Self {self.sqrt()}
+            #[inline(always)] fn cbrt(self) -> Self {self.cbrt()}
 
-            #[inline(always)] fn ln_1p(self) -> Self {$f::ln_1p(self)}
-            #[inline(always)] fn exp_m1(self) -> Self {$f::exp_m1(self)}
+            #[inline(always)] fn ln_1p(self) -> Self {self.ln_1p()}
+            #[inline(always)] fn exp_m1(self) -> Self {self.exp_m1()}
 
             #[inline(always)] fn e() -> Self {::core::$f::consts::E}
             #[inline(always)] fn ln_2() -> Self {::core::$f::consts::LN_2}
@@ -509,12 +509,12 @@ macro_rules! impl_real {
             #[inline(always)] fn as_natural(self) -> Self::Natural {self as $n}
             #[inline(always)] fn as_integer(self) -> Self::Integer {self as $z}
 
-            #[inline(always)] fn floor(self) -> Self {$f::floor(self)}
-            #[inline(always)] fn ceil(self) -> Self {$f::ceil(self)}
-            #[inline(always)] fn round(self) -> Self {$f::round(self)}
+            #[inline(always)] fn floor(self) -> Self { self.floor() }
+            #[inline(always)] fn ceil(self) -> Self {self.ceil()}
+            #[inline(always)] fn round(self) -> Self {self.round()}
 
-            #[inline(always)] fn trunc(self) -> Self {$f::trunc(self)}
-            #[inline(always)] fn fract(self) -> Self {$f::fract(self)}
+            #[inline(always)] fn trunc(self) -> Self {self.trunc()}
+            #[inline(always)] fn fract(self) -> Self {self.fract()}
 
             #[inline(always)] fn im(self) -> Self {self}
             #[inline(always)] fn re(self) -> Self {self}

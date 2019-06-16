@@ -239,25 +239,21 @@ pub mod additive {
 
     impl<G:AddMonoid + Negatable> MulZ for G {}
 
-    auto!{
+    ///A set with an fully described additive inverse
+    pub trait Negatable = Sized + Clone + Neg<Output=Self> + Sub<Self, Output=Self> + SubAssign<Self>;
 
-        ///A set with an fully described additive inverse
-        pub trait Negatable = Sized + Clone + Neg<Output=Self> + Sub<Self, Output=Self> + SubAssign<Self>;
-
-        ///A set with an addition operation
-        pub trait AddMagma = Sized + Clone + Add<Self,Output=Self> + AddAssign<Self>;
-        ///An associative additive magma
-        pub trait AddSemigroup = AddMagma + AddAssociative;
-        ///An additive semigroup with an identity element
-        pub trait AddMonoid = AddSemigroup + Zero + MulN;
-        ///An additive magma with an inverse operation and identity
-        pub trait AddLoop = AddMagma + Negatable + Zero;
-        ///An additive monoid with an inverse operation
-        pub trait AddGroup = AddMagma + AddAssociative + Negatable + Zero + MulZ;
-        ///A commutative additive group
-        pub trait AddAbelianGroup = AddGroup + AddCommutative;
-
-    }
+    ///A set with an addition operation
+    pub trait AddMagma = Sized + Clone + Add<Self,Output=Self> + AddAssign<Self>;
+    ///An associative additive magma
+    pub trait AddSemigroup = AddMagma + AddAssociative;
+    ///An additive semigroup with an identity element
+    pub trait AddMonoid = AddSemigroup + Zero + MulN;
+    ///An additive magma with an inverse operation and identity
+    pub trait AddLoop = AddMagma + Negatable + Zero;
+    ///An additive monoid with an inverse operation
+    pub trait AddGroup = AddMagma + AddAssociative + Negatable + Zero + MulZ;
+    ///A commutative additive group
+    pub trait AddAbelianGroup = AddGroup + AddCommutative;
 
 }
 
@@ -386,28 +382,20 @@ pub mod multiplicative {
     impl<G:MulMonoid+Invertable> PowZ for G {}
 
 
-    auto!{
-
-        ///A set with an fully described multiplicative inverse
-        pub trait Invertable = Sized + Clone + Inv<Output=Self> + Div<Self, Output=Self> + DivAssign<Self>;
-
-        ///A set with a multiplication operation
-        pub trait MulMagma = Sized + Clone + Mul<Self, Output=Self> + MulAssign<Self>;
-        ///An associative multiplicative magma
-        pub trait MulSemigroup = MulMagma + MulAssociative;
-        ///A multiplicative semigroup with an identity element
-        pub trait MulMonoid = MulSemigroup + One + PowN;
-        ///A multiplicative magma with an inverse operation and identity
-        pub trait MulLoop = MulMagma + Invertable + One;
-        ///A multiplicative monoid with an inverse operation
-        pub trait MulGroup = MulMagma + MulAssociative + Invertable + One + PowZ;
-        ///A commutative multiplicative group
-        pub trait MulAbelianGroup = MulGroup + MulCommutative;
-
-    }
-
-
-
+    ///A set with an fully described multiplicative inverse
+    pub trait Invertable = Sized + Clone + Inv<Output=Self> + Div<Self, Output=Self> + DivAssign<Self>;
+    ///A set with a multiplication operation
+    pub trait MulMagma = Sized + Clone + Mul<Self, Output=Self> + MulAssign<Self>;
+    ///An associative multiplicative magma
+    pub trait MulSemigroup = MulMagma + MulAssociative;
+    ///A multiplicative semigroup with an identity element
+    pub trait MulMonoid = MulSemigroup + One + PowN;
+    ///A multiplicative magma with an inverse operation and identity
+    pub trait MulLoop = MulMagma + Invertable + One;
+    ///A multiplicative monoid with an inverse operation
+    pub trait MulGroup = MulMagma + MulAssociative + Invertable + One + PowZ;
+    ///A commutative multiplicative group
+    pub trait MulAbelianGroup = MulGroup + MulCommutative;
 }
 
 use algebra::{Natural, IntegerSubset};

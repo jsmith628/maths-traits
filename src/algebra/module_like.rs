@@ -130,23 +130,18 @@ pub trait SkewSesquilinearForm<R:UnitalRing, M:RingModule<R>>: ReflexiveForm<R,M
 pub trait BilinearForm<R:UnitalRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
 pub trait ComplexSesquilinearForm<R:ComplexRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
 
+pub trait SymmetricForm<R,M> = BilinearForm<R,M> + SymSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
+pub trait SkewSymmetricForm<R,M> = BilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
 auto! {
-    pub trait SymmetricForm<R,M> = BilinearForm<R,M> + SymSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
-    pub trait SkewSymmetricForm<R,M> = BilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
     pub trait HermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SymSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
     pub trait SkewHermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
 }
 
-auto!{
-    ///An abelian additive group with a distributive scalar multiplication with a unital ring
-    pub trait RingModule<K> = AddAbelianGroup + Mul<K, Output=Self> + MulAssign<K> where K: UnitalRing;
-    ///An abelian additive group with a distributive scalar multiplication with a field
-    pub trait VectorSpace<K> = RingModule<K> + Div<K, Output=Self> + DivAssign<K> where K: Field;
-    ///A vector space with a distributive multiplication operation
-    pub trait Algebra<K> = VectorSpace<K> + MulMagma + Distributive where K: Field;
+///An abelian additive group with a distributive scalar multiplication with a unital ring
+pub trait RingModule<K: UnitalRing> = AddAbelianGroup + Mul<K, Output=Self> + MulAssign<K>;
+///An abelian additive group with a distributive scalar multiplication with a field
+pub trait VectorSpace<K: Field> = RingModule<K> + Div<K, Output=Self> + DivAssign<K>;
+///A vector space with a distributive multiplication operation
+pub trait Algebra<K: Field> = VectorSpace<K> + MulMagma + Distributive;
 
-    pub trait AffineSpace<K, V> =
-        Sized + Clone + Sub<Self, Output=V> + Add<V, Output=Self> + AddAssign<V> + Sub<V, Output=Self> + SubAssign<V>
-        where K: Field, V: VectorSpace<K>;
-
-}
+pub trait AffineSpace<K: Field, V: VectorSpace<K>> = Sized + Clone + Sub<Self, Output=V> + Add<V, Output=Self> + AddAssign<V> + Sub<V, Output=Self> + SubAssign<V>;
