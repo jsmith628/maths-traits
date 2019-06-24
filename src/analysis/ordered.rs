@@ -251,7 +251,7 @@ macro_rules! impl_ordered_float {
             #[inline] fn div_arch(self, rhs:Self) -> Self { self.div_alg_arch(rhs).0 }
             #[inline] fn div_alg_arch(self, rhs:Self) -> (Self, Self) {
                 let rem = self.rem_arch(rhs);
-                ((self - rem) / self, rem)
+                ((self - rem) / rhs, rem)
             }
         }
     )*}
