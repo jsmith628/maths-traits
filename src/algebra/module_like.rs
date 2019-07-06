@@ -1,6 +1,5 @@
 
 pub use core::ops::{Add, AddAssign, Sub, SubAssign, Neg, Mul, MulAssign, Div, DivAssign, Index, IndexMut};
-use crate::analysis::{ComplexRing};
 use crate::algebra::*;
 
 ///
@@ -128,12 +127,21 @@ pub trait SymSesquilinearForm<R:UnitalRing, M:RingModule<R>>: ReflexiveForm<R,M>
 pub trait SkewSesquilinearForm<R:UnitalRing, M:RingModule<R>>: ReflexiveForm<R,M> {}
 
 pub trait BilinearForm<R:UnitalRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
-pub trait ComplexSesquilinearForm<R:ComplexRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
-
 pub trait SymmetricForm<R,M> = BilinearForm<R,M> + SymSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
 pub trait SkewSymmetricForm<R,M> = BilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
-pub trait HermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SymSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
-pub trait SkewHermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
+
+#[cfg(feature = "std")] pub use self::complex::*;
+
+#[cfg(feature = "std")]
+mod complex {
+    use super::*;
+    use crate::analysis::{ComplexRing};
+
+    pub trait ComplexSesquilinearForm<R:ComplexRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
+    pub trait HermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SymSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
+    pub trait SkewHermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
+}
+
 
 ///An abelian additive group with a distributive scalar multiplication with a unital ring
 pub trait RingModule<K: UnitalRing> = AddAbelianGroup + Mul<K, Output=Self> + MulAssign<K>;
