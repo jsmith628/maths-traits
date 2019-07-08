@@ -53,7 +53,7 @@ macro_rules! impl_int_subset {
     (@neg $self:ident @unsigned) => {false};
     (@neg $self:ident @signed) => {*$self < 0 };
     (@abs $self:ident $name:ident @unsigned) => {$self};
-    (@abs $self:ident $name:ident @signed) => {($self as $name).abs() };
+    (@abs $self:ident $name:ident @signed) => {Sign::abs($self) };
 
     //base case for loop
     ($name:ident:$signed:ident:$unsigned:ident $($tt:tt)*) => {
@@ -78,46 +78,83 @@ macro_rules! impl_int_subset {
 
         impl UniquelyFactorizable for $name {}
 
-        #[cfg(std)]
-        impl Factorizable for $name {
-            fn factors(&self) -> Vec<Self> {
-                let mut factors = Vec::new();
-                let mut a:$name = *self;
+        mod $name {
+            use super::*;
 
-                if a==0 || a==1 {
-                     //the factorization of 0 or a unit is itself
-                    factors.push(*self);
-                }else{
-                    let mut i:$name = 2;
-                    let mut start = true;
-                    while a!=1 {
-                        let (q, r) = (a as $name).div_alg(i.clone());
-                        if r==0 {
-                            //we found a factor!
-                            a = q;
-                            factors.push(i);
-                        }else {
-                            //not a factor :(
-                            if i*i >= a {
-                                //if a is definitely prime
-                                factors.push(a);
-                            }else {
-                                //thus, we continue, skipping all non-2 evens
-                                if start {
-                                    i = 3;
-                                    start = false;
-                                } else {
-                                    i = i + 2;
-                                }
-                            }
+            #[inline(always)]
+            pub fn factor_base<F:FnMut($name)->bool>(mut x:$name, mut push:F) {
+                let mut cont = true;
+
+                if x==0 || x==1 { push(x); return; }
+
+                //get any factor of -1
+                if x.negative() {
+                    cont = push((0 as $name).wrapping_sub(1));
+                    x = impl_int_subset!(@abs x $name $($tt)*);
+                }
+
+                //first, get all factors of two
+                while x.even() && cont {
+                    cont = push(2);
+                    x = x >> 1;
+                }
+
+                //next, get all factors of 3
+                while x>1 && cont {
+                    let (q,r) = (x as $name).div_alg(3);
+                    if r==0 {
+                        cont = push(3);
+                        x = q;
+                    } else {
+                        break;
+                    }
+                }
+
+                //next get every other factor, iterating using the 5,7, 11,13, 17,19,.. pattern
+                let mut f = 5;
+                let mut add_two = true;
+                while x>1 && cont {
+                    if f*f > x { //then x is prime
+                        push(x);
+                        break;
+                    } else { //x not prime
+                        let (q, r) = (x as $name).div_alg(f);
+                        if r==0 { //we found a factor
+                            cont = push(f);
+                            x = q;
+                        } else { //f is not a factor
+                            f += if add_two {2} else {4};
+                            add_two = !add_two;
                         }
                     }
                 }
 
-                impl_int_subset!( @factors factors self $($tt)*);
+            }
 
+        }
+
+        impl Factorizable for $name {
+
+            fn factors_slice(&self, dest: &mut[$name]) -> usize {
+                let mut i = 0;
+                $name::factor_base(*self,
+                    |f| if i<dest.len() {
+                        dest[i] = f;
+                        i += 1;
+                        true
+                    } else {
+                        false
+                    }
+                );
+                return i;
+            }
+
+
+            #[cfg(feature = "std")]
+            fn factors(&self) -> Vec<Self> {
+                let mut factors = Vec::new();
+                $name::factor_base(*self, |f| {factors.push(f); true});
                 factors
-
             }
         }
 
