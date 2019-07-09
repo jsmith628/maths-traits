@@ -82,21 +82,21 @@ macro_rules! impl_int_subset {
             use super::*;
 
             #[inline(always)]
-            pub fn factor_base<F:FnMut($name)->bool>(mut x:$name, mut push:F) {
+            pub fn factor_base<F:FnMut($name)->bool>(mut x:$name, mut push:F) -> $name {
                 let mut cont = true;
 
-                if x==0 || x==1 { push(x); return; }
+                if x==0 || x==1 { push(x); return x; }
 
                 //get any factor of -1
                 if x.negative() {
                     cont = push((0 as $name).wrapping_sub(1));
-                    x = impl_int_subset!(@abs x $name $($tt)*);
+                    if cont { x = impl_int_subset!(@abs x $name $($tt)*) };
                 }
 
                 //first, get all factors of two
                 while x.even() && cont {
                     cont = push(2);
-                    x = x >> 1;
+                    if cont { x = x >> 1 };
                 }
 
                 //next, get all factors of 3
@@ -104,7 +104,7 @@ macro_rules! impl_int_subset {
                     let (q,r) = (x as $name).div_alg(3);
                     if r==0 {
                         cont = push(3);
-                        x = q;
+                        if cont { x = q };
                     } else {
                         break;
                     }
@@ -115,13 +115,13 @@ macro_rules! impl_int_subset {
                 let mut add_two = true;
                 while x>1 && cont {
                     if f*f > x { //then x is prime
-                        push(x);
+                        if push(x) { x = 1 };
                         break;
                     } else { //x not prime
                         let (q, r) = (x as $name).div_alg(f);
                         if r==0 { //we found a factor
                             cont = push(f);
-                            x = q;
+                            if cont { x = q };
                         } else { //f is not a factor
                             f += if add_two {2} else {4};
                             add_two = !add_two;
@@ -129,15 +129,17 @@ macro_rules! impl_int_subset {
                     }
                 }
 
+                return x;
+
             }
 
         }
 
         impl Factorizable for $name {
 
-            fn factors_slice(&self, dest: &mut[$name]) -> usize {
+            fn factors_slice(&self, dest: &mut[$name]) -> (usize,$name) {
                 let mut i = 0;
-                $name::factor_base(*self,
+                let rest = $name::factor_base(*self,
                     |f| if i<dest.len() {
                         dest[i] = f;
                         i += 1;
@@ -146,7 +148,7 @@ macro_rules! impl_int_subset {
                         false
                     }
                 );
-                return i;
+                return (i, rest);
             }
 
 
