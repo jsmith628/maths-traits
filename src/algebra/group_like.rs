@@ -47,8 +47,8 @@
 //!# Exponentiation
 //!
 //!In addition to these traits, it may be desirable to implement a [multiplication](Mul) or
-//![exponentiation](num_traits::Pow) operation with particular [integers](::algebra::Integer)
-//!or [naturals](::algebra::Natural). See [`MulN`], [`MulZ`], [`PowN`], and [`PowZ`] for more details.
+//![exponentiation](num_traits::Pow) operation with particular [integers](crate::algebra::Integer)
+//!or [naturals](crate::algebra::Natural). See [`MulN`], [`MulZ`], [`PowN`], and [`PowZ`] for more details.
 //!
 //!# Usage
 //!

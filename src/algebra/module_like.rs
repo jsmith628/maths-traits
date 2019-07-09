@@ -59,7 +59,7 @@ pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
     fn product_of(&self, v1:M, v2:M) -> R;
 
     ///
-    ///The mapping on `R` that factors the second argument of the [sesquilinear form](SesquilinearForm::product)
+    ///The mapping on `R` that factors the second argument of the [sesquilinear form](SesquilinearForm::product_of)
     ///
     ///Specifically: a function `σ:R->R` such that:
     /// * `x•(c*y) = (x•y)*σ(c)`

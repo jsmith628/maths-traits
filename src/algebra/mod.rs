@@ -12,8 +12,7 @@
 //! [Euclidean division](algebra::EuclideanDiv).
 //!* ["Module-Like"](algebra::module_like) traits for group-like structures with an added scalar multiplication.
 //!This includes [Vector Spaces](algebra::VectorSpace) and [Ring Modules](algebra::RingModule)
-//!with varying degrees of [bilinear](algebra::BilinearForm) and [quadradic](algebra::QuadradicForm)
-//!forms and indexing.
+//!with varying degrees of bilinear products and indexing.
 //!* [Integer](algebra::Integer) and [Natural](algebra::Natural) numeric traits
 //!
 //!For ease of use, members of each module have been re-exported into this one.

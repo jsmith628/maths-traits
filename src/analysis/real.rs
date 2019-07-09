@@ -234,11 +234,11 @@ pub trait Trig: UnitalRing + Divisibility {
 ///definition exists. For instance:
 /// * As already mentioned, some may allow the mapping to be non-trivial
 /// * Some may also allow `E(x) = 0`
-/// * For the Real and Complex exponentials, there are a [multitude](1) of equivalent definitions
+/// * For the Real and Complex exponentials, there are a [multitude][1] of equivalent definitions
 ///   that have no true effect on the mapping
 ///
 ///More importantly though, most authors specify that the `E(x+y) = E(x)*E(y)` for _all_ `x` and `y`
-///(such as on [Wikipedia](2))
+///(such as on [Wikipedia][2])
 ///However, doing so disallows both the Matrix exponential and Quaternion exponential as well
 ///as the Clifford Algebra exponential, all of which are frankly the only reason to make the exponential
 ///a separate trait on its own.
@@ -269,8 +269,8 @@ pub trait Trig: UnitalRing + Divisibility {
 ///stipulating that the function satisfy the classic differential equation `E'(x) = E(x)` or some
 ///variant.
 ///
-/// (1) https://en.wikipedia.org/wiki/Characterizations_of_the_exponential_function
-/// (2) https://en.wikipedia.org/wiki/Exponential_field
+/// [1]: https://en.wikipedia.org/wiki/Characterizations_of_the_exponential_function
+/// [2]: https://en.wikipedia.org/wiki/Exponential_field
 ///
 pub trait Exponential: UnitalRing {
     ///
@@ -308,7 +308,7 @@ pub trait Exponential: UnitalRing {
 ///
 ///An exponential ring with Real-like properties
 ///
-///The specifics of this are that this trait requires that the [logarithm](ExponentialRing::ln) of any integer be
+///The specifics of this are that this trait requires that the [logarithm](RealExponential::ln) of any integer be
 ///defined.
 ///
 ///However, the essence of this is that as a result:
@@ -328,7 +328,7 @@ pub trait RealExponential: Exponential + Divisibility {
     #[inline] fn try_pow(self, power:Self) -> Option<Self> { self.try_ln().map(move |x| (x * power).exp()) }
     ///This element taken to the given root as defined as `root(x, y) = x^(1/y)`, if `ln(x)` and `1/y` exist
     #[inline] fn try_root(self, index:Self) -> Option<Self> { index.inverse().and_then(move |x| self.try_pow(x)) }
-    ///The inverse of [pow()](Exponential::try_pow), if it exists
+    ///The inverse of [pow()](RealExponential::try_pow), if it exists
     #[inline] fn try_log(self, base: Self) -> Option<Self> {
         self.try_ln().and_then(move |x| base.try_ln().and_then(move |y| x.divide(y)))
     }
