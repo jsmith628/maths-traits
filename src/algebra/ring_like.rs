@@ -111,14 +111,54 @@ pub trait Bezout: GCD {
 ///
 ///A marker trait for [semirings](Semiring) where each element's set of irreducible divisors is unique
 ///
-///Note that this trait is independent of `Factorizable` and doesn't contain its own
+///Note that this trait is independent of [`Factorizable`] and doesn't contain its own
 ///`factors()` method since there are a number of notable examples of rings
 ///where unique factorization is provable, but no known algorithm to find the factors is known.
 ///This is the case for integer polynomials for example.
 ///
 pub trait UniquelyFactorizable: Sized {}
 
-
+///
+///For [semirings](Semiring) that have a _known_ algorithm for decomposing elements into a set
+///of irreducible factors
+///
+///# Notes on "Irreduciblity"
+///
+///An irreducible factor as defined here is any element that cannot be written as a product of two
+///or more non-invertible elements. Note that this is technically, but not usually, different than
+///a "prime" element. For more information, see [`Divisibility`].
+///
+///# Uniqueness and Ordering
+///
+///This trait on its own makes **no guarantees** that the returned factors are unique or ordered
+/// in **any** way. The only requirements are that:
+///* The product of the factors must be the original number
+///* No factors of `1` are included
+///* `0` returns `[0]`
+///* Only *one* invertible element can be included and must be the first factor
+///    * For example, `-6` might return `[-1, 2, 3]` or `[-1, 3, 2]`, but not `[2, -1, 3]`
+///
+///Importantly, this means does that some structures **can** return different sets of factors
+///at different times. For example, in ℤ[√5], `6 = 2*3 = (1+√5)*(1-√5)` are both valid irreducible
+///factorizations.
+///
+///_However_, if the [`UniquelyFactorizable`] trait is _also_ implemented, this is restricted somewhat,
+///but only up to ordering and units.
+///
+///In particular, given two lists of factors for an element:
+///* There is still no guaranteed ordering, so the lists could be permuted somehow
+///* Some factors in the second might be multiplied by some invertible element from the first
+///  or return an extra invertible element in the list.
+///     * For instance, `-10` might return `[-5, 2]` or `[5,-2]` or `[2,-5]` or even `[-1,5,2]`
+///
+///Furthermore, there is no requirement for any sort of ordering, as the wide range of possible
+///implementing structures gives no obvious standard as to what that would be.
+///
+///_However_, implementors are highly encouraged to guarantee some sort of ordering and uniqueness
+///themselves using their particular properties. For instance, the implementation on the primitive integers
+///return all non-negative factors in order of increasing absolute magnitude with a `-1` at the beginning
+///for negative numbers, or a polynomial could factor as monic polynomials of increasing degree.
+///
 pub trait Factorizable: Sized {
     fn factors_slice(&self, dest: &mut [Self]) -> (usize, Self);
     #[cfg(feature = "std")] fn factors(&self) -> Vec<Self>;
