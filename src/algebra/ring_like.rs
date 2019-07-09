@@ -251,7 +251,7 @@ pub trait EuclideanDiv: Sized {
 ///vast majority of cases, there is a canonical version that all others derive from _or_ there is only
 ///one non-trivial case.
 ///
-///For example, all real-algebras have infinitely many exponentials, but we get a canonical form
+///For example, most real-algebras have infinitely many exponentials, but we get a canonical form
 ///stipulating that the function satisfy the classic differential equation `E'(x) = E(x)` or some
 ///variant.
 ///
