@@ -220,90 +220,7 @@ pub trait Trig: UnitalRing + Divisibility {
     #[inline] fn to_radians(self) -> Self {self * (Self::pi().divide(Self::one().mul_n(180u32)).unwrap())}
 }
 
-///
-///A ring with an exponential operation
-///
-///Rigourously, and exponential operation is a mapping `E:R->R` such that:
-/// * `E(x+y) = E(x)*E(y)` whenever `x*y = y*x`
-/// * `E(x) != 0`
-///
-///In addition to these base properties, this trait also stipulates that this function _not_ map
-///every element to 1, so as to rule out the trivial case.
-///
-///Furthmore, to clear up ambiguity, it is important to note that different variations on this
-///definition exists. For instance:
-/// * As already mentioned, some may allow the mapping to be non-trivial
-/// * Some may also allow `E(x) = 0`
-/// * For the Real and Complex exponentials, there are a [multitude][1] of equivalent definitions
-///   that have no true effect on the mapping
-///
-///More importantly though, most authors specify that the `E(x+y) = E(x)*E(y)` for _all_ `x` and `y`
-///(such as on [Wikipedia][2])
-///However, doing so disallows both the Matrix exponential and Quaternion exponential as well
-///as the Clifford Algebra exponential, all of which are frankly the only reason to make the exponential
-///a separate trait on its own.
-///
-/// # Effects on Ring structure
-///
-///It is worth noting that _any_ ring that has a non-trivial exponential operation must automatically
-///have a characteristic of 0 (that is, `1+1+1+...+1` will never equal zero) and hence, has an
-///embedding of the Integers within it.
-///
-///This fact is easily proven as follows:
-/// * assume `char(R) = n != 0`
-/// * then, for any `x` in `R`, `nx = x+...+x = 0`, and,
-///   the Frobenious automorphism gives that `(x+y)ⁿ = xⁿ + yⁿ`
-/// * Hence, `(E(x) - 1)ⁿ = E(x)ⁿ - 1 = E(nx) - 1 = E(0) - 1 = 0`
-/// * Thus, we hae that that `E(x) = 1` contradicting our assumtions
-///
-///Additionally, any element that is the output of the expoenential _must_ be an invertible element,
-///since `E(-x) = E(x)⁻¹`
-///
-/// # Uniqueness
-///
-///In general, this characterization of the exponential function is *not* unique. However, in the
-///vast majority of cases, there is a canonical version that all others derive from _or_ there is only
-///one non-trivial case.
-///
-///For example, all real-algebras have infinitely many exponentials, but we get a canonical form
-///stipulating that the function satisfy the classic differential equation `E'(x) = E(x)` or some
-///variant.
-///
-/// [1]: https://en.wikipedia.org/wiki/Characterizations_of_the_exponential_function
-/// [2]: https://en.wikipedia.org/wiki/Exponential_field
-///
-pub trait Exponential: UnitalRing {
-    ///
-    ///The exponential of this ring element
-    ///
-    ///Here, `exp(x)` is defined such that:
-    /// * `exp(x+y) = exp(x)*exp(y)` for all `x` and `y` where `x*y=y*x`
-    /// * `exp(x) != 0`
-    /// * `exp(x)` is continuous (if applicable)
-    /// * `d/dx exp(1) = 1` (if applicable)
-    ///
-    ///For most structures, this function is equivalent to the infinite series Σ x<sup>n</sup>/n!
-    ///
-    fn exp(self) -> Self;
-
-    ///
-    ///An inverse of [exp(x)](Exponential::exp) where `ln(1) = 0`
-    ///
-    ///This returns a `None` value if and only if the inverse does not exist for the given input,
-    ///like with negative real numbers and the real-valued logarithm.
-    ///
-    /// ## Uniqueness and Continuity
-    ///
-    ///Do note, however, that for almost all non-[Real] structures, this function
-    ///is not unique and can *never* be continuous. Of course, some of this ambiguity is resolved by
-    ///stipulating that `ln(1) = 0`, but even so, some remains,
-    ///so it is entirely up to the implementor to guarrantee an canonical form if one exists.
-    ///
-    ///For example, the [Complex] numbers, the natural logarithm *must* be discontinuous somewhere,
-    ///but there are infinitely many choices as to where that is.
-    ///
-    fn try_ln(self) -> Option<Self>;
-}
+pub use crate::algebra::Exponential;
 
 ///
 ///An exponential ring with Real-like properties
@@ -322,7 +239,7 @@ pub trait Exponential: UnitalRing {
 ///both the Integers and Gaussian Integers have non-trivial exponential functions that do not behave
 ///in the way expected of the usual use of the term.
 ///
-pub trait RealExponential: Exponential + Divisibility {
+pub trait RealExponential: Exponential + UnitalRing + Divisibility {
 
     ///This element raised to the given power as defined by `x^y = exp(ln(x)*y)`, if `ln(x)` exists
     #[inline] fn try_pow(self, power:Self) -> Option<Self> { self.try_ln().map(move |x| (x * power).exp()) }
