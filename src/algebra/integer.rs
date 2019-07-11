@@ -1,6 +1,7 @@
 
 use core::convert::{TryFrom, TryInto};
 use core::ops::{Rem, RemAssign};
+use core::iter::Iterator;
 
 use crate::analysis::ordered::*;
 use crate::algebra::*;
@@ -37,6 +38,75 @@ pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
 
 pub trait Natural: IntegerSubset<Unsigned=Self> {}
 pub trait Integer: IntegerSubset<Signed=Self> + ArchUnitalRing {}
+
+pub struct TrialDivision<Z:IntegerSubset> {
+    x: Z,
+    f: Z,
+    mode: bool
+}
+
+impl<Z:IntegerSubset> TrialDivision<Z> {
+    pub fn factors_of(x:Z) -> Self { TrialDivision {x:x,f:Z::two(),mode:false} }
+}
+
+impl<Z:IntegerSubset+core::fmt::Debug> Iterator for TrialDivision<Z> {
+    type Item = Z;
+
+    fn next(&mut self) -> Option<Z> {
+
+        use core::mem::swap;
+
+        if self.x.is_one() {return None;}
+        let three = Z::one().mul_n(3u8);
+
+        if self.f >= three {
+
+            if self.f.clone().pow_n(2u8) > self.x { //if x is prime
+                self.f = self.x.clone();
+                self.x = Z::one();
+                Some(self.f.clone())
+            } else {
+                //divide and check the remainder
+                let (q, r) = self.x.clone().div_alg(self.f.clone());
+
+                if r.is_zero() {//if the remainder is zero, we have a factor
+                    self.x = q;
+                    Some(self.f.clone())
+                } else {//else do the next loop
+                    //get the next factor
+                    if !self.mode {
+                        self.mode = if self.f == three {false} else {true};
+                        self.f += Z::two();
+                    } else {
+                        self.mode = false;
+                        self.f += Z::two() + Z::two();
+                    }
+                    self.next()
+                }
+            }
+
+        } else {
+            if self.x.is_zero() { //x is zero
+                self.x = Z::one();
+                Some(Z::zero())
+            } else if self.x.negative() { //emit a factor of 1
+                self.x *= Z::zero() - Z::one();
+                Some(Z::zero() - Z::one())
+            } else { //if f is 2 we want to do bit-shifts and stuff for 2
+                if self.x.even() {
+                    self.x = self.x.clone().div_two();
+                    Some(Z::two())
+                } else {
+                    self.f = three;
+                    self.mode = false;
+                    self.next()
+                }
+            }
+        }
+
+    }
+
+}
 
 macro_rules! impl_int_subset {
 
@@ -78,86 +148,9 @@ macro_rules! impl_int_subset {
 
         impl UniquelyFactorizable for $name {}
 
-        mod $name {
-            use super::*;
-
-            #[inline(always)]
-            pub fn factor_base<F:FnMut($name)->bool>(mut x:$name, mut push:F) -> $name {
-                let mut cont = true;
-
-                if x==0 || x==1 { push(x); return x; }
-
-                //get any factor of -1
-                if x.negative() {
-                    cont = push((0 as $name).wrapping_sub(1));
-                    if cont { x = impl_int_subset!(@abs x $name $($tt)*) };
-                }
-
-                //first, get all factors of two
-                while x.even() && cont {
-                    cont = push(2);
-                    if cont { x = x >> 1 };
-                }
-
-                //next, get all factors of 3
-                while x>1 && cont {
-                    let (q,r) = (x as $name).div_alg(3);
-                    if r==0 {
-                        cont = push(3);
-                        if cont { x = q };
-                    } else {
-                        break;
-                    }
-                }
-
-                //next get every other factor, iterating using the 5,7, 11,13, 17,19,.. pattern
-                let mut f = 5;
-                let mut add_two = true;
-                while x>1 && cont {
-                    if f*f > x { //then x is prime
-                        if push(x) { x = 1 };
-                        break;
-                    } else { //x not prime
-                        let (q, r) = (x as $name).div_alg(f);
-                        if r==0 { //we found a factor
-                            cont = push(f);
-                            if cont { x = q };
-                        } else { //f is not a factor
-                            f += if add_two {2} else {4};
-                            add_two = !add_two;
-                        }
-                    }
-                }
-
-                return x;
-
-            }
-
-        }
-
         impl Factorizable for $name {
-
-            fn factors_slice(&self, dest: &mut[$name]) -> (usize,$name) {
-                let mut i = 0;
-                let rest = $name::factor_base(*self,
-                    |f| if i<dest.len() {
-                        dest[i] = f;
-                        i += 1;
-                        true
-                    } else {
-                        false
-                    }
-                );
-                return (i, rest);
-            }
-
-
-            #[cfg(feature = "std")]
-            fn factors(&self) -> Vec<Self> {
-                let mut factors = Vec::new();
-                $name::factor_base(*self, |f| {factors.push(f); true});
-                factors
-            }
+            type Factors = TrialDivision<Self>;
+            #[inline] fn factors(self) -> TrialDivision<Self> {TrialDivision::factors_of(self)}
         }
 
         impl EuclideanDiv for $name {

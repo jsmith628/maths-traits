@@ -1,4 +1,5 @@
 use crate::algebra::*;
+use core::iter::Iterator;
 
 ///A marker trait for stucts whose multiplication operation preserves addition,
 ///ie `z*(x+y)=z*x+z*y` and `(x+y)*z=x*z+y*z` for all `x`, `y`, and `z`.
@@ -160,8 +161,8 @@ pub trait UniquelyFactorizable: Sized {}
 ///for negative numbers, or a polynomial could factor as monic polynomials of increasing degree.
 ///
 pub trait Factorizable: Sized {
-    fn factors_slice(&self, dest: &mut [Self]) -> (usize, Self);
-    #[cfg(feature = "std")] fn factors(&self) -> Vec<Self>;
+    type Factors: Iterator<Item=Self>;
+    fn factors(self) -> Self::Factors;
 }
 
 ///A trait for performing division with with remainder
@@ -609,47 +610,47 @@ mod tests {
     fn factor() {
 
         #[cfg(feature = "std")] {
-            assert_eq!(91u8.factors(), vec![7,13] );
-            assert_eq!((-91i8).factors(), vec![-1,7,13] );
+            assert_eq!(91u8.factors().collect::<Vec<_>>(), vec![7,13] );
+            assert_eq!((-91i8).factors().collect::<Vec<_>>(), vec![-1,7,13] );
 
-            assert_eq!(360u16.factors(), vec![2,2,2,3,3,5] );
-            assert_eq!((-360i16).factors(), vec![-1,2,2,2,3,3,5] );
+            assert_eq!(360u16.factors().collect::<Vec<_>>(), vec![2,2,2,3,3,5] );
+            assert_eq!((-360i16).factors().collect::<Vec<_>>(), vec![-1,2,2,2,3,3,5] );
 
-            assert_eq!(1971813u32.factors(), vec![3,17,23,41,41] );
-            assert_eq!((-1971813i32).factors(), vec![-1,3,17,23,41,41] );
+            assert_eq!(1971813u32.factors().collect::<Vec<_>>(), vec![3,17,23,41,41] );
+            assert_eq!((-1971813i32).factors().collect::<Vec<_>>(), vec![-1,3,17,23,41,41] );
 
-            assert_eq!(1971813u32.factors(), vec![3,17,23,41,41] );
-            assert_eq!((-1971813i32).factors(), vec![-1,3,17,23,41,41] );
+            assert_eq!(1971813u32.factors().collect::<Vec<_>>(), vec![3,17,23,41,41] );
+            assert_eq!((-1971813i32).factors().collect::<Vec<_>>(), vec![-1,3,17,23,41,41] );
 
-            assert_eq!(0x344CAF57AB24A9u64.factors(), vec![101,101,103,103,107,107,109,109]);
-            assert_eq!((-0x344CAF57AB24A9i64).factors(), vec![-1,101,101,103,103,107,107,109,109]);
+            assert_eq!(0x344CAF57AB24A9u64.factors().collect::<Vec<_>>(), vec![101,101,103,103,107,107,109,109]);
+            assert_eq!((-0x344CAF57AB24A9i64).factors().collect::<Vec<_>>(), vec![-1,101,101,103,103,107,107,109,109]);
         }
 
-        let mut factors = [0xFF; 3];
-
-        //test 0 returns 0
-        assert_eq!(0u8.factors_slice(&mut factors), (1,0));
-        assert_eq!(&factors, &[0,0xFF,0xFF]);
-
-        //test 1 returns 1
-        assert_eq!(1u8.factors_slice(&mut factors), (1,1));
-        assert_eq!(&factors, &[1,0xFF,0xFF]);
-
-        //test the algorithm stopping at the end of the array
-        assert_eq!(210u8.factors_slice(&mut factors), (3,7));
-        assert_eq!(&factors, &[2,3,5]);//skips 7
-
-        let mut factors = [0;10];
-
-        //test -1 giving -1
-        assert_eq!((-1i64).factors_slice(&mut factors), (1,1));
-        assert_eq!(&factors, &[-1,0,0,0,0,0,0,0,0,0]);
-
-        assert_eq!((-0x344CAF57AB24A9i64).factors_slice(&mut factors), (9,1));
-        assert_eq!(&factors, &[-1,101,101,103,103,107,107,109,109,0]);
-
-        assert_eq!(0x344CAF57AB24A9i64.factors_slice(&mut factors), (8,1));
-        assert_eq!(&factors, &[101,101,103,103,107,107,109,109,109,0]);
+        // let mut factors = [0xFF; 3];
+        //
+        // //test 0 returns 0
+        // assert_eq!(0u8.factors_slice(&mut factors), (1,0));
+        // assert_eq!(&factors, &[0,0xFF,0xFF]);
+        //
+        // //test 1 returns 1
+        // assert_eq!(1u8.factors_slice(&mut factors), (1,1));
+        // assert_eq!(&factors, &[1,0xFF,0xFF]);
+        //
+        // //test the algorithm stopping at the end of the array
+        // assert_eq!(210u8.factors_slice(&mut factors), (3,7));
+        // assert_eq!(&factors, &[2,3,5]);//skips 7
+        //
+        // let mut factors = [0;10];
+        //
+        // //test -1 giving -1
+        // assert_eq!((-1i64).factors_slice(&mut factors), (1,1));
+        // assert_eq!(&factors, &[-1,0,0,0,0,0,0,0,0,0]);
+        //
+        // assert_eq!((-0x344CAF57AB24A9i64).factors_slice(&mut factors), (9,1));
+        // assert_eq!(&factors, &[-1,101,101,103,103,107,107,109,109,0]);
+        //
+        // assert_eq!(0x344CAF57AB24A9i64.factors_slice(&mut factors), (8,1));
+        // assert_eq!(&factors, &[101,101,103,103,107,107,109,109,109,0]);
 
 
     }
