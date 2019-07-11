@@ -626,31 +626,44 @@ mod tests {
             assert_eq!((-0x344CAF57AB24A9i64).factors().collect::<Vec<_>>(), vec![-1,101,101,103,103,107,107,109,109]);
         }
 
-        // let mut factors = [0xFF; 3];
-        //
-        // //test 0 returns 0
-        // assert_eq!(0u8.factors_slice(&mut factors), (1,0));
-        // assert_eq!(&factors, &[0,0xFF,0xFF]);
-        //
-        // //test 1 returns 1
-        // assert_eq!(1u8.factors_slice(&mut factors), (1,1));
-        // assert_eq!(&factors, &[1,0xFF,0xFF]);
-        //
-        // //test the algorithm stopping at the end of the array
-        // assert_eq!(210u8.factors_slice(&mut factors), (3,7));
-        // assert_eq!(&factors, &[2,3,5]);//skips 7
-        //
-        // let mut factors = [0;10];
-        //
-        // //test -1 giving -1
-        // assert_eq!((-1i64).factors_slice(&mut factors), (1,1));
-        // assert_eq!(&factors, &[-1,0,0,0,0,0,0,0,0,0]);
-        //
-        // assert_eq!((-0x344CAF57AB24A9i64).factors_slice(&mut factors), (9,1));
-        // assert_eq!(&factors, &[-1,101,101,103,103,107,107,109,109,0]);
-        //
-        // assert_eq!(0x344CAF57AB24A9i64.factors_slice(&mut factors), (8,1));
-        // assert_eq!(&factors, &[101,101,103,103,107,107,109,109,109,0]);
+        fn factors_slice<Z:IntegerSubset+Factorizable>(x:Z, dest: &mut [Z]) -> usize {
+            let mut i = 0;
+            for f in x.factors() {
+                if i<dest.len() {
+                    dest[i] = f;
+                    i += 1;
+                } else {
+                    return i;
+                }
+            }
+            return i;
+        }
+
+        let mut factors = [0xFF; 3];
+
+        //test 0 returns 0
+        assert_eq!(factors_slice(0u8, &mut factors), 1);
+        assert_eq!(&factors, &[0,0xFF,0xFF]);
+
+        //test 1 returns 1
+        assert_eq!(factors_slice(1u8, &mut factors), 0);
+        assert_eq!(&factors, &[0,0xFF,0xFF]);
+
+        //test the algorithm stopping at the end of the array
+        assert_eq!(factors_slice(210u8, &mut factors), 3);
+        assert_eq!(&factors, &[2,3,5]);//skips 7
+
+        let mut factors = [0;10];
+
+        //test -1 giving -1
+        assert_eq!(factors_slice(-1i64, &mut factors), 1);
+        assert_eq!(&factors, &[-1,0,0,0,0,0,0,0,0,0]);
+
+        assert_eq!(factors_slice(-0x344CAF57AB24A9i64, &mut factors), 9);
+        assert_eq!(&factors, &[-1,101,101,103,103,107,107,109,109,0]);
+
+        assert_eq!(factors_slice(0x344CAF57AB24A9i64, &mut factors), 8);
+        assert_eq!(&factors, &[101,101,103,103,107,107,109,109,109,0]);
 
 
     }

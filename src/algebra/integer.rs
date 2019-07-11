@@ -47,6 +47,8 @@ pub struct TrialDivision<Z:IntegerSubset> {
 
 impl<Z:IntegerSubset> TrialDivision<Z> {
     pub fn factors_of(x:Z) -> Self { TrialDivision {x:x,f:Z::two(),mode:false} }
+    pub fn remaining(&self) -> Z { self.x.clone() }
+    pub fn current_factor(&self) -> Z { self.f.clone() }
 }
 
 impl<Z:IntegerSubset+core::fmt::Debug> Iterator for TrialDivision<Z> {
