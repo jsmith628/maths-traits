@@ -54,8 +54,6 @@ impl<Z:IntegerSubset+core::fmt::Debug> Iterator for TrialDivision<Z> {
 
     fn next(&mut self) -> Option<Z> {
 
-        use core::mem::swap;
-
         if self.x.is_one() {return None;}
         let three = Z::one().mul_n(3u8);
 
