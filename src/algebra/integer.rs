@@ -57,7 +57,7 @@ impl<Z:IntegerSubset+core::fmt::Debug> Iterator for TrialDivision<Z> {
     fn next(&mut self) -> Option<Z> {
 
         if self.x.is_one() {return None;}
-        let three = Z::one().mul_n(3u8);
+        let three = Z::embed_nat(3u8);
 
         if self.f >= three {
 
