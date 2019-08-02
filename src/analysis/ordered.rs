@@ -47,26 +47,11 @@ impl<G: PartialOrd + Zero> Signed for G {
 }
 
 ///Helpful methods for manipulating an element's order relative to 0
-pub trait Sign: Signed + One + Neg<Output=Self> {
+pub trait Sign: Signed {
     ///Returns 1 if positive, -1 if negative, or itself (ie. 0 or NaN) if neither
     fn signum(self) -> Self;
     ///Returns this element's negative if less than 0 or itself otherwise
     fn abs(self) -> Self;
-}
-
-///Auto-implemented using `default` to allow for specialization if desired
-impl<G: Signed + One + Neg<Output=Self>> Sign for G {
-    #[inline]
-    default fn signum(self) -> Self {
-        if self.positive() {
-            Self::one()
-        } else if self.negative() {
-            -Self::one()
-        } else {
-            Self::zero()
-        }
-    }
-    #[inline] default fn abs(self) -> Self { if self.negative() {-self} else {self} }
 }
 
 ///
@@ -204,7 +189,7 @@ macro_rules! impl_ordered_int {
 
         impl Sign for $t {
             #[inline] fn signum(self) -> Self { $t::signum(self) }
-            #[inline] fn abs(self) -> Self { self.abs() }
+            #[inline] fn abs(self) -> Self { $t::abs(self) }
         }
         impl ArchimedeanDiv for $t {
             #[inline] fn embed_nat<N:Natural>(n:N) -> Self { (1).mul_n(n) }
@@ -221,6 +206,11 @@ macro_rules! impl_ordered_uint {
         impl AddOrdered for $t {}
         impl MulOrdered for $t {}
         impl ArchimedeanProperty for $t {}
+
+        impl Sign for $t {
+            #[inline] fn signum(self) -> Self { if self==0 {0} else {1} }
+            #[inline] fn abs(self) -> Self { self }
+        }
 
         impl ArchimedeanDiv for $t {
             #[inline] fn embed_nat<N:Natural>(n:N) -> Self { (1).mul_n(n) }
@@ -239,8 +229,14 @@ macro_rules! impl_ordered_float {
         impl ArchimedeanProperty for $t {}
 
         impl Sign for $t {
-            #[cfg(feature = "std")] #[inline] fn signum(self) -> Self { self.signum() }
-            #[cfg(feature = "std")] #[inline] fn abs(self) -> Self { self.abs() }
+            #[inline] fn signum(self) -> Self {
+                #[cfg(feature = "std")] {$t::signum(self)}
+                #[cfg(not(feature = "std"))] {if self<0.0 {-1.0} else if self>0.0 {1.0} else {0.0}}
+            }
+            #[inline] fn abs(self) -> Self {
+                #[cfg(feature = "std")] {$t::abs(self)}
+                #[cfg(not(feature = "std"))] {if self<0.0 {-self} else {self}}
+            }
         }
         impl ArchimedeanDiv for $t {
             #[inline] fn embed_nat<N:Natural>(n:N) -> Self { (1.0).mul_n(n) }

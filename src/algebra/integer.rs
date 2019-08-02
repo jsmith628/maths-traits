@@ -16,7 +16,7 @@ pub trait CastPrimInt =
 pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
                         + EuclideanSemidomain
                         + Primality
-                        + ArchSemiring + ArchimedeanDiv
+                        + ArchSemiring + ArchimedeanDiv + Sign
                         + Sub<Self, Output=Self> + Div<Self, Output=Self> + Rem<Self, Output=Self>
                         + SubAssign<Self> + DivAssign<Self> + RemAssign<Self>
 {
@@ -89,8 +89,8 @@ impl<Z:IntegerSubset+core::fmt::Debug> Iterator for TrialDivision<Z> {
             if self.x.is_zero() { //x is zero
                 self.x = Z::one();
                 Some(Z::zero())
-            } else if self.x.negative() { //emit a factor of 1
-                self.x *= Z::zero() - Z::one();
+            } else if self.x.negative() { //emit a factor of -1
+                self.x = self.x.clone().abs();
                 Some(Z::zero() - Z::one())
             } else { //if f is 2 we want to do bit-shifts and stuff for 2
                 if self.x.even() {
