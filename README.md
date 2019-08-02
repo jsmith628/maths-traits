@@ -9,16 +9,16 @@ The purpose of this crate is to provide a system for working with mathematical o
 that is maximally abstract *and* that is easy enough to use such that working with mathematical
 generics and high abstraction is nearly as simple as designing around a specific type.
 
-This system can be used in cases ranging broadly from something as simple as making [reals](analysis::Real) number
-algorithms apply seamlessly to different precisions to simplifying [vector](algebra::VectorSpace)
-systems such that using polynomials as coordinates is as easy as switching to a [ring module](algebra::RingModule),
-or even to something complex like separating the different poperties of [rings](algebra::ring_like)
-from the [Integers](algebra::Integer) so that objects like polynomials can be rightfully marked
-as able to do things like [Euclidean division](algebra::EuclideanDiv)
+This system can be used in cases ranging broadly from something as simple as making reals number
+algorithms apply seamlessly to different precisions to simplifying vector
+systems such that using polynomials as coordinates is as easy as switching to a ring module,
+or even to something complex like separating the different poperties of rings
+from the Integers so that objects like polynomials can be rightfully marked
+as able to do things like Euclidean division
 
 To accomplish this goal, the provided framework provided is built with a number of design considerations:
-* For ease of use and implementation, the included systems utilize [standard Rust][std] or well established
-  libraries, like [`num_traits`], whenever possible instead of creating new systems.
+* For ease of use and implementation, the included systems utilize standard Rust or well established
+  libraries, like `num_traits`, whenever possible instead of creating new systems.
 * Traits representing operations or properties and traits representing particular kinds of structures
   have been seperated in distinct sets of feature traits and distinct sets of trait aliases. This
   way, implementation of the structures is a simple matter of implementing the features and using
@@ -34,14 +34,14 @@ This way, to support the system, structs need only implement each relevant prope
 users can simply bound generics by the single alias of whatever mathematical struct fits their needs.
 
 For example, for a generalized `Rational` type,
-you would implement the standard [`Clone`](Clone), [`Add`](std::ops::Add), [`Sub`](std::ops::Sub),
-[`Mul`](std::ops::Mul),
-[`Div`](std::ops::Div), [`Neg`](std::ops::Neg), [`Inv`](num_traits::Inv), [`Zero`](num_traits::Zero),
-[`One`](num_traits::One) traits, and their assign variants as normal. Then, by implementing the new traits
-[`AddCommutative`](algebra::AddCommutative), [`AddAssociative`](algebra::AddAssociative),
-[`MulCommutative`](algebra::MulCommutative), [`MulCommutative`](algebra::MulAssociative), and
-[`Distributive`](algebra::Distributive), all of the aliases using those operations (such as [`Ring`](algebra::Ring)
-and [`MulMonoid`](algebra::MulMonoid)) will automatically be implemented and usable for the type.
+you would implement the standard `Clone`, `Add`, `Sub`,
+`Mul`std::ops::Mul,
+`Div`, `Neg`, `Inv`, `Zero`,
+`One` traits, and their assign variants as normal. Then, by implementing the new traits
+`AddCommutative`, `AddAssociative`,
+`MulCommutative`, `MulCommutative`, and
+`Distributive`, all of the aliases using those operations (such as `Ring`
+and `MulMonoid`) will automatically be implemented and usable for the type.
 
 ```
 use maths_traits::algebra::*;
@@ -249,13 +249,13 @@ assert_eq!(two_thirds + one_third, Rational::new(1, 1));
 # Current Features
 
 Currently, `maths_traits` supports traits for the following systems of mathematical structures:
- * [Group-Like](algebra::group_like) algebraic structures: monoids, groups, abelian groups, etc
- * [Ring-Like](algebra::ring_like) algebraic structures: rings, fields, GCD domains, Euclidean domains, etc
- * [Module-Like](algebra::module_like) structures: vector spaces, algebras, bilinear-forms, etc
- * [Integer](algebra::integer::Integer) and [Natural](algebra::integer::Natural) numbers
- * [Ordered](analysis::ordered) algebraic structures: ordered/archimedian rings, fields, etc
- * [Real](analysis::real::Real) and [Complex](analysis::real::Complex) numbers
- * [Metric](analysis::metric) properties of sets: metric spaces, inner-product, norm, etc
+ * Group-Like algebraic structures: monoids, groups, abelian groups, etc
+ * Ring-Like algebraic structures: rings, fields, GCD domains, Euclidean domains, etc
+ * Module-Like structures: vector spaces, algebras, bilinear-forms, etc
+ * Integer and Natural numbers
+ * Ordered algebraic structures: ordered/archimedian rings, fields, etc
+ * Real and Complex numbers
+ * Metric properties of sets: metric spaces, inner-product, norm, etc
 
 # Possible Future Features
 
