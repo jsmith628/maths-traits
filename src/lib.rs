@@ -1,37 +1,47 @@
 //!
 //!# Maths Traits
 //!
-//!A simple crate for sane and usable abstractions of common (and uncommon) mathematical constructs
-//!using the Rust trait system
+//!A simple crate of traits for usable abstractions of common (and uncommon) mathematical constructs
 //!
-//!# Design Philosophy
+//!# Design
 //!
-//!The framework in this crate is written to fit four design goals:
-//!* Traits should be flexible and assume as much mathematical abstraction as possible.
-//!* Trait names, functions, and categorization should fit their corresponding
-//! mathematical conventions.
-//!* Usage must be simple enough so that working with these generics instead of primitives add
-//! minimal complication
-//!* Implementation should utilize the [standard Rust][std::ops] or well established
-//! libraries (such as [`num_traits`]) as much as possible instead of creating new systems
-//! requiring significant special attention to support.
+//!The purpose of this crate is to provide a system for working with mathematical objects
+//!that is maximally abstract *and* that is easy enough to use such that working with mathematical
+//!generics and high abstraction is nearly as simple as designing around a specific type.
+//!
+//!This system can be used in cases ranging broadly from something as simple as making [reals](analysis::Real) number
+//!algorithms apply seamlessly to different precisions to simplifying [vector](algebra::VectorSpace)
+//!systems such that using polynomials as coordinates is as easy as switching to a [ring module](algebra::RingModule),
+//!or even to something complex like separating the different poperties of [rings](algebra::ring_like)
+//!from the [Integers](algebra::Integer) so that objects like polynomials can be rightfully marked
+//!as able to do things like [Euclidean division](algebra::EuclideanDiv)
+//!
+//!To accomplish this goal, the provided framework provided is built with a number of design considerations:
+//!* For ease of use and implementation, the included systems utilize [standard Rust][std] or well established
+//!  libraries, like [`num_traits`], whenever possible instead of creating new systems.
+//!* Traits representing operations or properties and traits representing particular kinds of structures
+//!  have been seperated in distinct sets of feature traits and distinct sets of trait aliases. This
+//!  way, implementation of the structures is a simple matter of implementing the features and using
+//!  the features is as easy as adding a single generic bound for the structure that contains all the desired features
+//!* The systems have been named and organized to fit mathematical convention as much as possible in
+//!  order to add clarity of use while also increasing generality and flexibility
 //!
 //!# Usage
 //!
-//!The traits in this framework are split into two collections, one for individual features and mathematical
-//!properties and one for common mathematical structures, where the second set of traits is automatically
-//!implemented by grouping together functionality from the first set. This way, to support the system,
-//!structs need only implement each relevant property, and end users can simply use the single
-//!trait for whichever mathematical struct fits their needs.
+//!The traits in this framework are split into two collections, a set of traits for individual properties
+//!and operations and a set of trait aliases for mathematical structures that have those properties.
+//!This way, to support the system, structs need only implement each relevant property, and to use the system
+//!users can simply bound generics by the single alias of whatever mathematical struct fits their needs.
 //!
-//!For example, to implement the [algebraic](algebra) features for a `Rational` type,
-//!you would implement [`Clone`](Clone), [`Add`](std::ops::Add), [`Sub`](std::ops::Sub), [`Mul`](std::ops::Mul),
+//!For example, for a generalized `Rational` type,
+//!you would implement the standard [`Clone`](Clone), [`Add`](std::ops::Add), [`Sub`](std::ops::Sub),
+//![`Mul`](std::ops::Mul),
 //![`Div`](std::ops::Div), [`Neg`](std::ops::Neg), [`Inv`](num_traits::Inv), [`Zero`](num_traits::Zero),
-//![`One`](num_traits::One), and their assign variants as normal. Then, by implementing the new traits
+//![`One`](num_traits::One) traits, and their assign variants as normal. Then, by implementing the new traits
 //![`AddCommutative`](algebra::AddCommutative), [`AddAssociative`](algebra::AddAssociative),
 //![`MulCommutative`](algebra::MulCommutative), [`MulCommutative`](algebra::MulAssociative), and
-//![`Distributive`](algebra::Distributive), all of the categorization traits (such as [`Ring`](algebra::Ring)
-//!and [`MulMonoid`](algebra::MulMonoid)) will automatically be implemented and usable for our type.
+//![`Distributive`](algebra::Distributive), all of the aliases using those operations (such as [`Ring`](algebra::Ring)
+//!and [`MulMonoid`](algebra::MulMonoid)) will automatically be implemented and usable for the type.
 //!
 //!```
 //!use maths_traits::algebra::*;
@@ -137,26 +147,142 @@
 //!assert_eq!(repeated_squaring(half, 7u32), Rational::new(1, 128));
 //!```
 //!
-//!# Supported Constructs
+//!In addition, using the traits in `maths-traits`, we can generalize this struct significantly with
+//!little effort to use a `T:Integer` or even a `T:GCDDomain` so that we can use more integer types
+//!or even polynomials.
 //!
-//!Currently, the mathematical structures supported in `math_traits` consist of a system of
-//![group-like](algebra::group_like), [ring-like](algebra::ring_like), [integer-like](algebra::integer),
-//!and [module-like](algebra::module_like) algebraic structures and a system of analytical constructions including
-//![ordered and Archimedean groups](analysis::ordered), [real and complex numbers](analysis::real),
-//!and [metric and inner product spaces](analysis::metric). For more information, see each respective
-//!module.
+//!```
+//!use maths_traits::algebra::*;
+//!
+//!//Using a GCDDomain here means we can use more integral types, polynomials, and other types
+//!#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+//!pub struct Rational<T:GCDDomain> {
+//!    n:T, d:T
+//!}
+//!
+//!impl<T:GCDDomain> Rational<T> {
+//!    pub fn new(numerator:T, denominator:T) -> Self {
+//!        let gcd = numerator.clone().gcd(denominator.clone());
+//!        Rational{n: numerator.divide(gcd.clone()).unwrap(), d: denominator.divide(gcd).unwrap()}
+//!    }
+//!}
+//!
+//!//Standard operations remain basically the same as for the i32 case
+//!
+//!impl<T:GCDDomain> Neg for Rational<T> {
+//!    type Output = Self;
+//!    fn neg(self) -> Self { Rational::new(-self.n, self.d) }
+//!}
+//!
+//!impl<T:GCDDomain> Inv for Rational<T> {
+//!    type Output = Self;
+//!    fn inv(self) -> Self { Rational::new(self.d, self.n) }
+//!}
+//!
+//!impl<T:GCDDomain> Add for Rational<T> {
+//!    type Output = Self;
+//!    fn add(self, rhs:Self) -> Self {
+//!        Rational::new(self.n*rhs.d.clone() + rhs.n*self.d.clone(), self.d*rhs.d)
+//!    }
+//!}
+//!
+//!impl<T:GCDDomain> AddAssign for Rational<T> {
+//!    fn add_assign(&mut self, rhs:Self) {*self = self.clone()+rhs;}
+//!}
+//!
+//!impl<T:GCDDomain> Sub for Rational<T> {
+//!    type Output = Self;
+//!    fn sub(self, rhs:Self) -> Self {
+//!        Rational::new(self.n*rhs.d.clone() - rhs.n*self.d.clone(), self.d*rhs.d)
+//!    }
+//!}
+//!
+//!impl<T:GCDDomain> SubAssign for Rational<T> {
+//!    fn sub_assign(&mut self, rhs:Self) {*self = self.clone()-rhs;}
+//!}
+//!
+//!impl<T:GCDDomain> Mul for Rational<T> {
+//!    type Output = Self;
+//!    fn mul(self, rhs:Self) -> Self { Rational::new(self.n*rhs.n, self.d*rhs.d) }
+//!}
+//!
+//!impl<T:GCDDomain> MulAssign for Rational<T> {
+//!    fn mul_assign(&mut self, rhs:Self) {*self = self.clone()*rhs;}
+//!}
+//!
+//!impl<T:GCDDomain> Div for Rational<T> {
+//!    type Output = Self;
+//!    fn div(self, rhs:Self) -> Self { Rational::new(self.n*rhs.d, self.d*rhs.n) }
+//!}
+//!
+//!impl<T:GCDDomain> DivAssign for Rational<T> {
+//!    fn div_assign(&mut self, rhs:Self) {*self = self.clone()/rhs;}
+//!}
+//!
+//!impl<T:GCDDomain+PartialEq> Zero for Rational<T> {
+//!    fn zero() -> Self {Rational::new(T::zero(),T::one())}
+//!    fn is_zero(&self) -> bool {self.n.is_zero()}
+//!}
+//!
+//!impl<T:GCDDomain+PartialEq> One for Rational<T> {
+//!    fn one() -> Self {Rational::new(T::one(), T::one())}
+//!    fn is_one(&self) -> bool {self.n.is_one() && self.d.is_one()}
+//!}
+//!
+//!impl<T:GCDDomain> AddAssociative for Rational<T> {}
+//!impl<T:GCDDomain> AddCommutative for Rational<T> {}
+//!impl<T:GCDDomain> MulAssociative for Rational<T> {}
+//!impl<T:GCDDomain> MulCommutative for Rational<T> {}
+//!impl<T:GCDDomain> Distributive for Rational<T> {}
+//!
+//!//Now, we can use both 8-bit integers AND 64 bit integers
+//!
+//!let half = Rational::new(1i8, 2i8);
+//!let sixth = Rational::new(1, 6);
+//!let two_thirds = Rational::new(2i64, 3i64);
+//!let one_third = Rational::new(1i64, 3i64);
+//!
+//!assert_eq!(half + sixth, Rational::new(2, 3));
+//!assert_eq!(two_thirds + one_third, Rational::new(1, 1));
+//!```
+//!
+//!# Current Features
+//!
+//!Currently, `maths_traits` supports traits for the following systems of mathematical structures:
+//! * [Group-Like](algebra::group_like) algebraic structures: monoids, groups, abelian groups, etc
+//! * [Ring-Like](algebra::ring_like) algebraic structures: rings, fields, GCD domains, Euclidean domains, etc
+//! * [Module-Like](algebra::module_like) structures: vector spaces, algebras, bilinear-forms, etc
+//! * [Integer](algebra::integer::Integer) and [Natural](algebra::integer::Natural) numbers
+//! * [Ordered](analysis::ordered) algebraic structures: ordered/archimedian rings, fields, etc
+//! * [Real](analysis::real::Real) and [Complex](analysis::real::Complex) numbers
+//! * [Metric](analysis::metric) properties of sets: metric spaces, inner-product, norm, etc
+//!
+//!# Possible Future Features
+//!
+//!As `maths_traits` is still in developement, there are a number of features that may be included
+//!at a later date:
+//! * Traits for vector spaces of finite or countable dimension that have discrete elements. This
+//!   will *almost certainly* be added eventually, but hasn't been added yet do to a number of relatively
+//!   difficult design questions and time constraints.
+//! * A system for category-like structures, ie, sets with an operation that is partial over its elements.
+//!   This would relatively simple to add, but *so far*, there do not seem to be enough use cases for such a
+//!   system to offset the added code complexity.
+//! * Systems for sets, geometric shapes, and set measure. The might be included in the future, but
+//!   so far, they do not seem to fit within the scope of this project.
+//!
+//!Of course, if anyone feels that any specific feature be added, feel free to file an issue or
+//!contribute at the [github](https://github.com/anvil777/maths-traits) repository. Since most
+//!of the non-implemeted features are non-implemented due to usefulness concerns, if a feature is
+//!requested (and is reasonable), it will probably be added (though this is not a guarantee).
 //!
 //!# Release Stability
 //!
-//!At the moment, this project is considered to be in Alpha, so expect to see changes
-//!to the API in the near future. As it stands, however, these changes almost
-//!certainly will centered around the `analysis` module, with a couple
-//!minor tweaks to `integer` and `module_like`. Hence, on that note,
-//!I would actually consider much of the `algebra` module,
-//!especially `group_like` and `ring_like`, to be mostly stable, though not guaranteed.
+//!At the moment, this project is still in developement, so the API most definitely could still change.
+//!However, large portions of the crate could definitely be considered fairly stable, so going forward,
+//!particularly unstable systems will be gated behind the `unstable` optional feature in order
+//!to provide more clarity as to what is and isn't bound to change.
 //!
-//!Once the general API is stable, the crate will probably signify this with an
-//!update to version 0.2.0.
+//!Specifically though, expect most changes to occur in the module, metric, and integer systems.
 //!
 
 #![feature(trait_alias)]
