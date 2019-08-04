@@ -77,7 +77,7 @@
 //!* A [Group](MulGroup) is a Monoid with [inverses](Invertable), or alternatively, an [associative](MulAssociative) Loop
 //!* An [Abelian Group](MulAbelianGroup) is a [commutative](MulCommutative) Group
 //!
-//!For more information, see Wikipedia's article on 
+//!For more information, see Wikipedia's article on
 //![algebraic structures](https://en.wikipedia.org/wiki/Outline_of_algebraic_structures)
 //!
 //!# Additional Notes
@@ -166,8 +166,8 @@ pub mod additive {
     ///is an expected possibility, it is recommended to use [TryInto](core::convert::TryInto) or
     ///a different to perform the operation.
     ///
-    ///It is worth noting that this particular design was chosen over returning a [Result](core::Result)
-    ///or [Option](core::Option) since this general behavior is already the default for primitive types
+    ///It is worth noting that this particular design was chosen over returning a [Result]
+    ///or [Option] since this general behavior is already the default for primitive types
     ///despite the relative ease with which it can happen.
     ///
     ///# Implementation Notes
@@ -238,8 +238,8 @@ pub mod additive {
     ///is an expected possibility, it is recommended to use [TryInto](core::convert::TryInto) or
     ///a different to perform the operation.
     ///
-    ///It is worth noting that this particular design was chosen over returning a [Result](core::Result)
-    ///or [Option](core::Option) since this general behavior is already the default for primitive types
+    ///It is worth noting that this particular design was chosen over returning a [Result]
+    ///or [Option] since this general behavior is already the default for primitive types
     ///despite the relative ease with which it can happen.
     ///
     ///# Implementation Notes
@@ -357,8 +357,8 @@ pub mod multiplicative {
     ///is an expected possibility, it is recommended to use [TryInto](core::convert::TryInto) or
     ///a different to perform the operation.
     ///
-    ///It is worth noting that this particular design was chosen over returning a [Result](core::Result)
-    ///or [Option](core::Option) since this general behavior is already the default for primitive types
+    ///It is worth noting that this particular design was chosen over returning a [Result]
+    ///or [Option] since this general behavior is already the default for primitive types
     ///despite the relative ease with which it can happen.
     ///
     ///# Implementation Notes
@@ -417,8 +417,8 @@ pub mod multiplicative {
     ///is an expected possibility, it is recommended to use [TryInto](core::convert::TryInto) or
     ///a different to perform the operation.
     ///
-    ///It is worth noting that this particular design was chosen over returning a [Result](core::Result)
-    ///or [Option](core::Option) since this general behavior is already the default for primitive types
+    ///It is worth noting that this particular design was chosen over returning a [Result]
+    ///or [Option] since this general behavior is already the default for primitive types
     ///despite the relative ease with which it can happen.
     ///
     ///# Implementation Notes
