@@ -2,17 +2,17 @@
 //!Traits for sets with binary operations
 //!
 //!Traits in this module have been split into four groups:
-//!* ["Group-Like"](algebra::group_like) mathematical objects with *one* binary operation and
+//!* ["Group-Like"](algebra::group_like) mathematical objects with one binary operation and
 //! include structures such as [groups](algebra::MulGroup) and [monoids](algebra::MulMonoid)
-//!* ["Ring-Like"](algebra::ring_like) mathematical objects with two *two* binary operations that
+//!* ["Ring-Like"](algebra::ring_like) mathematical objects with two binary operations that
 //! [distribute](algebra::Distributive) over the other. This includes sets like [rings](algebra::Ring),
 //! [semirings](algebra::Semiring), [division rings](algebra::DivisionRing), and [fields](algebra::Field).
-//! In addition, this module contains an added system for integer-like functionality like
-//! [divisibility](algebra::Divisibility) testing, [GCD](algebra::GCD), and
+//! In addition, this module contains an added system for integer-like properties like
+//! [divisibility](algebra::Divisibility), [greatest common denominators](algebra::GCD), and
 //! [Euclidean division](algebra::EuclideanDiv).
-//!* ["Module-Like"](algebra::module_like) traits for group-like structures with an added scalar multiplication.
-//!This includes [Vector Spaces](algebra::VectorSpace) and [Ring Modules](algebra::RingModule)
-//!with varying degrees of bilinear products and indexing.
+//!* ["Module-Like"](algebra::module_like) traits for groups with an added scalar multiplication operation.
+//! This includes [vector spaces](algebra::VectorSpace), [ring modules](algebra::RingModule),
+//! and [algebras](algebra::Algebra) as well as a system for [bilinear forms](algebra::BilinearForm).
 //!* [Integer](algebra::Integer) and [Natural](algebra::Natural) numeric traits
 //!
 //!For ease of use, members of each module have been re-exported into this one.
