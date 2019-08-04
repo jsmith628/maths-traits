@@ -144,7 +144,7 @@ mod complex {
 
 
 ///An abelian additive group with a distributive scalar multiplication with a unital ring
-pub trait RingModule<K: UnitalRing> = AddAbelianGroup + Mul<K, Output=Self> + MulAssign<K>;
+pub trait RingModule<K: UnitalRing> = AddAbelianGroup + Mul<K, Output=Self> + MulAssign<K> + Distributive<K>;
 ///An abelian additive group with a distributive scalar multiplication with a field
 pub trait VectorSpace<K: Field> = RingModule<K> + Div<K, Output=Self> + DivAssign<K>;
 ///A vector space with a distributive multiplication operation
