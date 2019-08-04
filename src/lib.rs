@@ -287,7 +287,6 @@
 
 #![feature(trait_alias)]
 #![feature(specialization)]
-#![feature(euclidean_division)]
 #![feature(extra_log_consts)]
 
 #![cfg_attr(not(feature = "std"), no_std)]
