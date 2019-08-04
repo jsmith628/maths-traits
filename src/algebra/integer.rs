@@ -26,7 +26,7 @@ pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
     fn as_signed(self) -> Self::Signed;
     fn as_unsigned(self) -> Self::Unsigned;
 
-    #[inline] fn abs_unsigned(self) -> Self::Unsigned { self.as_signed().abs().as_unsigned() }
+    #[inline] fn abs_unsigned(self) -> Self::Unsigned { self.abs().as_unsigned() }
 
     #[inline] fn two() -> Self { Self::one()+Self::one() }
     #[inline] fn mul_two(self) -> Self { self * Self::two() }
