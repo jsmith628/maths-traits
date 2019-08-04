@@ -1,3 +1,89 @@
+//!
+//!Traits for structures with both an addition and multiplication operation
+//!
+//!While ring-like structures can technically apply to any pair of operations, for ease of use
+//!and to stick with mathematical convention, these operations are taken to be specifically addition
+//!and multiplication where multiplication distributes over addition.
+//!
+//!# Implementation
+//!
+//!This module behaves in a way similar to the [group-like](crate::algebra::group_like) structures and,
+//!in fact, builds upon it such that the ring-like trait aliases use the properties present in that
+//!module. However, in addition to the basic group traits, the following properties are also considered:
+//! * Distributivity:
+//!    * Multiplication can act on summed elements independently,
+//!      ie`z*(x+y)=z*x+z*y` and `(x+y)*z=x*z+y*z` for all `x`, `y`, and `z`.
+//!    * Represented by the [`Distributive`] trait
+//!    * Note that unlike other marker traits, this one takes a type parameter so that
+//!      multiplication between types can also be marked
+//!      (such as scalar-vector or matrix-vector multiplication)
+//! * The Exponentiation and Logarthm operations:
+//!    * Unary operations that map between addition and multiplication
+//!    * Represented with the [`Exponential`] trait
+//! * Properties regarding partial divisibility and factoring
+//!    * These traits _essentially_ measure how "integer-like" a particular ring is by abstracting
+//!      many properties and operations commonly associated with integers and natural numbers
+//!    * These include, but are not limited to:
+//!        * [Divisibility]
+//!        * [Primality]
+//!        * [GCD]
+//!        * [Euclidean Division](EuclideanDiv)
+//!        * [Factorizability](Factorizable)
+//!    * For more information, see each individual trait's documentation
+//!
+//!# Usage
+//!
+//!Similarly to the [group-like](crate::algebra::group_like) module, there are a number of
+//!trait aliases corresponding to a system of ring-like algebraic structures that form a heirarchy
+//!as represented in the following diagram:
+//!
+//!```text
+//!
+//!    Add Abelian Group   Mul Semigroup
+//!           |                 |
+//!           -------Ring--------
+//!                    |
+//!    ----------Unital Ring-------------------------
+//!    |                    |             |         |
+//!    |             Commutative Ring   Domain      |
+//!    |                    |             |         |
+//!    |                    ---------------         |
+//!    |                           |                |
+//!    |                     Integral Domain        |
+//!    |                           |                |
+//!Division Ring            ---GCD Domain---        |
+//!    |                    |              |        |
+//!    |                   UFD       Bezout Domain  |
+//!    |                    |              |        |
+//!    |                    ------PID-------        |
+//!    |                           |                |
+//!    |                    Euclidean Domain        |
+//!    |                           |                |
+//!    -------------Field-----------         Exponential Ring
+//!                   |                             |
+//!                   ------Exponential Field--------
+//!
+//!```
+//!
+//!Note also that in addition to the above system, there is a complementary system of "Semirings"
+//!that follows almost the same exact structure but doesn't require a subtraction operation
+//!
+//!# Naming
+//!
+//!It is worth noting that in mathematical literature, there is some leniency in what certain
+//!structures are called, so some trait aliases may be named differently than what some are used to.
+//!
+//!In particular:
+//! * Some mathematicians and literature use the term "Ring" to refer to what is called a "Unital Ring"
+//!   here, instead preferring the term "Rng" for Rings without a multiplicative identity. In fact,
+//!   this convention is _probably_ the majority considering how little use there is for non-unital rings.
+//!   However, the choice was made against using the "Rng" system for the simple reason that it is
+//!   obviously highly prone to typesetting errors and is arguably pretty unintuitive for those learning
+//!   the terminology.
+//! * The term "Semiring" doesn't really have an established meaning in mathematical convention, so
+//!   the use here reflects a particular design choice more than a particular standard.
+//!
+
 use crate::algebra::*;
 use core::iter::Iterator;
 
