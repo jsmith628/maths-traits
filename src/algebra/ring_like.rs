@@ -294,7 +294,7 @@ pub trait EuclideanDiv: Sized {
 }
 
 ///
-///A ring with an exponential operation
+///A unary operation mapping addition into multiplication
 ///
 ///Rigourously, and exponential operation is a mapping `E:R->R` such that:
 /// * `E(x+y) = E(x)*E(y)` whenever `x*y = y*x`
@@ -307,14 +307,14 @@ pub trait EuclideanDiv: Sized {
 ///definition exists. For instance:
 /// * As already mentioned, some may allow the mapping to be non-trivial
 /// * Some may also allow `E(x) = 0`
-/// * For the Real and Complex exponentials, there are a [multitude][1] of equivalent definitions
-///   that have no true effect on the mapping
+/// * For the [Real](analysis::Real) and [Complex](analysis::Complex) exponentials,
+///   there are a [multitude][1] of equivalent definitions that have no true effect on the mapping
 ///
 ///More importantly though, most authors specify that the `E(x+y) = E(x)*E(y)` for _all_ `x` and `y`
 ///(such as on [Wikipedia][2])
 ///However, doing so disallows both the Matrix exponential and Quaternion exponential as well
-///as the Clifford Algebra exponential, all of which are frankly the only reason to make the exponential
-///a separate trait on its own.
+///as the Clifford Algebra exponential, all of which are, frankly, the only reason to make the exponential
+///its own separate trait.
 ///
 /// # Effects on Ring structure
 ///
@@ -325,12 +325,12 @@ pub trait EuclideanDiv: Sized {
 ///This fact is easily proven as follows:
 /// * assume `char(R) = n != 0`
 /// * then, for any `x` in `R`, `nx = x+...+x = 0`, and,
-///   the Frobenious automorphism gives that `(x+y)ⁿ = xⁿ + yⁿ`
+///   the [Frobenious automorphism][3] gives that `(x+y)ⁿ = xⁿ + yⁿ`
 /// * Hence, `(E(x) - 1)ⁿ = E(x)ⁿ - 1 = E(nx) - 1 = E(0) - 1 = 0`
-/// * Thus, we hae that that `E(x) = 1` contradicting our assumtions
+/// * Thus, we have that that `E(x) = 1` contradicting our assumtions
 ///
 ///Additionally, any element that is the output of the expoenential _must_ be an invertible element,
-///since `E(-x) = E(x)⁻¹`
+///since <br> `1 = E(0) = E(x-x) = E(x)*E(-x)` implying `E(x) = E(x)⁻¹`
 ///
 /// # Uniqueness
 ///
@@ -344,6 +344,7 @@ pub trait EuclideanDiv: Sized {
 ///
 /// [1]: https://en.wikipedia.org/wiki/Characterizations_of_the_exponential_function
 /// [2]: https://en.wikipedia.org/wiki/Exponential_field
+/// [3]: https://en.wikipedia.org/wiki/Frobenius_endomorphism
 ///
 pub trait Exponential: Sized {
     ///
@@ -353,7 +354,7 @@ pub trait Exponential: Sized {
     /// * `exp(x+y) = exp(x)*exp(y)` for all `x` and `y` where `x*y=y*x`
     /// * `exp(x) != 0`
     /// * `exp(x)` is continuous (if applicable)
-    /// * `d/dx exp(1) = 1` (if applicable)
+    /// * `d/dx exp(x)|ₓ₌₁ = 1` (if applicable)
     ///
     ///For most structures, this function is equivalent to the infinite series Σ x<sup>n</sup>/n!
     ///
@@ -362,18 +363,19 @@ pub trait Exponential: Sized {
     ///
     ///An inverse of [exp(x)](Exponential::exp) where `ln(1) = 0`
     ///
-    ///This returns a `None` value if and only if the inverse does not exist for the given input,
-    ///like with negative real numbers and the real-valued logarithm.
+    ///This returns a `None` value whenever the inverse does not exist for the given input.
     ///
     /// ## Uniqueness and Continuity
     ///
-    ///Do note, however, that for almost all non-[Real] structures, this function
-    ///is not unique and can *never* be continuous. Of course, some of this ambiguity is resolved by
+    ///Do note, however, that for almost all non-[Real](analysis::Real) structures, this function
+    ///is not unique and can **never** be continuous. Of course, some of this ambiguity is resolved by
     ///stipulating that `ln(1) = 0`, but even so, some remains,
-    ///so it is entirely up to the implementor to guarrantee an canonical form if one exists.
+    ///and so, it is entirely up to the implementor to any specific canonical form if applicable.
     ///
-    ///For example, the [Complex] numbers, the natural logarithm *must* be discontinuous somewhere,
-    ///but there are infinitely many choices as to where that is.
+    ///For example, the [Complex](analysis::Complex) numbers, the natural logarithm *must* be discontinuous somewhere,
+    ///and there are infinitely many choices as to where that is. However, usually, this ambiguity
+    ///is removed by taking the imaginary component of the result between -π and π and setting
+    ///the discontinuity to be on the negative real axis
     ///
     fn try_ln(self) -> Option<Self>;
 }
