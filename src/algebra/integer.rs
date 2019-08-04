@@ -1,3 +1,6 @@
+//!
+//!Traits for integers and natural numbers
+//!
 
 use core::convert::{TryFrom, TryInto};
 use core::ops::{Rem, RemAssign};
@@ -6,6 +9,7 @@ use core::iter::Iterator;
 use crate::analysis::ordered::*;
 use crate::algebra::*;
 
+///Aliases conversion traits to and from the primitive integer types
 pub trait CastPrimInt =
     TryFrom<i8>   + TryFrom<u8>   + TryInto<i8>   + TryInto<u8> +
     TryFrom<i16>  + TryFrom<u16>  + TryInto<i16>  + TryInto<u16> +
@@ -13,6 +17,19 @@ pub trait CastPrimInt =
     TryFrom<i64>  + TryFrom<u64>  + TryInto<i64>  + TryInto<u64> +
     TryFrom<i128> + TryFrom<u128> + TryInto<i128> + TryInto<u128>;
 
+///
+///A subset of the Integers that has all of the major integer operations
+///
+///This includes:
+/// * Basic ring operations
+/// * Euclidean division any everything implied by having it
+/// * Algebraic ordering properties and archimedian division
+/// * Additional operations conventionally implemented on integer types
+///
+///Furthermore, this trait is intended to include a full "integer ecosystem" of sorts by including
+///extra useful functions and associated types for this representation's corresponding signed and
+///unsigned types are.
+///
 pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
                         + EuclideanSemidomain
                         + Primality
@@ -39,6 +56,14 @@ pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
 pub trait Natural: IntegerSubset<Unsigned=Self> {}
 pub trait Integer: IntegerSubset<Signed=Self> + ArchUnitalRing {}
 
+///
+///An iterator over the factors of an integer using the
+///[trial division](https://en.wikipedia.org/wiki/Trial_division) algorithm
+///
+///Given the nature of the algorithm, factors are guaranteed to be returned ascending order,
+///with a factor of `-1` given at the beginning if the number is negative, a single `0` given
+///if zero, and no factors returned if the original integer is `1`.
+///
 pub struct TrialDivision<Z:IntegerSubset> {
     x: Z,
     f: Z,
@@ -46,12 +71,22 @@ pub struct TrialDivision<Z:IntegerSubset> {
 }
 
 impl<Z:IntegerSubset> TrialDivision<Z> {
+    ///constructs an iterator over the factors of the argument
     pub fn factors_of(x:Z) -> Self { TrialDivision {x:x,f:Z::two(),mode:false} }
+
+    ///the product of the remaining factors to be iterated over
     pub fn remaining(&self) -> Z { self.x.clone() }
+
+    ///
+    ///the current factor being tested in the algorithm
+    ///
+    ///Note that there is no guarantee that this actually _is_ a factor
+    ///**or** that this function's result will change after an iterator step
+    ///
     pub fn current_factor(&self) -> Z { self.f.clone() }
 }
 
-impl<Z:IntegerSubset+core::fmt::Debug> Iterator for TrialDivision<Z> {
+impl<Z:IntegerSubset> Iterator for TrialDivision<Z> {
     type Item = Z;
 
     fn next(&mut self) -> Option<Z> {
