@@ -5,11 +5,11 @@
 //!and each of the group properties in this module have both an additive and multiplicative variant.
 //!
 //!As it stands currently, there is no real difference between the two, so it is ultimately up
-//!to the implementor's preference which one (or both) to use. However, obviously, addition and multiplication
+//!to the implementor's preference which one (or both) to use. Obviously though, addition and multiplication
 //!carry difference connotations in different contexts, so for clarity and consistency it is
 //!suggested to try to follow the general mathematical or programming conventions whenever possible.
 //!In particular:
-//!* Try to use multiplication for single operation structures
+//!* Try to use multiplication for structures with a single operation
 //!except when convention dictates otherwise (such as the case of string concatenation).
 //!* While the option does exist, avoid implementing a non-commutative or especially a non-associative
 //!addition operation unless convention dictates otherwise.
@@ -18,8 +18,8 @@
 //!
 //!# Implementation
 //!
-//!The inclusion of a particular struct into a group-like trait will depend on its implementation
-//!of the following properties:
+//!To implement a struct as a group-like structure, the various group-like trait aliases will be usable
+//!according to which and how the following properties are implemented:
 //!* An additive or multiplicative binary operation:
 //!    * Has some function taking any pair of elements from `Self` and outputing any other member of `Self`
 //!    * Represented with either [`Add`] and [`AddAssign`] or [`Mul`] and [`MulAssign`] from [`std::ops`]
@@ -47,15 +47,18 @@
 //!# Exponentiation
 //!
 //!In addition to these traits, it may be desirable to implement a [multiplication](Mul) or
-//![exponentiation](num_traits::Pow) operation with particular [integers](crate::algebra::Integer)
-//!or [naturals](crate::algebra::Natural). See [`MulN`], [`MulZ`], [`PowN`], and [`PowZ`] for more details.
+//![exponentiation](num_traits::Pow) operation with particular [integer](crate::algebra::Integer)
+//!or [natural](crate::algebra::Natural) type. See [`MulN`], [`MulZ`], [`PowN`], and [`PowZ`] for more details.
 //!
 //!# Usage
 //!
-//!Structs with these properties implemented will be automatically added to a number of categorization
-//!traits for various mathematical sets. These traits all have additive and multiplicative variants
-//!and fit into a heirarchy of mathematical structures as such:
-//!``` ignore
+//!Structs with the above properties implemented will be automatically usable under a number of trait
+//!aliases for particular group-like structures. These structures follow standard mathematical
+//!convention and roughly correspond to a heirarchy varying levels of "niceness" of each
+//!binary operation.
+//!
+//!These structures can be diagrammed as follows:
+//!```text
 //!    ---Magma---
 //!    |         |
 //!    |     Semigroup
@@ -74,17 +77,27 @@
 //!* A [Group](MulGroup) is a Monoid with [inverses](Invertable), or alternatively, an [associative](MulAssociative) Loop
 //!* An [Abelian Group](MulAbelianGroup) is a [commutative](MulCommutative) Group
 //!
+//!For more information, see Wikipedia's article on 
+//![algebraic structures](https://en.wikipedia.org/wiki/Outline_of_algebraic_structures)
+//!
+//!# Additional Notes
+//!
+//!It is worth noting that this particular system is certainly non-exhaustive and is missing a number
+//!of group-like structures. In particular, it is missing the Category-like structures and Quasigroups
+//!
+//!In the case of categories, this is because as it stands currently, there are few uses for partial
+//!operations while including them would add noticeable complexity.
+//!
+//!In the case of quasigroups however, the reason is because with the way the primitive types are
+//!designed, the only way to determine if an addition or subtraction operation is *truely* invertible
+//!is to check against the [Neg] or [Inv] traits, as the unsigned integers implement **both** division
+//!and subtraction even though technically those operations are not valid on all natural numbers.
+//!So seeing as quasigroups aren't particularly useful anyway, the decision was made to omit them.
+//!
+//!
 
 pub use self::additive::*;
 pub use self::multiplicative::*;
-
-//Note: we do not have additive or multiplicative quasigroups because some types
-//override operators while guaranteeing too little.
-//For example, to have a multiplicative quasigroup, we'd need true division, but all
-//primitive int types have a division operation that is mathematically incorrect
-//(even if convenient). So the best way to weed these out is with the inv trait, but
-//*technically* there may not be true "inverses" in quasigroups. But whatever, quasigroups aren't
-//particularly useful anyway
 
 ///Traits for group-like structures using addition
 pub mod additive {
@@ -145,7 +158,21 @@ pub mod additive {
     ///
     ///```
     ///
-    ///Note, however, that while multiplication by natural numbers is very simply defined using
+    ///# Usage Notes
+    ///
+    ///This trait is intended for use with *small* integers and can make no guarrantee that the
+    ///mathematical output will actually fit in the valid range for the output type. As such,
+    ///it is possible for the method to panic, overflow, or return an NaN or error value, so if this
+    ///is an expected possibility, it is recommended to use [TryInto](core::convert::TryInto) or
+    ///a different to perform the operation.
+    ///
+    ///It is worth noting that this particular design was chosen over returning a [Result](core::Result)
+    ///or [Option](core::Option) since this general behavior is already the default for primitive types
+    ///despite the relative ease with which it can happen.
+    ///
+    ///# Implementation Notes
+    ///
+    ///Note that while multiplication by natural numbers is very simply defined using
     ///repeated addition, in order to add flexibility in implementation and the possibility for
     ///proper optimization, the automatic implmentation of this trait will first try to use other
     ///traits as a base before defaulting to the general [repeated_doubling] algorithm
@@ -203,7 +230,21 @@ pub mod additive {
     ///
     ///```
     ///
-    ///Note, however, that while multiplication by integers is very simply defined using
+    ///# Usage Notes
+    ///
+    ///This trait is intended for use with *small* integers and can make no guarrantee that the
+    ///mathematical output will actually fit in the valid range for the output type. As such,
+    ///it is possible for the method to panic, overflow, or return an NaN or error value, so if this
+    ///is an expected possibility, it is recommended to use [TryInto](core::convert::TryInto) or
+    ///a different to perform the operation.
+    ///
+    ///It is worth noting that this particular design was chosen over returning a [Result](core::Result)
+    ///or [Option](core::Option) since this general behavior is already the default for primitive types
+    ///despite the relative ease with which it can happen.
+    ///
+    ///# Implementation Notes
+    ///
+    ///Note that while multiplication by integers is very simply defined using
     ///repeated addition and subtraction, in order to add flexibility in implementation and the possibility for
     ///proper optimization, the automatic implmentation of this trait will first try to use other
     ///traits as a base before defaulting to the general [repeated_doubling_neg] algorithm
@@ -308,8 +349,21 @@ pub mod multiplicative {
     /// assert_eq!(2.0f64.pow_n(4u128), 16.0);
     ///
     ///```
+    ///# Usage Notes
     ///
-    ///Note, however, that while exponentiation by natural numbers is very simply defined using
+    ///This trait is intended for use with *small* integers and can make no guarrantee that the
+    ///mathematical output will actually fit in the valid range for the output type. As such,
+    ///it is possible for the method to panic, overflow, or return an NaN or error value, so if this
+    ///is an expected possibility, it is recommended to use [TryInto](core::convert::TryInto) or
+    ///a different to perform the operation.
+    ///
+    ///It is worth noting that this particular design was chosen over returning a [Result](core::Result)
+    ///or [Option](core::Option) since this general behavior is already the default for primitive types
+    ///despite the relative ease with which it can happen.
+    ///
+    ///# Implementation Notes
+    ///
+    ///Note that while exponentiation by natural numbers is very simply defined using
     ///repeated multiplication, in order to add flexibility in implementation and the possibility for
     ///proper optimization, the automatic implmentation of this trait will first try to use other
     ///traits as a base before defaulting to the general [repeated_squaring] algorithm
@@ -355,8 +409,21 @@ pub mod multiplicative {
     /// assert_eq!(2.0f32.pow_z(-3i64), 0.125);
     ///
     ///```
+    ///# Usage Notes
     ///
-    ///Note, however, that while exponentiation by integers is very simply defined using
+    ///This trait is intended for use with *small* integers and can make no guarrantee that the
+    ///mathematical output will actually fit in the valid range for the output type. As such,
+    ///it is possible for the method to panic, overflow, or return an NaN or error value, so if this
+    ///is an expected possibility, it is recommended to use [TryInto](core::convert::TryInto) or
+    ///a different to perform the operation.
+    ///
+    ///It is worth noting that this particular design was chosen over returning a [Result](core::Result)
+    ///or [Option](core::Option) since this general behavior is already the default for primitive types
+    ///despite the relative ease with which it can happen.
+    ///
+    ///# Implementation Notes
+    ///
+    ///Note that while exponentiation by integers is very simply defined using
     ///repeated multiplication and inversion, in order to add flexibility in implementation and the possibility for
     ///proper optimization, the automatic implmentation of this trait will first try to use other
     ///traits as a base before defaulting to the general [repeated_squaring_inv] algorithm
