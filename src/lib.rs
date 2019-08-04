@@ -246,7 +246,7 @@
 //!assert_eq!(two_thirds + one_third, Rational::new(1, 1));
 //!```
 //!
-//!# Current Features
+//!# Currently Supported Constructs
 //!
 //!Currently, `maths_traits` supports traits for the following systems of mathematical structures:
 //! * [Group-Like](algebra::group_like) algebraic structures: monoids, groups, abelian groups, etc
