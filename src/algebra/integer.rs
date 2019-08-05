@@ -37,19 +37,66 @@ pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
                         + Sub<Self, Output=Self> + Div<Self, Output=Self> + Rem<Self, Output=Self>
                         + SubAssign<Self> + DivAssign<Self> + RemAssign<Self>
 {
+
+    ///
+    ///This type's corresponding signed Integer representation
+    ///
+    ///Implementors should guarantee that this type has the same theoretical bit precision as
+    ///the Unsigned type
+    ///
     type Signed: Integer + IntegerSubset<Signed=Self::Signed, Unsigned=Self::Unsigned>;
+
+    ///
+    ///This type's corresponding unsigned Integer representation
+    ///
+    ///Implementors should guarantee that this type has the same theoretical bit precision as
+    ///the Signed type
+    ///
     type Unsigned: Natural + IntegerSubset<Signed=Self::Signed, Unsigned=Self::Unsigned>;
 
+    ///
+    ///Converts `self` to a signed integer representation
+    ///
+    ///Note that this has the same guarantees as the primitive `as` operation
+    ///and can thus panic on overflow
+    ///
     fn as_signed(self) -> Self::Signed;
+
+    ///
+    ///Converts `self` into an unsigned integer representation
+    ///
+    ///Note that this has the same guarantees as the primitive `as` operation
+    ///and can thus panic on underflow
+    ///
     fn as_unsigned(self) -> Self::Unsigned;
 
+    ///
+    ///Takes the absolute value and converts into an unsigned integer representation
+    ///
+    ///Implementors should guarantee that this conversion never fails or panics since
+    ///the unsigned and signed types are assumed to be of the same theoretical bit precision
+    ///
     #[inline] fn abs_unsigned(self) -> Self::Unsigned { self.abs().as_unsigned() }
 
     #[inline] fn two() -> Self { Self::one()+Self::one() }
+
+    ///
+    ///Multiplies by two
+    ///
+    ///This is meant both as convenience and to expose the `<<` operator for representations that
+    ///support it. As such, this method has the _potential_ to be faster than normal multiplication
+    ///
     #[inline] fn mul_two(self) -> Self { self * Self::two() }
+
+    ///
+    ///Divides by two
+    ///
+    ///This is meant both as convenience and to expose the `>>` operator for representations that
+    ///support it. As such, this method has the _potential_ to be faster than normal division
+    ///
     #[inline] fn div_two(self) -> Self { self / Self::two() }
 
-    #[inline] fn even(&self) -> bool {(Self::one()+Self::one()).divides(self.clone())}
+    #[inline] fn even(&self) -> bool {Self::two().divides(self.clone())}
     #[inline] fn odd(&self) -> bool {!self.even()}
 }
 
