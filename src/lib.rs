@@ -277,9 +277,9 @@
 //!maths-traits = {version = "0.2", default-features = false}
 //!```
 //!
-//!However, do note that the [`real`](analysis::real) module and anything that depends on it will
-//!only be available when using `std` as the floating-point trigonometric and exponential operations
-//!are only available when linking to the standard library.
+//!However, do note that the implementations of all traits related to [`Real`](analysis::Real) on
+//!primitive types will only be available when using `std` since the floating-point trigonometric
+//!and exponential functions are only available when linking to the standard library.
 //!
 //!# Possible Future Features
 //!

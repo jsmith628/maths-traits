@@ -130,9 +130,8 @@ pub trait BilinearForm<R:UnitalRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
 pub trait SymmetricForm<R,M> = BilinearForm<R,M> + SymSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
 pub trait SkewSymmetricForm<R,M> = BilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
 
-#[cfg(feature = "std")] pub use self::complex::*;
+pub use self::complex::*;
 
-#[cfg(feature = "std")]
 mod complex {
     use super::*;
     use crate::analysis::{ComplexRing};

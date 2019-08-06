@@ -113,6 +113,7 @@ pub trait InnerProductSpace<F: ComplexRing>: RingModule<F> {
     }
 }
 
+#[cfg(feature = "std")] 
 macro_rules! impl_metric {
     (@int $($f:ident)*) => {$(
         impl InnerProductSpace<$f> for $f {
@@ -147,6 +148,7 @@ macro_rules! impl_metric {
 }
 
 // Necessary do to issue #60021
+#[cfg(feature = "std")]
 mod impls {
     use super::{ ComplexSubset, InnerProductSpace };
     impl_metric!(@float f32 f64);

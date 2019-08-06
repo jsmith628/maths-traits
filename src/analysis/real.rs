@@ -324,6 +324,7 @@ pub trait Complex: ComplexField + Trig + RealExponential + From<<Self as Complex
     fn div_i(self) -> Self;
 }
 
+#[cfg(feature = "std")] 
 macro_rules! float_to_option {
     ($expr:expr) => {
         {
@@ -337,6 +338,7 @@ macro_rules! float_to_option {
     }
 }
 
+#[cfg(feature = "std")]
 macro_rules! impl_real {
     ($($f:ident:$n:ident:$z:ident)*) => {$(
         impl Trig for $f {
@@ -496,7 +498,7 @@ macro_rules! impl_real {
 }
 
 // Necessary do to issue #60021
-mod impls {
+#[cfg(feature = "std")] mod impls {
     use super::{ Trig, Exponential, RealExponential, ComplexSubset, Real };
     impl_real!(f32:u32:i32 f64:u64:i64);
 }
