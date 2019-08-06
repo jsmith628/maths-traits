@@ -1,7 +1,7 @@
 
 # Maths Traits
 
-A simple crate of traits for usable abstractions of common (and uncommon) mathematical constructs
+A simple to use yet abstract system of mathematical traits for the Rust language
 
 # Design
 
@@ -17,8 +17,8 @@ from the Integers so that objects like polynomials can be rightfully marked
 as able to do things like Euclidean division
 
 To accomplish this goal, the provided framework provided is built with a number of design considerations:
-* For ease of use and implementation, the included systems utilize standard Rust or well established
-  libraries, like `num_traits`, whenever possible instead of creating new systems.
+* For ease of use and implementation, the included systems utilize [standard Rust][std] or well established
+  libraries, like [`num_traits`], whenever possible instead of creating new systems.
 * Traits representing operations or properties and traits representing particular kinds of structures
   have been seperated in distinct sets of feature traits and distinct sets of trait aliases. This
   way, implementation of the structures is a simple matter of implementing the features and using
@@ -35,13 +35,16 @@ users can simply bound generics by the single alias of whatever mathematical str
 
 For example, for a generalized `Rational` type,
 you would implement the standard `Clone`, `Add`, `Sub`,
-`Mul`std::ops::Mul,
+`Mul`,
 `Div`, `Neg`, `Inv`, `Zero`,
 `One` traits, and their assign variants as normal. Then, by implementing the new traits
 `AddCommutative`, `AddAssociative`,
 `MulCommutative`, `MulCommutative`, and
 `Distributive`, all of the aliases using those operations (such as `Ring`
 and `MulMonoid`) will automatically be implemented and usable for the type.
+
+<details>
+<summary> ▶ <i>click to show</i> </summary>
 
 ```
 use maths_traits::algebra::*;
@@ -146,10 +149,16 @@ let sixth = Rational::new(1, 6);
 assert_eq!(mul_add(half, two_thirds, sixth), half);
 assert_eq!(repeated_squaring(half, 7u32), Rational::new(1, 128));
 ```
+</details> <p>
 
-In addition, using the traits in `maths-traits`, we can generalize this struct significantly with
-little effort to use a `T:Integer` or even a `T:GCDDomain` so that we can use more integer types
-or even polynomials.
+In addition, with little effort, using a more abstract `Integer` or `GCDDomain` bound we can generalize
+significantly to be able to have more options for numerators and
+denominators, including every primitive integer precision, various big-integer types, or even
+structures like polynomials or functions<p>.
+
+
+<details>
+<summary> ▶ <i>click to show</i> </summary>
 
 ```
 use maths_traits::algebra::*;
@@ -245,8 +254,9 @@ let one_third = Rational::new(1i64, 3i64);
 assert_eq!(half + sixth, Rational::new(2, 3));
 assert_eq!(two_thirds + one_third, Rational::new(1, 1));
 ```
+</details>
 
-# Current Features
+# Currently Supported Constructs
 
 Currently, `maths_traits` supports traits for the following systems of mathematical structures:
  * Group-Like algebraic structures: monoids, groups, abelian groups, etc
@@ -256,6 +266,20 @@ Currently, `maths_traits` supports traits for the following systems of mathemati
  * Ordered algebraic structures: ordered/archimedian rings, fields, etc
  * Real and Complex numbers
  * Metric properties of sets: metric spaces, inner-product, norm, etc
+
+# `no_std`
+
+It is possible to use `maths-traits` without the standard library. To do so, simply compile
+without the `std` feature by disabling default features in `Cargo.toml`.
+
+```TOML
+[dependencies]
+maths-traits = {version = "0.2", default-features = false}
+```
+
+However, do note that the implementations of all traits related to `Real` on
+primitive types will only be available when using `std` since the floating-point trigonometric
+and exponential functions are only available when linking to the standard library.
 
 # Possible Future Features
 
