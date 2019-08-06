@@ -154,8 +154,7 @@
 //!In addition, with little effort, using a more abstract `Integer` or `GCDDomain` bound we can generalize
 //!significantly to be able to have more options for numerators and
 //!denominators, including every primitive integer precision, various big-integer types, or even
-//!structures like polynomials or functions<p>.
-//!
+//!structures like polynomials or functions.<p>
 //!
 //!<details>
 //!<summary> ▶ <i>click to show</i> </summary>

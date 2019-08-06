@@ -44,7 +44,7 @@ you would implement the standard `Clone`, `Add`, `Sub`,
 and `MulMonoid`) will automatically be implemented and usable for the type.
 
 <details>
-<summary> ▶ <i>click to show</i> </summary>
+<summary><i>click to show</i></summary>
 
 ```
 use maths_traits::algebra::*;
@@ -154,11 +154,11 @@ assert_eq!(repeated_squaring(half, 7u32), Rational::new(1, 128));
 In addition, with little effort, using a more abstract `Integer` or `GCDDomain` bound we can generalize
 significantly to be able to have more options for numerators and
 denominators, including every primitive integer precision, various big-integer types, or even
-structures like polynomials or functions<p>.
+structures like polynomials or functions.<p>
 
 
 <details>
-<summary> ▶ <i>click to show</i> </summary>
+<summary><i>click to show</i></summary>
 
 ```
 use maths_traits::algebra::*;
