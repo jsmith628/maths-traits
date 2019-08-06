@@ -43,6 +43,9 @@
 //![`Distributive`](algebra::Distributive), all of the aliases using those operations (such as [`Ring`](algebra::Ring)
 //!and [`MulMonoid`](algebra::MulMonoid)) will automatically be implemented and usable for the type.
 //!
+//!<details>
+//!<summary> ▶ <i>click to show</i> </summary>
+//!
 //!```
 //!use maths_traits::algebra::*;
 //!
@@ -146,10 +149,16 @@
 //!assert_eq!(mul_add(half, two_thirds, sixth), half);
 //!assert_eq!(repeated_squaring(half, 7u32), Rational::new(1, 128));
 //!```
+//!</details> <p>
 //!
-//!In addition, using the traits in `maths-traits`, we can generalize this struct significantly with
-//!little effort to use a `T:Integer` or even a `T:GCDDomain` so that we can use more integer types
-//!or even polynomials.
+//!In addition, with little effort, using a more abstract `Integer` or `GCDDomain` bound we can generalize
+//!significantly to be able to have more options for numerators and
+//!denominators, including every primitive integer precision, various big-integer types, or even
+//!structures like polynomials or functions<p>.
+//!
+//!
+//!<details>
+//!<summary> ▶ <i>click to show</i> </summary>
 //!
 //!```
 //!use maths_traits::algebra::*;
@@ -245,6 +254,7 @@
 //!assert_eq!(half + sixth, Rational::new(2, 3));
 //!assert_eq!(two_thirds + one_third, Rational::new(1, 1));
 //!```
+//!</details>
 //!
 //!# Currently Supported Constructs
 //!
