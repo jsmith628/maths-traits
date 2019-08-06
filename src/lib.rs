@@ -267,6 +267,20 @@
 //! * [Real](analysis::real::Real) and [Complex](analysis::real::Complex) numbers
 //! * [Metric](analysis::metric) properties of sets: metric spaces, inner-product, norm, etc
 //!
+//!# `no_std`
+//!
+//!It is possible to use `maths-traits` without the standard library. To do so, simply compile
+//!without the `std` feature by disabling default features in `Cargo.toml`.
+//!
+//!```TOML
+//![dependencies]
+//!maths-traits = {version = "0.2", default-features = false}
+//!```
+//!
+//!However, do note that the [`real`](analysis::real) module and anything that depends on it will
+//!only be available when using `std` as the floating-point trigonometric and exponential operations
+//!are only available when linking to the standard library.
+//!
 //!# Possible Future Features
 //!
 //!As `maths_traits` is still in developement, there are a number of features that may be included
