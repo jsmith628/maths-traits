@@ -100,7 +100,10 @@ pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
     #[inline] fn odd(&self) -> bool {!self.even()}
 }
 
+///An [IntegerSubset] that specifically represents an unsigned integer
 pub trait Natural: IntegerSubset<Unsigned=Self> {}
+
+///An [IntegerSubset] that specifically represents a signed integer
 pub trait Integer: IntegerSubset<Signed=Self> + ArchUnitalRing {}
 
 ///
