@@ -1,7 +1,7 @@
 //!
 //!# Maths Traits
 //!
-//!A simple crate of traits for usable abstractions of common (and uncommon) mathematical constructs
+//!A simple to use yet abstract system of mathematical traits for the Rust language
 //!
 //!# Design
 //!
