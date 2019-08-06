@@ -307,7 +307,7 @@ pub trait EuclideanDiv: Sized {
 ///definition exists. For instance:
 /// * As already mentioned, some may allow the mapping to be non-trivial
 /// * Some may also allow `E(x) = 0`
-/// * For the [Real](analysis::Real) and [Complex](analysis::Complex) exponentials,
+/// * For the [Real](crate::analysis::Real) and [Complex](crate::analysis::Complex) exponentials,
 ///   there are a [multitude][1] of equivalent definitions that have no true effect on the mapping
 ///
 ///More importantly though, most authors specify that the `E(x+y) = E(x)*E(y)` for _all_ `x` and `y`
@@ -367,12 +367,12 @@ pub trait Exponential: Sized {
     ///
     /// ## Uniqueness and Continuity
     ///
-    ///Do note, however, that for almost all non-[Real](analysis::Real) structures, this function
+    ///Do note, however, that for almost all non-[Real](crate::analysis::Real) structures, this function
     ///is not unique and can **never** be continuous. Of course, some of this ambiguity is resolved by
     ///stipulating that `ln(1) = 0`, but even so, some remains,
     ///and so, it is entirely up to the implementor to any specific canonical form if applicable.
     ///
-    ///For example, the [Complex](analysis::Complex) numbers, the natural logarithm *must* be discontinuous somewhere,
+    ///For example, the [Complex](crate::analysis::Complex) numbers, the natural logarithm *must* be discontinuous somewhere,
     ///and there are infinitely many choices as to where that is. However, usually, this ambiguity
     ///is removed by taking the imaginary component of the result between -π and π and setting
     ///the discontinuity to be on the negative real axis
