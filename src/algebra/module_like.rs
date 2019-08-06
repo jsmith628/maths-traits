@@ -1,6 +1,7 @@
 
 pub use core::ops::{Add, AddAssign, Sub, SubAssign, Neg, Mul, MulAssign, Div, DivAssign, Index, IndexMut};
 use crate::algebra::*;
+use crate::analysis::{ComplexRing};
 
 ///
 ///A product between two vectors or module elements resulting in a scalar that is semi-linear in both arguments
@@ -130,16 +131,9 @@ pub trait BilinearForm<R:UnitalRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
 pub trait SymmetricForm<R,M> = BilinearForm<R,M> + SymSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
 pub trait SkewSymmetricForm<R,M> = BilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
 
-pub use self::complex::*;
-
-mod complex {
-    use super::*;
-    use crate::analysis::{ComplexRing};
-
-    pub trait ComplexSesquilinearForm<R:ComplexRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
-    pub trait HermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SymSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
-    pub trait SkewHermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
-}
+pub trait ComplexSesquilinearForm<R:ComplexRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
+pub trait HermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SymSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
+pub trait SkewHermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
 
 
 ///An abelian additive group with a distributive scalar multiplication with a unital ring
