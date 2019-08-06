@@ -288,6 +288,7 @@
 //! * Traits for vector spaces of finite or countable dimension that have discrete elements. This
 //!   will *almost certainly* be added eventually, but hasn't been added yet do to a number of relatively
 //!   difficult design questions and time constraints.
+//! * Optional default implementations for the other mathematical strutures in the `num` crate.
 //! * A system for category-like structures, ie, sets with an operation that is partial over its elements.
 //!   This would relatively simple to add, but *so far*, there do not seem to be enough use cases for such a
 //!   system to offset the added code complexity.
