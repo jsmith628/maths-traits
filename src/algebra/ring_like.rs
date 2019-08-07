@@ -7,9 +7,8 @@
 //!
 //!# Implementation
 //!
-//!This module behaves in a way similar to the [group-like](crate::algebra::group_like) structures and,
-//!in fact, builds upon it such that the ring-like trait aliases use the properties present in that
-//!module. However, in addition to the basic group traits, the following properties are also considered:
+//!This module build upon and behaves in a way similar to the [group-like](crate::algebra::group_like)
+//!structures. However, in addition to the basic group traits, the following properties are also considered:
 //! * Distributivity:
 //!    * Multiplication can act on summed elements independently,
 //!      ie`z*(x+y)=z*x+z*y` and `(x+y)*z=x*z+y*z` for all `x`, `y`, and `z`.
@@ -66,7 +65,9 @@
 //!```
 //!
 //!Note also that in addition to the above system, there is a complementary system of "Semirings"
-//!that follows almost the same exact structure but doesn't require a subtraction operation
+//!that follows almost the same exact structure but doesn't require a subtraction operation.
+//!
+//!For more information, see each structure's documentation
 //!
 //!# Naming
 //!

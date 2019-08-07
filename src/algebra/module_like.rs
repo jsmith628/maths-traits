@@ -1,3 +1,36 @@
+//!
+//!Traits for structures with an addition and scalar multiplication operation
+//!
+//!# Implementation
+//!
+//!This module builds upon the and behaves in a way similar to the [group-like](crate::algebra::group_like)
+//!structures, though, at this point in time, there are no additional properties or operations
+//!for structs to consider when targeting this module's systems.
+//!
+//!# Usage
+//!
+//!Similarly to the [group-like](crate::algebra::group_like) module, there are a number of
+//!trait aliases corresponding to a system of module-like algebraic structures that form a heirarchy
+//!as represented in the following diagram:
+//!
+//!```
+//!        Affine Space    Additive Abelian Group
+//!             |                   |
+//!             |              Ring Module
+//!             |                   |
+//!             ----Vector Space-----
+//!                      |
+//!                   Algebra
+//!```
+//!
+//!Where:
+//! * A [ring-module](RingModule) is an [additive abelian group](AddAbelianGroup)
+//!   with a scalar multiplication operation with elements from a particular [Ring]
+//! * A [vector-space](VectorSpace) is a ring-module with scalars that form a field
+//! * An [algebra](Algebra) is a vector-space with a distributive multiplication operation
+//! * An [affine-space](AffineSpace) is a set with a subtraction operation producing a vector
+//!     * <i>for more information see the trait-level documentation</i>
+//!
 
 pub use core::ops::{Add, AddAssign, Sub, SubAssign, Neg, Mul, MulAssign, Div, DivAssign, Index, IndexMut};
 use crate::algebra::*;
@@ -143,4 +176,25 @@ pub trait VectorSpace<K: Field> = RingModule<K> + Div<K, Output=Self> + DivAssig
 ///A vector space with a distributive multiplication operation
 pub trait Algebra<K: Field> = VectorSpace<K> + MulMagma + Distributive;
 
-pub trait AffineSpace<K: Field, V: VectorSpace<K>> = Sized + Clone + Sub<Self, Output=V> + Add<V, Output=Self> + AddAssign<V> + Sub<V, Output=Self> + SubAssign<V>;
+///
+///A set with a subtraction operation producing a vector
+///
+///Conceptually, this can be thought of as any space with vectors in-between every pair of points,
+///and are usually used to represent any sort of space or scale with or without some sort of origin point.
+///However, in practice, they are basically just a vector-space without an origin.
+///
+///Examples include:
+/// * Actual physical space: In physics, there is no notion of an absolute set of coordinates, so
+///   in reality, all distance and position measurements must be performed relative to some
+///   other location.
+/// * Temporal measurements: In most contexts, there is no notion of an absolute time, so all times
+///   are measured relative some other instant (such as 0CE or the beginning of the Unix epoch). In
+///   fact, the [`Instant`](std::time::Instant) and [`Duration`](std::time::Duration) system _almost_
+///   implements `AffineSpace`, but unfortunately, `Duration` is not a full `VectorSpace` in a traditional sense.
+/// * Pointers: While not technically an affine-space because integer offsets aren't vector-spaces,
+///   pointers still carry the same sort of idea since you can subtract pointers to get integer offsets
+///   and add offsets to pointers
+///
+pub trait AffineSpace<K: Field, V: VectorSpace<K>> = Sized + Clone +
+    Sub<Self, Output=V> + Add<V, Output=Self> + Sub<V, Output=Self> +
+    SubAssign<V> + AddAssign<V>;
