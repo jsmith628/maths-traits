@@ -98,6 +98,9 @@ impl<K:ComplexRing, V:InnerProductSpace<K>> ReflexiveForm<K,V> for InnerProductM
 impl<K:ComplexRing, V:InnerProductSpace<K>> SymSesquilinearForm<K,V> for InnerProductMetric {}
 impl<K:Real, V:InnerProductSpace<K>> BilinearForm<K,V> for InnerProductMetric {}
 
+impl<K:ComplexRing, V:InnerProductSpace<K>> ComplexSesquilinearForm<K,V> for InnerProductMetric {}
+impl<K:ComplexRing, V:InnerProductSpace<K>> InnerProduct<K,V> for InnerProductMetric {}
+
 
 pub trait InnerProductSpace<F: ComplexRing>: RingModule<F> {
     fn inner_product(self, rhs:Self) -> F;
