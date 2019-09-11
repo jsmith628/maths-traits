@@ -26,9 +26,11 @@ pub trait CastPrimInt =
 /// * Algebraic ordering properties and archimedian division
 /// * Additional operations conventionally implemented on integer types
 ///
-///Furthermore, this trait is intended to include a full "integer ecosystem" of sorts by including
-///extra useful functions and associated types for this representation's corresponding signed and
-///unsigned types are.
+///In practice, this means that a type implementing this trait must be either a
+///representation of the natural numbers or the integers as a whole.
+///
+///Furthermore, this trait contains associated types referring to an unsigned and signed type of
+///similar precision to make it easier to manage the broader system of types used in integer algorithms
 ///
 pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
                         + EuclideanSemidomain
@@ -78,6 +80,7 @@ pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
     ///
     #[inline] fn abs_unsigned(self) -> Self::Unsigned { self.abs().as_unsigned() }
 
+    ///A shorthand for `1+1`
     #[inline] fn two() -> Self { Self::one()+Self::one() }
 
     ///
@@ -96,7 +99,10 @@ pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
     ///
     #[inline] fn div_two(self) -> Self { self / Self::two() }
 
+    ///Determines if a number is divisible by two
     #[inline] fn even(&self) -> bool {Self::two().divides(self.clone())}
+
+    ///Determines if a number is not divisible by two
     #[inline] fn odd(&self) -> bool {!self.even()}
 }
 
@@ -113,6 +119,16 @@ pub trait Integer: IntegerSubset<Signed=Self> + ArchUnitalRing {}
 ///Given the nature of the algorithm, factors are guaranteed to be returned ascending order,
 ///with a factor of `-1` given at the beginning if the number is negative, a single `0` given
 ///if zero, and no factors returned if the original integer is `1`.
+///
+///```
+/// # use maths_traits::algebra::*;
+///let mut factors = TrialDivision::factors_of(-15);
+///
+///assert_eq!(factors.next(), Some(-1));
+///assert_eq!(factors.next(), Some(3));
+///assert_eq!(factors.next(), Some(5));
+///assert_eq!(factors.next(), None);
+///```
 ///
 pub struct TrialDivision<Z:IntegerSubset> {
     x: Z,

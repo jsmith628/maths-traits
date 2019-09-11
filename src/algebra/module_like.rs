@@ -13,7 +13,7 @@
 //!trait aliases corresponding to a system of module-like algebraic structures that form a heirarchy
 //!as represented in the following diagram:
 //!
-//!```
+//!```text
 //!        Affine Space    Additive Abelian Group
 //!             |                   |
 //!             |              Ring Module
@@ -40,8 +40,8 @@ use crate::analysis::{ComplexRing};
 ///A product between two vectors or module elements resulting in a scalar that is semi-linear in both arguments
 ///
 ///Rigorously, a σ-sesquilinear form is a mapping `•:M⨯M->R` from a Ring Module to its base ring such that:
-/// * `(x + y)•z = x•z + y•z`
-/// * `x•(y + z) = x•y + x•y`
+/// * `(x+y)•z = x•z + y•z`
+/// * `x•(y+z) = x•y + x•y`
 /// * `(c*x)•y = c*(x•y)`
 /// * `x•(c*y) = (x•y)*σ(c)` where `σ:R->R` is some anti-automorphism, usually the complex conjugate
 ///   or the identity map
@@ -64,15 +64,15 @@ use crate::analysis::{ComplexRing};
 /// * [BilinearForm]: `x•(c*y) = (x•y)*c`, ie, `σ(x) = x` for all `x`
 ///     * If also a [SymSesquilinearForm], this implies `x•y = y•x`
 ///     * If also a [SkewSesquilinearForm], this implies `x•y = -y•x`
-/// * [ComplexSesquilinearForm]: `x•(c*y) = (x•y)*c̅`, ie `R ⊆ ℂ` and `σ(x) = x̅` for all `x`
-///     * If also a [SymSesquilinearForm], this implies `x•y = conj(y•x)`
-///     * If also a [SkewSesquilinearForm], this implies `x•y = -conj(y•x)`
+/// * [ComplexSesquilinearForm]: `x•(c*y) = (x•y)*̅c`, ie `R ⊆ ℂ` and `σ(x) = ̅x` for all `x`
+///     * If also a [SymSesquilinearForm], this implies `x•y = ̅y̅•̅x`
+///     * If also a [SkewSesquilinearForm], this implies `x•y = -̅y̅•̅x`
 ///
 /// # Examples
 ///
 /// * Dot product of finite dimensional spaces and modules: `x•y = Σ(xₖ*yₖ)`
 /// * Inner Product of real and complex vector spaces of any dimension
-/// * Complex and Hyper-complex moduli: `z*w̅`
+/// * Complex and Hyper-complex moduli: `z*̅w`
 /// * The "Cross-Product" in 2D real-vector spaces: `x₁*y₂ - x₂*y₁`
 ///     * Alternatively, the mapping taking two vectors to the determinant of the matrix with
 ///      the vectors as its columns
@@ -102,6 +102,9 @@ pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
     ///     * `σ(a*b) = σ(b)*σ(a)`
     ///     * `σ(a)!=σ(b)` whenever `a!=b`
     ///     * for all `a` in `R`, there is a `b` in `R` where `σ(b) = a`
+    ///
+    ///By default, this is just the identity operation, but common alternatives include negation
+    ///and the complex conjugate
     ///
     #[inline] fn sigma(&self, x:R) -> R {x}
 
@@ -156,42 +159,80 @@ pub trait SesquilinearForm<R:UnitalRing, M:RingModule<R>> {
 
 }
 
+///A [SesquilinearForm] where `x•y = 0` implies `y•x = 0`
 pub trait ReflexiveForm<R:UnitalRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
+
+///
+///A [SesquilinearForm] where `σ(x•y) = y•x`
+///
+///The is a property implemented on _most_ sesquilinear forms, but a notable exception is the
+///the "Cross-Product" 2D vectors: `x₁*y₂ - x₂*y₁`
+///
 pub trait SymSesquilinearForm<R:UnitalRing, M:RingModule<R>>: ReflexiveForm<R,M> {}
+
+///
+///A [SesquilinearForm] where `σ(x•y) = -y•x`
+///
+///An example of which is the 2D "Cross-Product": `x₁*y₂ - x₂*y₁`
+///
 pub trait SkewSesquilinearForm<R:UnitalRing, M:RingModule<R>>: ReflexiveForm<R,M> {}
 
+///A [SesquilinearForm] where `x•(c*y) = (x•y)*c` and `σ(x) = x`
 pub trait BilinearForm<R:UnitalRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
+
+///A [BilinearForm] where `x•y = y•x`
 pub trait SymmetricForm<R,M> = BilinearForm<R,M> + SymSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
+
+///A [BilinearForm] where `x•y = -y•x`
 pub trait SkewSymmetricForm<R,M> = BilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:UnitalRing, M:RingModule<R>;
 
+///A [SesquilinearForm] where `x•(c*y) = (x•y)*̅c` and `σ(x) = ̅x`
 pub trait ComplexSesquilinearForm<R:ComplexRing, M:RingModule<R>>: SesquilinearForm<R,M> {}
+
+///A [ComplexSesquilinearForm] where `x•y = ̅y̅•̅x`
 pub trait HermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SymSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
+
+///A [ComplexSesquilinearForm] where `x•y = -̅y̅•̅x`
 pub trait SkewHermitianForm<R,M> = ComplexSesquilinearForm<R,M> + SkewSesquilinearForm<R,M> where R:ComplexRing, M:RingModule<R>;
 
 
 ///An abelian additive group with a distributive scalar multiplication with a unital ring
 pub trait RingModule<K: UnitalRing> = AddAbelianGroup + Mul<K, Output=Self> + MulAssign<K> + Distributive<K>;
+///A ring module with a distributive multiplication operation
+pub trait RingAlgebra<K: UnitalRing> = RingModule<K> + MulMagma + Distributive;
+///A ring algebra with a multiplicative identity
+pub trait UnitalRingAlgebra<K: UnitalRing> = RingAlgebra<K> + One;
+///A ring algebra with an associative multiplication operation
+pub trait AssociativeRingAlgebra<K: UnitalRing> = RingAlgebra<K> + MulAssociative;
+
 ///An abelian additive group with a distributive scalar multiplication with a field
 pub trait VectorSpace<K: Field> = RingModule<K> + Div<K, Output=Self> + DivAssign<K>;
 ///A vector space with a distributive multiplication operation
 pub trait Algebra<K: Field> = VectorSpace<K> + MulMagma + Distributive;
+///An algebra with a multiplicative identity
+pub trait UnitalAlgebra<K: Field> = Algebra<K> + One;
+///An algebra with an associative multiplication operation
+pub trait AssociativeAlgebra<K: Field> = Algebra<K> + MulAssociative;
 
 ///
-///A set with a subtraction operation producing a vector
+///A set of points without an origin
 ///
-///Conceptually, this can be thought of as any space with vectors in-between every pair of points,
-///and are usually used to represent any sort of space or scale with or without some sort of origin point.
-///However, in practice, they are basically just a vector-space without an origin.
+///Rigorously, this is defined as a set `A` with a companion vector-space `V` and operations
+///`-:AxA -> V` and `+:AxV -> A` such that:
+/// * `x+0 = x`
+/// * `(x+v)+w = x+(v+w)`
+/// * `x+(y-x) = y`
+/// * for all `x` in `A` and `v` in `V`, there exists a `y` in `A` where `x-y=v`
+///
+///In practice though, this can be thought of a collection of points with no distinguished origin.
+///In fact, every affine space can be represented by a vector space by choosing a point as the origin.
 ///
 ///Examples include:
-/// * Actual physical space: In physics, there is no notion of an absolute set of coordinates, so
-///   in reality, all distance and position measurements must be performed relative to some
-///   other location.
+/// * Actual physical space: In physics, there is no notion of an absolute set of coordinates, but
+///   we model displacements between them using 3D vectors
 /// * Temporal measurements: In most contexts, there is no notion of an absolute time, so all times
-///   are measured relative some other instant (such as 0CE or the beginning of the Unix epoch). In
-///   fact, the [`Instant`](std::time::Instant) and [`Duration`](std::time::Duration) system _almost_
-///   implements `AffineSpace`, but unfortunately, `Duration` is not a full `VectorSpace` in a traditional sense.
-/// * Pointers: While not technically an affine-space because integer offsets aren't vector-spaces,
+///   are measured relative some other instant (such as 0CE or the beginning of the Unix epoch).
+/// * Pointers: While not technically an affine-space because integer offsets don't have scalar multiplication,
 ///   pointers still carry the same sort of idea since you can subtract pointers to get integer offsets
 ///   and add offsets to pointers
 ///
