@@ -1,3 +1,6 @@
+//!
+//!Traits for metric properties and function
+//!
 
 use crate::algebra::*;
 use crate::analysis::*;
@@ -113,7 +116,7 @@ pub trait InnerProductSpace<F: ComplexRing>: RingModule<F> {
     }
 }
 
-#[cfg(feature = "std")] 
+#[cfg(feature = "std")]
 macro_rules! impl_metric {
     (@int $($f:ident)*) => {$(
         impl InnerProductSpace<$f> for $f {

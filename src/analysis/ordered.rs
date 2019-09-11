@@ -1,5 +1,10 @@
+//!
+//!Traits for ordered structures
+//!
 
 use crate::algebra::*;
+
+pub use core::cmp::{PartialOrd, Ord};
 
 ///
 ///A marker trait signifying that for `x > y`, `x+z > x+z` and `z+x > z+x` for all `z`
@@ -84,7 +89,7 @@ pub trait ArchimedeanDiv: Sized + ArchimedeanProperty {
     ///Maps a natural number into this structure preserving addition and
     ///using the relevant canonical representation
     ///
-    ///For rings and semirings with [One], this representation should make the [Natural] 1 to 1 in
+    ///For rings and semirings with [One], this representation should map the [Natural] 1 to 1 in
     ///the structure and should also preserve multiplication
     ///
     fn embed_nat<N:Natural>(n:N) -> Self;

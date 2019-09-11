@@ -1,3 +1,6 @@
+//!
+//!Traits for [Real] and [Complex] properties and representations
+//!
 
 use crate::algebra::*;
 use crate::analysis::*;
@@ -324,7 +327,7 @@ pub trait Complex: ComplexField + Trig + RealExponential + From<<Self as Complex
     fn div_i(self) -> Self;
 }
 
-#[cfg(feature = "std")] 
+#[cfg(feature = "std")]
 macro_rules! float_to_option {
     ($expr:expr) => {
         {
