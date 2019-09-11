@@ -34,9 +34,9 @@
 //!users can simply bound generics by the single alias of whatever mathematical struct fits their needs.
 //!
 //!For example, for a generalized `Rational` type,
-//!you would implement the standard [`Clone`](Clone), [`Add`](std::ops::Add), [`Sub`](std::ops::Sub),
-//![`Mul`](std::ops::Mul),
-//![`Div`](std::ops::Div), [`Neg`](std::ops::Neg), [`Inv`](num_traits::Inv), [`Zero`](num_traits::Zero),
+//!you would implement the standard [`Clone`](Clone), [`Add`](core::ops::Add), [`Sub`](core::ops::Sub),
+//![`Mul`](core::ops::Mul),
+//![`Div`](core::ops::Div), [`Neg`](core::ops::Neg), [`Inv`](num_traits::Inv), [`Zero`](num_traits::Zero),
 //![`One`](num_traits::One) traits, and their assign variants as normal. Then, by implementing the new traits
 //![`AddCommutative`](algebra::AddCommutative), [`AddAssociative`](algebra::AddAssociative),
 //![`MulCommutative`](algebra::MulCommutative), [`MulCommutative`](algebra::MulAssociative), and

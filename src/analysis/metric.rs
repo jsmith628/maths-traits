@@ -30,7 +30,7 @@ pub trait Metric<X, R:Real> {
 }
 
 ///
-///A real-valued function from a [RingModule] that quantifies it's length, allowing for null-vectors
+///A real-valued function from a ring module that quantifies it's length, allowing for null-vectors
 ///
 ///Specifically, a seminorm ‖•‖ is a function from a ring module `X` over `K` to the reals such that:
 /// * `K` has a seminorm |•|
@@ -38,7 +38,7 @@ pub trait Metric<X, R:Real> {
 /// * `‖cx‖ = |c|‖x‖`
 /// * `‖x+y‖ <= ‖x‖ + ‖y‖`
 ///
-///This is distinct from a [NormedMetric] in that it is allowed to be 0 for non-zero vectors
+///This is distinct from a NormedMetric in that it is allowed to be 0 for non-zero vectors
 ///
 pub trait Seminorm<K:UnitalRing, X:RingModule<K>, R:Real> {
     #[inline] fn norm(&self, x:X) -> R;
@@ -46,7 +46,7 @@ pub trait Seminorm<K:UnitalRing, X:RingModule<K>, R:Real> {
 }
 
 ///
-///A real-valued on a [RingModule] that quantifies it's length, disallowing null-vectors
+///A real-valued on a ring-module that quantifies it's length, disallowing null-vectors
 ///
 ///Specifically, a norm ‖x‖ is a function from a ring module `X` over `K` to the reals such that:
 /// * `K` has a norm |•|
@@ -58,8 +58,15 @@ pub trait Seminorm<K:UnitalRing, X:RingModule<K>, R:Real> {
 ///
 pub trait Norm<K:UnitalRing, X:RingModule<K>, R:Real>: Seminorm<K,X,R> {}
 
+///
+///A hermitian form with the added restriction that `x•x` be Real and `x•x>0` for nonzero `x`
+///
+///Because of this restriction, any inner product automatically also defines a [Norm] as the square
+///root of any element with itself
+///
 pub trait InnerProduct<K:ComplexRing, M:RingModule<K>>: HermitianForm<K,M> + Norm<K,M,K::Real>{}
 
+///A metric that also defines a norm
 pub trait NormedMetric<K,X,R> = Norm<K,X,R> + Metric<X,R> where K:UnitalRing, X:RingModule<K>, R:Real;
 
 ///

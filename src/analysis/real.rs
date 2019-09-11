@@ -10,10 +10,10 @@ use crate::analysis::*;
 ///
 ///For the most part, these methods are meant for struct representing [real numbers](Real),
 ///and so, for those, the included functions have their normal meaning. However, in order to
-///include the useful generalizations of the trigonometric functions (such as the complex numbers),
-///this trait also supports mathematical constructions that can satisfy other characterizations.
+///include the generalizations (such as the complex trig functions), the precise definitions are
+///defined in a more abstract way.
 ///
-///In particular, all of the included methods should satisfy the relevant differential equation definition
+///Specifically, all of the included methods should satisfy the relevant differential equation definition
 ///of its function. Specifically:
 /// * [Sine](Trig::sin) and [Cosine](Trig::cos) should satisfy
 ///     * `d/dx cos(x) = -sin(x)`
@@ -31,6 +31,9 @@ use crate::analysis::*;
 /// * [Hyperbolic Tangent](Trig::tanh) should satisfy
 ///     * `d/dx tanh(x) = 1 - tanh²(x)`
 ///     * `tanh(0) = 0`
+///
+///Of course, for Real and Complex numbers, the standard infinite series definitions also apply
+///and are most likely the method of computation.
 ///
 pub trait Trig: UnitalRing + Divisibility {
 
@@ -200,23 +203,23 @@ pub trait Trig: UnitalRing + Divisibility {
     ///
     fn pi() -> Self;
 
-    ///`2/π`. Mirrors [FRAC_2_PI](::std::f32::consts::FRAC_2_PI)
+    ///`2/π`. Mirrors [FRAC_2_PI](::core::f32::consts::FRAC_2_PI)
     #[inline] fn frac_2_pi() -> Self {Self::one().mul_n(2u32).divide(Self::pi()).unwrap()}
-    ///`π/2`. Mirrors [FRAC_PI_2](::std::f32::consts::FRAC_PI_2)
+    ///`π/2`. Mirrors [FRAC_PI_2](::core::f32::consts::FRAC_PI_2)
     #[inline] fn frac_pi_2() -> Self {Self::pi().divide(Self::one().mul_n(2u32)).unwrap()}
-    ///`π/3`. Mirrors [FRAC_PI_3](::std::f32::consts::FRAC_PI_3)
+    ///`π/3`. Mirrors [FRAC_PI_3](::core::f32::consts::FRAC_PI_3)
     #[inline] fn frac_pi_3() -> Self {Self::pi().divide(Self::one().mul_n(3u32)).unwrap()}
-    ///`π/4`. Mirrors [FRAC_PI_4](::std::f32::consts::FRAC_PI_4)
+    ///`π/4`. Mirrors [FRAC_PI_4](::core::f32::consts::FRAC_PI_4)
     #[inline] fn frac_pi_4() -> Self {Self::pi().divide(Self::one().mul_n(4u32)).unwrap()}
-    ///`π/6`. Mirrors [FRAC_PI_6](::std::f32::consts::FRAC_PI_6)
+    ///`π/6`. Mirrors [FRAC_PI_6](::core::f32::consts::FRAC_PI_6)
     #[inline] fn frac_pi_6() -> Self {Self::pi().divide(Self::one().mul_n(6u32)).unwrap()}
-    ///`π/8`. Mirrors [FRAC_PI_8](::std::f32::consts::FRAC_PI_8)
+    ///`π/8`. Mirrors [FRAC_PI_8](::core::f32::consts::FRAC_PI_8)
     #[inline] fn frac_pi_8() -> Self {Self::pi().divide(Self::one().mul_n(8u32)).unwrap()}
 
-    ///The length of the hypotenuse of a unit right-triangle. Mirrors [SQRT_2](::std::f32::consts::SQRT_2)
+    ///The length of the hypotenuse of a unit right-triangle. Mirrors [SQRT_2](::core::f32::consts::SQRT_2)
     #[inline] fn pythag_const() -> Self {Self::one().mul_n(2u32) * Self::pythag_const_inv()}
 
-    ///The sine of [`π/4`](Trig::frac_pi_4()). Mirrors [FRAC_1_SQRT_2](::std::f32::consts::FRAC_1_SQRT_2)
+    ///The sine of [`π/4`](Trig::frac_pi_4()). Mirrors [FRAC_1_SQRT_2](::core::f32::consts::FRAC_1_SQRT_2)
     #[inline] fn pythag_const_inv() -> Self {Self::frac_pi_4().sin()}
 
     #[inline] fn to_degrees(self) -> Self {self * (Self::one().mul_n(180u32).divide(Self::pi()).unwrap())}
@@ -228,19 +231,24 @@ pub use crate::algebra::Exponential;
 ///
 ///An exponential ring with Real-like properties
 ///
-///The specifics of this are that this trait requires that the [logarithm](RealExponential::ln) of any integer be
-///defined.
+///Specifically, this trait should be implemented on any [Exponential Ring](ExponentialRing)
+///where the [natural logarithm](Exponential::try_ln) exists for any positive integer and is
+///continuous almost everywhere[*][1], the purpose being that the above property guarantees
+///a large number of [Real]-like behavior and functions for free utilizing only the exponential function.
 ///
-///However, the essence of this is that as a result:
-/// * This ring contains a form of the Rationals
-///     * easily shown by `exp(-ln(x)) = 1/exp(ln(x)) = 1/x`
-/// * The logarithm of any rational exists by `ln(p/q) = ln(p) - ln(q)`
+///In particular, this property can be used to prove that:
+/// * This ring contains a form of the positive Rationals: `exp(-ln(x)) = 1/exp(ln(x)) = 1/x`
+/// * The logarithm of any positive rational exists: `ln(p/q) = ln(p) - ln(q)`
 /// * We can take the nth-root of any rational with `exp(ln(x)/n)`
-/// * We have a way to raise any rational to the power of any rational with exp(ln(x)*y)
+/// * We can raise any rational to the power of any other rational using `exp(ln(x)*y)`
+/// * Any of the above can be extended to all reals using the continuity of the logarithm
 ///
-///This distinction between the "Real Exponential" and just an "Exponential" is important since
-///both the Integers and Gaussian Integers have non-trivial exponential functions that do not behave
-///in the way expected of the usual use of the term.
+///Now, it is worth noting that this distinction between the "Real Exponential" and "Exponential"
+///is necessarily since certain exponential rings are only possible if they do not fit this description.
+///In particular, the [integers](Integer) have an exponential defined as `(-1)^n` which obviously
+///does not output any naturals besides 1
+///
+///[1]: https://en.wikipedia.org/wiki/Almost_everywhere
 ///
 pub trait RealExponential: Exponential + UnitalRing + Divisibility {
 
@@ -253,36 +261,109 @@ pub trait RealExponential: Exponential + UnitalRing + Divisibility {
         self.try_ln().and_then(move |x| base.try_ln().and_then(move |y| x.divide(y)))
     }
 
+    ///
+    ///The natural logarithm of `self`
+    ///
+    ///Do note that this function is allowed to panic or return an error value whenever
+    ///the desired logarithm does not exist. This exception is specifically to allow primitive
+    ///floats to implement this method as a wrapper for the intrinsic definition
+    ///
     #[inline] fn ln(self) -> Self {self.try_ln().unwrap()}
+
+    ///
+    ///The logarithm of `self` over a specific base
+    ///
+    ///Do note that this function is allowed to panic or return an error value whenever
+    ///the desired logarithm does not exist. This exception is specifically to allow primitive
+    ///floats to implement this method as a wrapper for the intrinsic definition
+    ///
     #[inline] fn log(self, base: Self) -> Self {self.try_log(base).unwrap()}
+
+    ///
+    ///The power of `self` over a specific exponent
+    ///
+    ///Do note that this function is allowed to panic or return an error value whenever
+    ///the desired power does not exist. This exception is specifically to allow primitive
+    ///floats to implement this method as a wrapper for the intrinsic definition
+    ///
     #[inline] fn pow(self, p: Self) -> Self {self.try_pow(p).unwrap()}
+
+    ///
+    ///The root of `self` over a specific index
+    ///
+    ///Do note that this function is allowed to panic or return an error value whenever
+    ///the desired root does not exist. This exception is specifically to allow primitive
+    ///floats to implement this method as a wrapper for the intrinsic definition
+    ///
     #[inline] fn root(self, r: Self) -> Self {self.try_root(r).unwrap()}
 
+    ///Raises 2 to the power of `self`
     #[inline] fn exp2(self) -> Self {self.pow(Self::one().mul_n(2u32))}
+
+    ///Raises 10 to the power of `self`
     #[inline] fn exp10(self) -> Self { self.pow(Self::one().mul_n(10u32)) }
 
+    ///The logarithm of base 2
     #[inline] fn log2(self) -> Self {self.log(Self::one().mul_n(2u32))}
+
+    ///The logarithm of base 10
     #[inline] fn log10(self) -> Self { self.log(Self::one().mul_n(10u32)) }
 
+    //Takes the square-root of `self`
     #[inline] fn sqrt(self) -> Self {self.root(Self::one().mul_n(2u32))}
+
+    //Takes the cube-root of `self`
     #[inline] fn cbrt(self) -> Self {self.root(Self::one().mul_n(3u32))}
 
+    ///
+    ///The natural logarithm of `self` plus 1.
+    ///
+    ///This is meant as a wrapper for f32::ln_1p and f64::ln_1p
+    ///
     #[inline] fn ln_1p(self) -> Self {(self-Self::one()).ln()}
+
+    ///
+    ///The exponential of `self` minus 1.
+    ///
+    ///This is meant as a wrapper for f32::exp_m1 and f64::exp_m1
+    ///
     #[inline] fn exp_m1(self) -> Self {self.exp()-Self::one()}
 
-    ///The [exponential](Exponential::exp) of 1
+    ///The exponential of 1. Mirrors [::core::f32::consts::E]
     #[inline] fn e() -> Self {Self::one().exp()}
+
+    ///The natural logarithm of 2. Mirrors [::core::f32::consts::LN_2]
     #[inline] fn ln_2() -> Self {Self::one().mul_n(2u32).ln()}
+
+    ///The natural logarithm of 10. Mirrors [::core::f32::consts::LN_10]
     #[inline] fn ln_10() -> Self {Self::one().mul_n(10u32).ln()}
+
+    ///The logarithm base 2 of e. Mirrors [::core::f32::consts::LOG2_E]
     #[inline] fn log2_e() -> Self {Self::ln_2().inverse().unwrap()}
+
+    ///The logarithm base 10 of e. Mirrors [::core::f32::consts::LOG10_E]
     #[inline] fn log10_e() -> Self {Self::ln_10().inverse().unwrap()}
+
+    ///The logarithm base 2 of 10. Mirrors [::core::f32::consts::LOG2_10]
     #[inline] fn log2_10() -> Self {Self::ln_10().divide(Self::ln_2()).unwrap()}
+
+    ///The logarithm base 10 of 2. Mirrors [::core::f32::consts::LOG10_2]
     #[inline] fn log10_2() -> Self {Self::ln_2().divide(Self::ln_10()).unwrap()}
 
+    ///The square root of 2. Mirrors [::core::f32::consts::SQRT_2]
     #[inline] fn sqrt_2() -> Self {Self::one().mul_n(2u32).sqrt()}
+
+    ///One over the square root of 2. Mirrors [::core::f32::consts::FRAC_1_SQRT_2]
     #[inline] fn frac_1_sqrt_2() -> Self {Self::sqrt_2().inverse().unwrap()}
 }
 
+///
+///An algebraic stucture that is a subset of the [Complex] numbers
+///
+///This trait is both meant as an ensapsulation of the [naturals](Natural), [integers](Integer),
+///[real numbers](Real), and [complex numbers](Complex). This way, users can work with a particular
+///set of similar-precision numeric types abstractly similarly to how they would normally.
+///
 pub trait ComplexSubset: PartialEq + Clone + Semiring {
     type Real: Real
         + ComplexSubset<Natural = Self::Natural, Integer = Self::Integer, Real = Self::Real>;
@@ -293,37 +374,112 @@ pub trait ComplexSubset: PartialEq + Clone + Semiring {
         + IntegerSubset<Signed = Self::Integer, Unsigned = Self::Natural>
         + ComplexSubset<Natural = Self::Natural, Integer = Self::Integer, Real = Self::Real>;
 
+    ///Converts `self` to a real number, discarding any imaginary component, if complex.
     fn as_real(self) -> Self::Real;
+
+    ///Converts `self` to a natural number, truncating when necessary.
     fn as_natural(self) -> Self::Natural;
+
+    ///Converts `self` to an integer, truncating when necessary.
     fn as_integer(self) -> Self::Integer;
 
+    ///Rounds the real and imaginary components of `self` to the closest integer downward
     fn floor(self) -> Self;
+
+    ///Rounds the real and imaginary components of `self` to the closest integer upward
     fn ceil(self) -> Self;
+
+    ///Rounds the real and imaginary components of `self` to the closest integer
     fn round(self) -> Self;
 
+    ///Rounds the real and imaginary components of `self` by removing the factional parts
     fn trunc(self) -> Self;
+
+    ///Removes the integral parts of the real and imaginary components of `self`
     fn fract(self) -> Self;
 
+    ///Sets the real component of `self` to 0
     fn im(self) -> Self;
+
+    ///Sets the imaginary component of `self` to 0
     fn re(self) -> Self;
+
+    ///The complex conjugate of `self`
     fn conj(self) -> Self;
 
+    ///
+    ///The square of the complex absolute value of `self`
+    ///
+    ///This is computed as `self * self.conj()` by default
+    ///
     #[inline] fn modulus_sqrd(self) -> Self { self.clone() * self.conj()}
+
+    ///
+    ///The complex absolute value of `self`
+    ///
+    ///This is computed as the square root of [modulus_sqrd](ComplexSubset::modulus_sqrd) by default
+    ///
     #[inline] fn modulus(self) -> Self::Real { (self.clone() * self.conj()).as_real().sqrt()}
 }
 
+///A commutative semiring that is also a subset of the Complex numbers
 pub trait ComplexSemiring = CommutativeSemiring + ComplexSubset;
+///A commutative ring that is also a subset of the Complex numbers
 pub trait ComplexRing = CommutativeRing + ComplexSubset;
+///A field that is also a subset of the Complex numbers
 pub trait ComplexField = Field + ComplexSubset;
 
+///
+///A type representing the real numbers
+///
+///Note that in order to accomidate the primitive floats, this trait does _technically_ allow for
+///special values such as [infinity](::core::f32::INFINITY) and [NaN](::core::f32::NAN)
+///to return from operations
+///as error codes, but usage of such values is discouraged in favor of alternative functions that return
+///[optional](::core::option::Option) values instead
+///
 pub trait Real: ArchField + ComplexSubset<Real=Self> + Trig + RealExponential {
+
+    ///
+    ///Approximates this real number as a 64-bit floating point
+    ///
+    ///This is meant as a convenient way to interface with code using primitives, and in most cases,
+    ///this will exactly represent the given value since most real representations are 32 or 64-bit floats
+    ///However, this is not always the case, and the returned value is only guaranteed to be within
+    ///the precision of an f64.
+    ///
     fn approx(self) -> f64;
+
+    ///
+    ///Constructs a real number from a 64-bit floating point
+    ///
+    ///This is meant to be a convenient way to input constants into algorithms with generics and to
+    ///interface with code using primitives, and in most cases, this should constant fold and represent
+    ///the given value precisely. However, there is no guarantee of this as the representation returned
+    ///could have a different precision than the f64
+    ///
     fn repr(f: f64) -> Self;
 }
 
+///A type representing the complex numbers
 pub trait Complex: ComplexField + Trig + RealExponential + From<<Self as ComplexSubset>::Real> {
+    ///The imaginary unit representing `√̅-̅1`
     fn i() -> Self;
+
+    ///
+    ///Multiplies `self` by [`i`](Complex::i)
+    ///
+    ///This is meant both as convenience and to be potentially faster than normal multiplication
+    ///as this can be done using only data moves and negation
+    ///
     fn mul_i(self) -> Self;
+
+    ///
+    ///Divides `self` by [`i`](Complex::i). This is also equivalent to multiplication by `-i`
+    ///
+    ///This is meant both as convenience and to be potentially faster than normal multiplication
+    ///as this can be done using only data moves and negation
+    ///
     fn div_i(self) -> Self;
 }
 

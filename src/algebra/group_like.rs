@@ -22,7 +22,7 @@
 //!according to which and how the following properties are implemented:
 //!* An additive or multiplicative binary operation:
 //!    * Has some function taking any pair of elements from `Self` and outputing any other member of `Self`
-//!    * Represented with either [`Add`] and [`AddAssign`] or [`Mul`] and [`MulAssign`] from [`std::ops`]
+//!    * Represented with either [`Add`] and [`AddAssign`] or [`Mul`] and [`MulAssign`] from [`core::ops`]
 //!    * (Note that for the auto-implementing categorization traits to work, the corresponding
 //!      "Assign" traits must be implemented.)
 //!* An identity element:
@@ -34,7 +34,7 @@
 //!     `x*y=1` and `y*x=1` (or `x+y=0` and `y+x=0` if additive), and there exists
 //!     a corresponding inverse operation.
 //!    * Represented with either [`Neg`], [`Sub`], and [`SubAssign`] or [`Inv`], [`Div`], and [`DivAssign`]
-//!      from [`std::ops`] and [`num_traits`]
+//!      from [`core::ops`] and [`num_traits`]
 //!    * Note, again, that the "Assign" variants are required
 //!* Commutative:
 //!    * If the operation is order invariant, ie `x+y=y+x` or `x*y=y*x` for all `x` and `y`.
