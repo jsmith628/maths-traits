@@ -6,23 +6,21 @@ A simple to use yet abstract system of mathematical traits for the Rust language
 # Design
 
 The purpose of this crate is to provide a system for working with mathematical objects
-that is maximally abstract *and* that is easy enough to use such that working with mathematical
+that is both maximally abstract *and* that is easy to use such that working with mathematical
 generics and high abstraction is nearly as simple as designing around a specific type.
 
 This system can be used in cases ranging broadly from something as simple as making reals number
 algorithms apply seamlessly to different precisions to simplifying vector
 systems such that using polynomials as coordinates is as easy as switching to a ring module,
-or even to something complex like separating the different poperties of rings
-from the Integers so that objects like polynomials can be rightfully marked
-as able to do things like Euclidean division
+or even something like separating the different poperties of rings
+from the Integers so that objects like polynomials can fit into algorithms
+generally designed for the latter.
 
 To accomplish this goal, the provided framework provided is built with a number of design considerations:
 * For ease of use and implementation, the included systems utilize [standard Rust][std] or well established
   libraries, like [`num_traits`], whenever possible instead of creating new systems.
-* Traits representing operations or properties and traits representing particular kinds of structures
-  have been seperated in distinct sets of feature traits and distinct sets of trait aliases. This
-  way, implementation of the structures is a simple matter of implementing the features and using
-  the features is as easy as adding a single generic bound for the structure that contains all the desired features
+* Implementors should only have to consider individual properties of structures while users
+  should only need to use the single trait for whichever mathematical object has the desired features
 * The systems have been named and organized to fit mathematical convention as much as possible in
   order to add clarity of use while also increasing generality and flexibility
 
@@ -30,23 +28,23 @@ To accomplish this goal, the provided framework provided is built with a number 
 
 The traits in this framework are split into two collections, a set of traits for individual properties
 and operations and a set of trait aliases for mathematical structures that have those properties.
-This way, to support the system, structs need only implement each relevant property, and to use the system
-users can simply bound generics by the single alias of whatever mathematical struct fits their needs.
+This way, to support the system, structs need only implement each relevant property, and to use the system,
+one can simply bound generics by the single alias of whatever mathematical structure fits their needs.
 
-For example, for a generalized `Rational` type,
-you would implement the standard `Clone`, `Add`, `Sub`,
-`Mul`,
-`Div`, `Neg`, `Inv`, `Zero`,
-`One` traits, and their assign variants as normal. Then, by implementing the new traits
-`AddCommutative`, `AddAssociative`,
-`MulCommutative`, `MulCommutative`, and
-`Distributive`, all of the aliases using those operations (such as `Ring`
-and `MulMonoid`) will automatically be implemented and usable for the type.
+For example, to create a generalized `Rational` type,
+you would implement the standard [`Clone`](Clone), [`Add`](core::ops::Add), [`Sub`](core::ops::Sub),
+[`Mul`](core::ops::Mul),
+[`Div`](core::ops::Div), [`Neg`](core::ops::Neg), [`Inv`](num_traits::Inv), [`Zero`](num_traits::Zero),
+[`One`](num_traits::One) traits, and their assign variants as normal. Then, by implementing the new traits
+[`AddCommutative`](algebra::AddCommutative), [`AddAssociative`](algebra::AddAssociative),
+[`MulCommutative`](algebra::MulCommutative), [`MulCommutative`](algebra::MulAssociative), and
+[`Distributive`](algebra::Distributive), all of the aliases using those operations (such as [`Ring`](algebra::Ring)
+and [`MulMonoid`](algebra::MulMonoid)) will automatically be implemented and usable for the type.
 
 <details>
-<summary><i>click to show</i></summary>
+<summary><i>click to show</i> </summary>
 
-```Rust
+```
 use maths_traits::algebra::*;
 
 #[derive(Clone)] //necessary to auto-implement Ring and MulMonoid
@@ -151,16 +149,16 @@ assert_eq!(repeated_squaring(half, 7u32), Rational::new(1, 128));
 ```
 </details> <p>
 
-In addition, with little effort, using a more abstract `Integer` or `GCDDomain` bound we can generalize
+In addition, with little effort, using a more abstract [`Integer`](algebra::Integer)
+or [`GCDDomain`](algebra::GCDDomain) bound we can generalize
 significantly to be able to have more options for numerators and
 denominators, including every primitive integer precision, various big-integer types, or even
 structures like polynomials or functions.<p>
 
-
 <details>
-<summary><i>click to show</i></summary>
+<summary><i>click to show</i> </summary>
 
-```Rust
+```
 use maths_traits::algebra::*;
 
 //Using a GCDDomain here means we can use more integral types, polynomials, and other types
@@ -269,16 +267,16 @@ Currently, `maths_traits` supports traits for the following systems of mathemati
 
 # `no_std`
 
-It is possible to use `maths-traits` without the standard library. To do so, simply compile
-without the `std` feature by disabling default features in `Cargo.toml`.
+It is possible to use `maths-traits` without the standard library. To do so, simply compile your project
+without the `std` feature by disabling default features in your `Cargo.toml`.
 
 ```TOML
 [dependencies]
 maths-traits = {version = "0.2", default-features = false}
 ```
 
-However, do note that the implementations of all traits related to `Real` on
-primitive types will only be available when using `std` since the floating-point trigonometric
+However, do note that the implementations of all traits related to [`Real`](analysis::Real) on
+primitive types will only be available when using `std`, as the floating-point trigonometric
 and exponential functions are only available when linking to the standard library.
 
 # Possible Future Features
@@ -286,24 +284,31 @@ and exponential functions are only available when linking to the standard librar
 As `maths_traits` is still in developement, there are a number of features that may be included
 at a later date:
  * Traits for vector spaces of finite or countable dimension that have discrete elements. This
-   will *almost certainly* be added eventually, but hasn't been added yet do to a number of relatively
-   difficult design questions and time constraints.
+   will *almost certainly* be added eventually, but hasn't yet due to a number of design
+   constraints.
+ * Optional default implementations for the other mathematical strutures in the `num` crate.
  * A system for category-like structures, ie, sets with an operation that is partial over its elements.
    This would relatively simple to add, but *so far*, there do not seem to be enough use cases for such a
-   system to offset the added code complexity.
+   system in order to offset the added code complexity.
  * Systems for sets, geometric shapes, and set measure. The might be included in the future, but
    so far, they do not seem to fit within the scope of this project.
 
 Of course, if anyone feels that any specific feature be added, feel free to file an issue or
 contribute at the [github](https://github.com/anvil777/maths-traits) repository. Since most
 of the non-implemeted features are non-implemented due to usefulness concerns, if a feature is
-requested (and is reasonable), it will probably be added (though this is not a guarantee).
+requested (and is reasonable), it will probably be added at some point afterward
+(though this is not a guarantee).
 
 # Release Stability
 
-At the moment, this project is still in developement, so the API most definitely could still change.
-However, large portions of the crate could definitely be considered fairly stable, so going forward,
-particularly unstable systems will be gated behind the `unstable` optional feature in order
-to provide more clarity as to what is and isn't bound to change.
+At the moment, this project is still in developement, so do note that it is entirely possible
+for the API to change in the future. I simply do not feel that the crate has had enough use to
+warrent a feature freeze of any kind, so I would like to leave that within the realm of possibility.
 
-Specifically though, expect most changes to occur in the module, metric, and integer systems.
+_However_, as it stands currently, a fair portion of subsystems have more-or-less been stable in my own
+personal use for some time, and I would specifically expect most changes to
+occur in the module-like, metric, and integer systems, so there should not be a terribly large
+number of breaking changes in the future.
+
+Of course, if an API-breaking change _is_ introduced at any point it will be reflected in
+the semantic-versioning.
