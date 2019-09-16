@@ -46,7 +46,7 @@ and `MulMonoid`) will automatically be implemented and usable for the type.
 <details>
 <summary><i>click to show</i></summary>
 
-```
+```Rust
 use maths_traits::algebra::*;
 
 #[derive(Clone)] //necessary to auto-implement Ring and MulMonoid
@@ -160,7 +160,7 @@ structures like polynomials or functions.<p>
 <details>
 <summary><i>click to show</i></summary>
 
-```
+```Rust
 use maths_traits::algebra::*;
 
 //Using a GCDDomain here means we can use more integral types, polynomials, and other types
