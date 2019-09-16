@@ -2,20 +2,22 @@
 //!Traits for integers and natural numbers
 //!
 
-use core::convert::{TryFrom, TryInto};
+use core::convert::{TryFrom};
 use core::ops::{Rem, RemAssign};
 use core::iter::Iterator;
+
+use num_traits::{ToPrimitive, FromPrimitive};
 
 use crate::analysis::ordered::*;
 use crate::algebra::*;
 
 ///Aliases conversion traits to and from the primitive integer types
 pub trait CastPrimInt =
-    TryFrom<i8>   + TryFrom<u8>   + TryInto<i8>   + TryInto<u8> +
-    TryFrom<i16>  + TryFrom<u16>  + TryInto<i16>  + TryInto<u16> +
-    TryFrom<i32>  + TryFrom<u32>  + TryInto<i32>  + TryInto<u32> +
-    TryFrom<i64>  + TryFrom<u64>  + TryInto<i64>  + TryInto<u64> +
-    TryFrom<i128> + TryFrom<u128> + TryInto<i128> + TryInto<u128>;
+    TryFrom<i8>   + TryFrom<u8>   +
+    TryFrom<i16>  + TryFrom<u16>  +
+    TryFrom<i32>  + TryFrom<u32>  +
+    TryFrom<i64>  + TryFrom<u64>  +
+    TryFrom<i128> + TryFrom<u128> ;
 
 ///
 ///A subset of the Integers that has all of the major integer operations
@@ -32,7 +34,7 @@ pub trait CastPrimInt =
 ///Furthermore, this trait contains associated types referring to an unsigned and signed type of
 ///similar precision to make it easier to manage the broader system of types used in integer algorithms
 ///
-pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt
+pub trait IntegerSubset: Ord + Eq + Clone + CastPrimInt + ToPrimitive + FromPrimitive
                         + EuclideanSemidomain
                         + Primality
                         + ArchSemiring + ArchimedeanDiv + Sign

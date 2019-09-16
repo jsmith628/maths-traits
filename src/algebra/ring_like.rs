@@ -595,64 +595,64 @@ pub fn miller_rabin<Z:Natural>(n:Z) -> bool {
     }
 
     //the breakpoints for each set of sufficient witnesses
-    let b1:Z = Z::try_from(2047u32).unwrap_or(Z::zero());
-    let b2:Z = Z::try_from(1373653u32).unwrap_or(Z::zero());
-    let b3:Z = Z::try_from(9080191u32).unwrap_or(Z::zero());
-    let b4:Z = Z::try_from(25326001u32).unwrap_or(Z::zero());
-    let b5:Z = Z::try_from(3215031751u64).unwrap_or(Z::zero());
-    let b6:Z = Z::try_from(4759123141u64).unwrap_or(Z::zero());
-    let b7:Z = Z::try_from(1122004669633u64).unwrap_or(Z::zero());
-    let b8:Z = Z::try_from(2152302898747u64).unwrap_or(Z::zero());
-    let b9:Z = Z::try_from(3474749660383u64).unwrap_or(Z::zero());
-    let b10:Z = Z::try_from(341550071728321u64).unwrap_or(Z::zero());
-    let b11:Z = Z::try_from(3825123056546413051u64).unwrap_or(Z::zero());
-    let b12:Z = Z::try_from(318665857834031151167461u128).unwrap_or(Z::zero());
-    let b13:Z = Z::try_from(3317044064679887385961981u128).unwrap_or(Z::zero());
+    let b1 = Z::from_u32(2047u32);
+    let b2 = Z::from_u32(1373653u32);
+    let b3 = Z::from_u32(9080191u32);
+    let b4 = Z::from_u32(25326001u32);
+    let b5 = Z::from_u64(3215031751u64);
+    let b6 = Z::from_u64(4759123141u64);
+    let b7 = Z::from_u64(1122004669633u64);
+    let b8 = Z::from_u64(2152302898747u64);
+    let b9 = Z::from_u64(3474749660383u64);
+    let b10 = Z::from_u64(341550071728321u64);
+    let b11 = Z::from_u64(3825123056546413051u64);
+    let b12 = Z::from_u128(318665857834031151167461u128);
+    let b13 = Z::from_u128(3317044064679887385961981u128);
 
-    if b1.is_zero() || n < b1 {
+    if b1.map_or(true, |x| n < x) {
         witness(2, d.clone(), s.clone(), n.clone())
-    } else if b2.is_zero() || n < b2 {
+    } else if b2.map_or(true, |x| n < x) {
         witness(2, d.clone(), s.clone(), n.clone()) &&
         witness(3, d.clone(), s.clone(), n.clone())
-    } else if b3.is_zero() || n < b3 {
+    } else if b3.map_or(true, |x| n < x) {
         witness(31, d.clone(), s.clone(), n.clone()) &&
         witness(73, d.clone(), s.clone(), n.clone())
-    } else if b4.is_zero() || n < b4 {
+    } else if b4.map_or(true, |x| n < x) {
         witness(2, d.clone(), s.clone(), n.clone()) &&
         witness(3, d.clone(), s.clone(), n.clone()) &&
         witness(5, d.clone(), s.clone(), n.clone())
-    } else if b5.is_zero() || n < b5 {
+    } else if b5.map_or(true, |x| n < x) {
         witness(2, d.clone(), s.clone(), n.clone()) &&
         witness(3, d.clone(), s.clone(), n.clone()) &&
         witness(5, d.clone(), s.clone(), n.clone()) &&
         witness(7, d.clone(), s.clone(), n.clone())
-    } else if b6.is_zero() || n < b6 {
+    } else if b6.map_or(true, |x| n < x) {
         witness(2, d.clone(), s.clone(), n.clone()) &&
         witness(7, d.clone(), s.clone(), n.clone()) &&
         witness(61, d.clone(), s.clone(), n.clone())
-    } else if b7.is_zero() || n < b7 {
+    } else if b7.map_or(true, |x| n < x) {
         witness(2, d.clone(), s.clone(), n.clone()) &&
         witness(13, d.clone(), s.clone(), n.clone()) &&
         witness(23, d.clone(), s.clone(), n.clone()) &&
         witness(1662803, d.clone(), s.clone(), n.clone())
-    } else if b13.is_zero() || n < b13 {
+    } else if b13.map_or(true, |x| n < x) {
         witness(2, d.clone(), s.clone(), n.clone()) &&
         witness(3, d.clone(), s.clone(), n.clone()) &&
         witness(5, d.clone(), s.clone(), n.clone()) &&
         witness(7, d.clone(), s.clone(), n.clone()) &&
         witness(11, d.clone(), s.clone(), n.clone()) &&
-        if !b8.is_zero() && n >= b8 { witness(13, d.clone(), s.clone(), n.clone()) } else {true} &&
-        if !b9.is_zero() && n >= b9 { witness(17, d.clone(), s.clone(), n.clone()) } else {true} &&
-        if !b10.is_zero() && n >= b10 {
+        if b8.map_or(false, |x| n >= x) { witness(13, d.clone(), s.clone(), n.clone()) } else {true} &&
+        if b9.map_or(false, |x| n >= x) { witness(17, d.clone(), s.clone(), n.clone()) } else {true} &&
+        if b10.map_or(false, |x| n >= x) {
             witness(19, d.clone(), s.clone(), n.clone()) &&
             witness(23, d.clone(), s.clone(), n.clone())
         } else {true} &&
-        if !b11.is_zero() && n >= b11 {
+        if b11.map_or(false, |x| n >= x) {
             witness(29, d.clone(), s.clone(), n.clone()) &&
             witness(31, d.clone(), s.clone(), n.clone()) &&
             witness(37, d.clone(), s.clone(), n.clone())
         } else {true} &&
-        if !b12.is_zero() && n >= b12 { witness(41, d.clone(), s.clone(), n.clone()) } else {true}
+        if b12.map_or(false, |x| n >= x) { witness(41, d.clone(), s.clone(), n.clone()) } else {true}
     } else {
 
         //in general, we need to check every witness below 2*ln(n)^2
