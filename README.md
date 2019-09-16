@@ -32,19 +32,18 @@ This way, to support the system, structs need only implement each relevant prope
 one can simply bound generics by the single alias of whatever mathematical structure fits their needs.
 
 For example, to create a generalized `Rational` type,
-you would implement the standard [`Clone`](Clone), [`Add`](core::ops::Add), [`Sub`](core::ops::Sub),
-[`Mul`](core::ops::Mul),
-[`Div`](core::ops::Div), [`Neg`](core::ops::Neg), [`Inv`](num_traits::Inv), [`Zero`](num_traits::Zero),
-[`One`](num_traits::One) traits, and their assign variants as normal. Then, by implementing the new traits
-[`AddCommutative`](algebra::AddCommutative), [`AddAssociative`](algebra::AddAssociative),
-[`MulCommutative`](algebra::MulCommutative), [`MulCommutative`](algebra::MulAssociative), and
-[`Distributive`](algebra::Distributive), all of the aliases using those operations (such as [`Ring`](algebra::Ring)
-and [`MulMonoid`](algebra::MulMonoid)) will automatically be implemented and usable for the type.
+you would implement the standard `Clone`, `Add`, `Sub`,
+`Mul`, `Div`, `Neg`, `Inv`, `Zero`,
+`One` traits, and their assign variants as normal. Then, by implementing the new traits
+`AddCommutative`, `AddAssociative`,
+`MulCommutative`, `MulCommutative`, and
+`Distributive`, all of the aliases using those operations (such as `Ring`
+and `MulMonoid`) will automatically be implemented and usable for the type.
 
 <details>
 <summary><i>click to show</i> </summary>
 
-```
+```Rust
 use maths_traits::algebra::*;
 
 #[derive(Clone)] //necessary to auto-implement Ring and MulMonoid
@@ -149,8 +148,8 @@ assert_eq!(repeated_squaring(half, 7u32), Rational::new(1, 128));
 ```
 </details> <p>
 
-In addition, with little effort, using a more abstract [`Integer`](algebra::Integer)
-or [`GCDDomain`](algebra::GCDDomain) bound we can generalize
+In addition, with little effort, using a more abstract `Integer`
+or `GCDDomain` bound we can generalize
 significantly to be able to have more options for numerators and
 denominators, including every primitive integer precision, various big-integer types, or even
 structures like polynomials or functions.<p>
@@ -158,7 +157,7 @@ structures like polynomials or functions.<p>
 <details>
 <summary><i>click to show</i> </summary>
 
-```
+```Rust
 use maths_traits::algebra::*;
 
 //Using a GCDDomain here means we can use more integral types, polynomials, and other types
@@ -275,7 +274,7 @@ without the `std` feature by disabling default features in your `Cargo.toml`.
 maths-traits = {version = "0.2", default-features = false}
 ```
 
-However, do note that the implementations of all traits related to [`Real`](analysis::Real) on
+However, do note that the implementations of all traits related to `Real` on
 primitive types will only be available when using `std`, as the floating-point trigonometric
 and exponential functions are only available when linking to the standard library.
 
