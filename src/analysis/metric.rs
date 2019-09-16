@@ -101,24 +101,102 @@ impl<K:Real, V:InnerProductSpace<K>> BilinearForm<K,V> for InnerProductMetric {}
 impl<K:ComplexRing, V:InnerProductSpace<K>> ComplexSesquilinearForm<K,V> for InnerProductMetric {}
 impl<K:ComplexRing, V:InnerProductSpace<K>> InnerProduct<K,V> for InnerProductMetric {}
 
-
+///
+///A ring module over some complex ring with an inner product
+///
+///Rigorously, this operation is defined as a binary product `⟨,⟩:MxM->ℂ` from a module over a complex
+///ring to the complex numbers such that:
+/// * `⟨x+y,z⟩ = ⟨x,z⟩ + ⟨y,z⟩`
+/// * `⟨x•y⟩ = ̅⟨̅y̅,̅x̅⟩`
+/// * `⟨c*x,y⟩ = c*⟨x•y⟩`
+/// * `⟨x,x⟩` is real-valued and `⟨x,x⟩ > 0` whenenever `x != 0`
+///
+///Practically, however, the inner-product is simply a way to combine together the ideas of
+///(Euclidean) vector lengths, orthogonality/perpendicularity, and vector projections into one operation
+///Specifically:
+/// * Vector length becomes: `‖x‖ = √⟨x,x⟩`
+/// * `x` and `y` are orthogonal iff `⟨x,y⟩ == 0`
+/// * The component of `x` in the "direction" of `y` is quantified by `⟨x,y⟩*y/⟨y,y⟩`
+///
+///# Uniqueness
+///
+///While this trait treats the inner-product as a property of the space it acts upon, it is
+///worth noting that _technically_, for all non-trivial inner-product spaces,
+///there are *infinitely* many possible choices for it's output.
+///In fact, another inner-product can always be found by simply taking the pre-existing operation
+///and scaling it by some non-zero scalar. _However_, despite this, the choice of product is almost always
+///taken as intrinsic to to whichever space being considered, since the pick of product is entirely
+///determined by it's value on the space's basis vectors which themselves are usually core to that
+///vector's representation.
+///
+///However, if a space with more options is desired, the option to use the [SesquilinearForm]
+///system in addition or in lieu of this trait also exists.
+///
+///# Examples
+///
+/// * The standard N-dimensional real-valued dot product: `⟨x,y⟩ = x₁*y₁ + ... xₙ*yₙ`
+/// * The N-dimensional complex dot product: `⟨x,y⟩ = x₁*̅y̅₁ + ... xₙ*̅y̅ₙ`
+/// * The L₂ inner-product between complex-valued functions: `⟨f,g⟩ = ∫f(x)*̅g(x)dx`
+///
+///
 pub trait InnerProductSpace<F: ComplexRing>: RingModule<F> {
+
+    ///
+    ///A binary scalar operation `⟨,⟩:MxM->ℂ` between two module element such that:
+    /// * `⟨x+y,z⟩ = ⟨x,z⟩ + ⟨y,z⟩`
+    /// * `⟨x•y⟩ = ̅⟨̅y̅,̅x̅⟩`
+    /// * `⟨c*x,y⟩ = c*⟨x•y⟩`
+    /// * `⟨x,x⟩` is real-valued and `⟨x,x⟩ > 0` whenenever `x != 0`
+    ///
     fn inner_product(self, rhs:Self) -> F;
 
+    ///
+    ///The square of the norm induced by the inner-product
+    ///
+    ///This is equivalent to `⟨x,x⟩` for all `x`
+    ///
     #[inline] fn norm_sqrd(self) -> F::Real {self.clone().inner_product(self).as_real()}
+
+    ///
+    ///The norm induced by the inner-product
+    ///
+    ///This is equivalent to `√⟨x,x⟩` for all `x`
+    ///
     #[inline] fn norm(self) -> F::Real {self.norm_sqrd().sqrt()}
+
+    ///The distance between two elements as defined by `√⟨x-y,x-y⟩`
     #[inline] fn dist_euclid(self, rhs: Self) -> F::Real {(self - rhs).norm()}
+
+    ///
+    ///Divides an element by its length. Only available if the reals are fully contained in this module's scalars
+    ///
+    ///Note that this can panic or return an error value if self if is zero
+    ///
     #[inline] fn normalized(self) -> Self where F:From<<F as ComplexSubset>::Real> {
         self.clone() * F::from(self.norm().inv())
     }
 
+    ///Determines if two elements are normal to each other. Equivalent to `⟨x,y⟩ == 0`
     #[inline] fn orthogonal(self, rhs:Self) -> bool {self.inner_product(rhs).is_zero()}
+
+    ///Computes the orthogonal component of `rhs` to `self`. equivalent to `rhs - self.project(rhs)`
     #[inline] fn reject(self, rhs: Self) -> Self where F:ComplexField { rhs.clone() - self.project(rhs) }
+
+    ///Computes the parallel component of `rhs` to `self`. equivalent to `⟨self,rhs⟩*rhs/⟨self,self⟩`
     #[inline] fn project(self, rhs: Self) -> Self where F:ComplexField {
         let l = self.clone().inner_product(self.clone()).inv() * self.clone().inner_product(rhs);
         self * l
     }
 
+    ///
+    ///Computes a measure of the angle between two module elements
+    ///
+    ///For finite real-spaces, this works exactly as expected, but for infinite or complex spaces,
+    ///the particular interpretation varies depending on context.
+    ///
+    ///Rigorously, this method is equivalent equivalent to `acos(⟨self,rhs⟩/(‖self‖*‖rhs‖))`, and is
+    ///based upon the finite real result that `⟨x,y⟩ = ‖x‖*‖y‖*cos(θ)`
+    ///
     #[inline] fn angle(self, rhs: Self) -> F where F:Trig+From<<F as ComplexSubset>::Real> {
         let l1 = self.clone().norm();
         let l2 = rhs.clone().norm();
