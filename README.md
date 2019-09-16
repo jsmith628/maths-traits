@@ -17,8 +17,8 @@ from the Integers so that objects like polynomials can fit into algorithms
 generally designed for the latter.
 
 To accomplish this goal, the provided framework provided is built with a number of design considerations:
-* For ease of use and implementation, the included systems utilize [standard Rust][std] or well established
-  libraries, like [`num_traits`], whenever possible instead of creating new systems.
+* For ease of use and implementation, the included systems utilize standard Rust or well established
+  libraries, like [`num_traits`](https://crates.io/crates/num-traits), whenever possible instead of creating new systems.
 * Implementors should only have to consider individual properties of structures while users
   should only need to use the single trait for whichever mathematical object has the desired features
 * The systems have been named and organized to fit mathematical convention as much as possible in
