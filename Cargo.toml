@@ -1,5 +1,5 @@
 [package]
-authors = ["Joshua Smith <anvil775@gmail.com>"]
+authors = ["Joshua Smith <jsmith62831@gmail.com>"]
 name = "maths-traits"
 description = "A simple to use yet abstract system of mathematical traits for the Rust language"
 version = "0.2.1"
