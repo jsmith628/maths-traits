@@ -656,11 +656,7 @@ macro_rules! impl_real {
     )*}
 }
 
-// Necessary do to issue #60021
-#[cfg(feature = "std")] mod impls {
-    use super::{ Trig, Exponential, RealExponential, ComplexSubset, Real };
-    impl_real!(f32:u32:i32 f64:u64:i64);
-}
+#[cfg(feature = "std")] impl_real!(f32:u32:i32 f64:u64:i64);
 
 macro_rules! int_exp {
     ($($t:ident)*) => {
