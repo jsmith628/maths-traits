@@ -265,7 +265,8 @@ impl_ordered_float!(f32 f64);
 #[cfg(feature = "bigint")] mod impl_bigint {
 
     use super::*;
-    use num_bigint::{BigUint, BigInt, Sign as NumSign};
+    use num_traits::Signed as NumSign;
+    use num_bigint::{BigUint, BigInt};
 
     impl AddOrdered for BigUint {}
     impl AddOrdered for BigInt {}
@@ -280,21 +281,8 @@ impl_ordered_float!(f32 f64);
     }
 
     impl Sign for BigInt {
-        #[inline] fn signum(self) -> Self {
-            match BigInt::sign(&self) {
-                NumSign::Plus => Self::one(),
-                NumSign::NoSign => -Self::zero(),
-                NumSign::Minus => -Self::one()
-            }
-        }
-
-        #[inline]
-        fn abs(self) -> Self {
-            match BigInt::sign(&self) {
-                NumSign::Minus => -self,
-                _ => self
-            }
-        }
+        fn signum(self) -> Self {NumSign::signum(&self)}
+        fn abs(self) -> Self {NumSign::abs(&self)}
     }
 
     impl ArchimedeanDiv for BigUint {
