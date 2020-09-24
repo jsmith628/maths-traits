@@ -315,7 +315,11 @@
 //!
 
 #![feature(trait_alias)]
+
+//is only used internally and currently works ok, so just suppress the warning
+#![allow(incomplete_features)]
 #![feature(specialization)]
+
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
