@@ -564,4 +564,11 @@ macro_rules! impl_props {
 
 impl_props!{ usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128; f32 f64 }
 
+#[cfg(feature = "bigint")]
+mod impl_bigint {
+    use super::*;
+    use num_bigint::{BigUint, BigInt};
+    impl_props!{BigUint BigInt; }
+}
+
 #[cfg(std)] impl<'a> AddAssociative for ::std::borrow::Cow<'a,str> {}

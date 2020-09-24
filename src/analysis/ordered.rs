@@ -258,10 +258,69 @@ macro_rules! impl_ordered_float {
     )*}
 }
 
-// Necessary do to issue #60021
-mod impls {
-    use super::{ AddOrdered, MulOrdered, ArchimedeanProperty, Sign, ArchimedeanDiv, Natural, MulN };
-    impl_ordered_int!(i8 i16 i32 i64 i128 isize);
-    impl_ordered_uint!(u8 u16 u32 u64 u128 usize);
-    impl_ordered_float!(f32 f64);
+impl_ordered_int!(i8 i16 i32 i64 i128 isize);
+impl_ordered_uint!(u8 u16 u32 u64 u128 usize);
+impl_ordered_float!(f32 f64);
+
+#[cfg(feature = "bigint")] mod impl_bigint {
+
+    use super::*;
+    use num_bigint::{BigUint, BigInt, Sign as NumSign};
+
+    impl AddOrdered for BigUint {}
+    impl AddOrdered for BigInt {}
+    impl MulOrdered for BigUint {}
+    impl MulOrdered for BigInt {}
+    impl ArchimedeanProperty for BigUint {}
+    impl ArchimedeanProperty for BigInt {}
+
+    impl Sign for BigUint {
+        #[inline] fn signum(self) -> Self { if self.is_zero() { Self::zero() } else { Self::one() } }
+        #[inline] fn abs(self) -> Self { self }
+    }
+
+    impl Sign for BigInt {
+        #[inline] fn signum(self) -> Self {
+            match BigInt::sign(&self) {
+                NumSign::Plus => Self::one(),
+                NumSign::NoSign => -Self::zero(),
+                NumSign::Minus => -Self::one()
+            }
+        }
+
+        #[inline]
+        fn abs(self) -> Self {
+            match BigInt::sign(&self) {
+                NumSign::Minus => -self,
+                _ => self
+            }
+        }
+    }
+
+    impl ArchimedeanDiv for BigUint {
+        #[inline] fn embed_nat<N:Natural>(n:N) -> Self { Self::one().mul_n(n) }
+        #[inline] fn div_arch(self, rhs:Self) -> Self {self / rhs}
+        #[inline] fn rem_arch(self, rhs:Self) -> Self {self % rhs}
+        #[inline] fn div_alg_arch(self, rhs:Self) -> (Self, Self) {(&self / &rhs, &self % &rhs)}
+    }
+
+    impl ArchimedeanDiv for BigInt {
+        #[inline] fn embed_nat<N:Natural>(n:N) -> Self { Self::one().mul_n(n) }
+        #[inline] fn div_arch(self, rhs:Self) -> Self {self.div_alg_arch(rhs).0}
+        #[inline] fn rem_arch(self, rhs:Self) -> Self {self.div_alg_arch(rhs).1}
+
+        #[inline]
+        fn div_alg_arch(self, rhs:Self) -> (Self, Self) {
+            let (q, r) = (&self / &rhs, &self % &rhs);
+            if r.negative() {
+                if rhs.negative() {
+                    (q + Self::one(), r - rhs)
+                } else {
+                    (q - Self::one(), r + rhs)
+                }
+            } else {
+                (q, r)
+            }
+        }
+    }
 }

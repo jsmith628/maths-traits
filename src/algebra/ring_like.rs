@@ -448,7 +448,15 @@ macro_rules! impl_dist {
         )*
     };
 }
+
 impl_dist!(usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128 f32 f64);
+
+#[cfg(feature = "bigint")]
+mod impl_bigint {
+    use super::*;
+    use num_bigint::{BigUint, BigInt};
+    impl_dist!{BigUint BigInt}
+}
 
 macro_rules! impl_for_field {
     ($($t:ty)*) => {

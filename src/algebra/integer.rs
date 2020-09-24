@@ -323,3 +323,111 @@ macro_rules! impl_primality {
 impl_int!(i8:u8 i16:u16 i32:u32 i64:u64 i128:u128 isize:usize);
 impl_primality!(i8:u16 i16:u32 i32:u64 i64:u128 i128:u128 isize:u128);
 impl_primality!(u8:u16 u16:u32 u32:u64 u64:u128 u128:u128 usize:u128);
+
+#[cfg(feature = "bigint")]
+mod impl_bigint {
+    use super::*;
+    use num_integer::Integer as NumInteger;
+    use num_bigint::{BigUint, BigInt};
+
+    //
+    //while we *can* just use impl_int!, some of the methods we need to impl already have
+    //methods in num_integer::Integer
+    //
+
+    macro_rules! impl_bigint {
+        ($name:ty:$signed:ty:$unsigned:ty) => {
+            impl Divisibility for $name {
+                #[inline] fn unit(&self) -> bool{
+                    self.is_one() || Self::try_from(-1i32).map(|m| &m==self).unwrap_or(false)
+                }
+
+                #[inline] fn inverse(self) -> Option<Self>
+                    {if self.unit() { Option::Some(self) } else {Option::None} }
+                #[inline] fn divides(self, rhs: Self) -> bool { NumInteger::is_multiple_of(&rhs, &self) }
+                #[inline] fn divide(self, rhs: Self) -> Option<Self> {
+                    let (q, r) = self.div_alg(rhs);
+                    if r.is_zero() {Some(q)} else {None}
+                }
+            }
+
+            impl NoZeroDivisors for $name {}
+
+            impl GCD for $name {
+                #[inline] fn lcm(self, rhs: Self) -> Self { NumInteger::gcd_lcm(&self, &rhs).1  }
+                #[inline] fn gcd(self, rhs: Self) -> Self{ NumInteger::gcd(&self, &rhs) }
+            }
+
+            impl UniquelyFactorizable for $name {}
+
+            impl Factorizable for $name {
+                type Factors = TrialDivision<Self>;
+                #[inline] fn factors(self) -> TrialDivision<Self> {TrialDivision::factors_of(self)}
+            }
+
+            impl EuclideanDiv for $name {
+                type Naturals = $unsigned;
+                #[inline] fn euclid_norm(&self) -> $unsigned {self.clone().abs_unsigned()}
+
+                ///Euclidean division implemented using the `/` operator
+                #[inline] fn div_euc(self, rhs: Self) -> Self {self / rhs}
+
+                ///Euclidean remainder implemented using the `%` operator
+                #[inline] fn rem_euc(self, rhs: Self) -> Self {self % rhs}
+
+                ///
+                ///Euclidean division implemented using the `/` and `%` operators
+                ///
+                ///Note that this does mean that the remainder may be negative and this method
+                ///only guarantees that it satisfies the basic [Eucldidean division](EuclideanDiv::div_alg)
+                ///axioms
+                #[inline] fn div_alg(self, rhs: Self) -> (Self, Self) {(&self / &rhs, &self % &rhs)}
+            }
+
+            impl IntegerSubset for $name {
+                type Signed = $signed;
+                type Unsigned = $unsigned;
+                #[inline] fn as_signed(self) -> $signed { <$signed>::from(self) }
+                #[inline] fn as_unsigned(self) -> $unsigned { <$unsigned>::try_from(self).unwrap() }
+
+                #[inline] fn two() -> Self { 2u32.into() }
+                #[inline] fn mul_two(self) -> Self { self << 1 }
+                #[inline] fn div_two(self) -> Self { self >> 1 }
+                #[inline] fn even(&self) -> bool { NumInteger::is_even(self) }
+                #[inline] fn odd(&self) -> bool { NumInteger::is_odd(self) }
+            }
+
+            impl Primality for $name {
+                #[inline] fn irreducible(&self) -> bool { self.prime() }
+                #[inline] fn prime(&self) -> bool { miller_rabin(self.clone().as_unsigned()) }
+            }
+
+        };
+
+        ($signed:ty:$unsigned:ty) => {
+
+            impl_bigint!($signed:$signed:$unsigned);
+            impl_bigint!($unsigned:$signed:$unsigned);
+
+            impl Bezout for $signed {
+                #[inline]
+                fn bezout_coefficients(self, rhs: Self) -> (Self, Self) {
+                    let gcd = NumInteger::extended_gcd(&self, &rhs);
+                    (gcd.x, gcd.y)
+                }
+                #[inline]
+                fn bezout_with_gcd(self, rhs: Self) -> (Self, Self, Self) {
+                    let gcd = NumInteger::extended_gcd(&self, &rhs);
+                    (gcd.x, gcd.y, gcd.gcd)
+                }
+            }
+
+            impl Integer for $signed {}
+            impl Natural for $unsigned {}
+
+        }
+
+    }
+
+    impl_bigint!{BigInt:BigUint}
+}
