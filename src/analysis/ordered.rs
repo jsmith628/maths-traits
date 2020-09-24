@@ -23,7 +23,7 @@ pub use core::cmp::{PartialOrd, Ord};
 pub trait AddOrdered: PartialOrd {}
 
 ///
-///A marker trait signifying that for `x > y`, `x*z > x*z` and `z*x > z*x` for all `z > 0`
+///A marker trait signifying that for `x > y`, `x*z > y*z` and `z*x > z*y` for all `z > 0`
 ///
 ///Like for [AddOrdered], for this also implies for non-trivial structures that they are infinite
 ///and provides for embeddings of the [Naturals](Natural) and [Integers](Integer) in much the same
