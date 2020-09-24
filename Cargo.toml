@@ -26,3 +26,4 @@ std = []
 
 bigint = ["num-bigint", "num-integer"]
 rational = ["num-rational", "num-integer"]
+num = ["bigint", "rational"]
