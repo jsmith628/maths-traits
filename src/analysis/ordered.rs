@@ -324,3 +324,41 @@ impl_ordered_float!(f32 f64);
         }
     }
 }
+
+#[cfg(feature = "rational")] mod impl_rational {
+
+    use super::*;
+    use num_rational::Ratio;
+    use num_traits::Signed as NumSign;
+    use num_integer::Integer as NumInteger;
+
+    impl<T:Clone+NumInteger+AddOrdered+MulOrdered> AddOrdered for Ratio<T> {}
+    impl<T:Clone+NumInteger+MulOrdered> MulOrdered for Ratio<T> {}
+    impl<T:Clone+NumInteger+ArchRing> ArchimedeanProperty for Ratio<T> {}
+
+    impl<T:Clone+NumInteger+NumSign> Sign for Ratio<T> {
+        fn signum(self) -> Self {NumSign::signum(&self)}
+        fn abs(self) -> Self {NumSign::abs(&self)}
+    }
+
+    impl<T:Clone+NumInteger+ArchUnitalRing> ArchimedeanDiv for Ratio<T> {
+        #[inline] fn embed_nat<N:Natural>(n:N) -> Self { Self::from_integer(T::embed_nat(n)) }
+        #[inline] fn div_arch(self, rhs:Self) -> Self {self.div_alg_arch(rhs).0}
+        #[inline] fn rem_arch(self, rhs:Self) -> Self {self.div_alg_arch(rhs).1}
+
+        #[inline]
+        fn div_alg_arch(self, rhs:Self) -> (Self, Self) {
+            let (q, r) = (&self / &rhs, &self % &rhs);
+            if r < Self::zero() {
+                if rhs < Self::zero() {
+                    (q + Self::one(), r - rhs)
+                } else {
+                    (q - Self::one(), r + rhs)
+                }
+            } else {
+                (q, r)
+            }
+        }
+    }
+
+}

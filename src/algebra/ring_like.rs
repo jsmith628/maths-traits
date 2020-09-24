@@ -458,6 +458,13 @@ mod impl_bigint {
     impl_dist!{BigUint BigInt}
 }
 
+#[cfg(feature = "rational")]
+mod impl_rational {
+    use super::*;
+    impl<T:Distributive> Distributive for num_rational::Ratio<T> {}
+    impl<T:Distributive> Distributive<T> for num_rational::Ratio<T> {}
+}
+
 macro_rules! impl_for_field {
     ($($t:ty)*) => {
         $(

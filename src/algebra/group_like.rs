@@ -564,6 +564,8 @@ macro_rules! impl_props {
 
 impl_props!{ usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128; f32 f64 }
 
+#[cfg(std)] impl<'a> AddAssociative for ::std::borrow::Cow<'a,str> {}
+
 #[cfg(feature = "bigint")]
 mod impl_bigint {
     use super::*;
@@ -571,4 +573,21 @@ mod impl_bigint {
     impl_props!{BigUint BigInt; }
 }
 
-#[cfg(std)] impl<'a> AddAssociative for ::std::borrow::Cow<'a,str> {}
+#[cfg(feature = "rational")]
+mod impl_rational {
+
+    use super::*;
+    use num_rational::Ratio;
+
+    //needs MulAssociative since the denominator of `(a/b + c/d) + e/f` is `(b*d)*f`
+    //and the denominator of `a/b + (c/d + e/f)` is `b*(d*f)`
+    impl<T:AddAssociative+MulAssociative> AddAssociative for Ratio<T> {}
+
+    //needs MulCommutative since the denominator of `a/b + c/d` is `b*d`
+    //and the denominator of `c/d + a/b` is `d*b`
+    impl<T:AddCommutative+MulCommutative> AddCommutative for Ratio<T> {}
+
+    impl<T:MulAssociative> MulAssociative for Ratio<T> {}
+    impl<T:MulCommutative> MulCommutative for Ratio<T> {}
+
+}
