@@ -41,7 +41,7 @@ pub trait Metric<X, R:Real> {
 ///This is distinct from a NormedMetric in that it is allowed to be 0 for non-zero vectors
 ///
 pub trait Seminorm<K:UnitalRing, X:RingModule<K>, R:Real> {
-    #[inline] fn norm(&self, x:X) -> R;
+    fn norm(&self, x:X) -> R;
     #[inline] fn normalize(&self, x:X) -> X where K:From<R> {x.clone() * K::from(self.norm(x).inv())}
 }
 
